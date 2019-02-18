@@ -1,7 +1,7 @@
 package uk.badamson.mc;
-/* 
+/*
  * © Copyright Benedict Adamson 2018-19.
- * 
+ *
  * This file is part of MC.
  *
  * MC is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.boot.*;
-import org.springframework.boot.autoconfigure.*;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 /**
  * <p>
@@ -33,11 +33,11 @@ public final class Application {
     * <p>
     * The entry point of the Mission Command program.
     * </p>
-    * 
+    *
     * @param args
     *           The command line arguments of the program.
     */
-   public static void main(String[] args) {
+   public static void main(final String[] args) {
       SpringApplication.run(Application.class, args);
    }
 
