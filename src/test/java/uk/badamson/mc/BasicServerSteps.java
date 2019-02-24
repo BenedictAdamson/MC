@@ -21,8 +21,8 @@ package uk.badamson.mc;
 import java.net.URI;
 
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * <p>
@@ -36,39 +36,39 @@ public class BasicServerSteps {
    private String dnsName;
    private URI requestUri;
 
-   @Given("A potential player has the DNS name of an MC server")
-   public void givenDnsNameOfAnMcServer() {
+   @Given("the DNS name of an MC server")
+   public void the_DNS_name_of_an_MC_server() {
       dnsName = "example.com";
    }
 
-   @Given("the MC server at the DNS name is running")
-   public void givenMcServerAtTheDnsNameIsRunning() {
+   @Given("the MC server is running")
+   public void the_MC_server_is_running() {
+      // TODO
+   }
+
+   @When("the MC server receives the request")
+   public void the_MC_server_receives_the_request() {
+      // TODO
+   }
+
+   @Then("the MC server serves a home-page")
+   public void the_MC_server_serves_a_home_page() throws Throwable {
       // TODO
    }
 
    @Given("the potential player gives the DNS name to a web browser")
-   public void givenGivesTheDnsNameToAWebBrowser() {
+   public void the_potential_player_gives_the_DNS_name_to_a_web_browser() {
       // Do nothing
    }
 
    @Given("the web browser gets the default HTML resource at the DNS name")
-   public void givenWebBrowserGetsTheDefaultHtmlResourceAtTheDnsName()
+   public void the_web_browser_gets_the_default_HTML_resource_at_the_DNS_name()
             throws Exception {
       final String authority = dnsName;
       final String path = null;
       final String query = null;
       final String fragment = null;
       requestUri = new URI(scheme, authority, path, query, fragment);
-   }
-
-   @When("the MC server receives the request")
-   public void whenMcServerReceivesTheRequest() {
-      // TODO
-   }
-
-   @Then("the MC server serves a home-page")
-   public void thenMcServerServesAHomePage() throws Throwable {
-      // TODO
    }
 
 }
