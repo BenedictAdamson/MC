@@ -1,9 +1,4 @@
 package uk.badamson.mc;
-
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.config.EnableWebFlux;
-
 /*
  * © Copyright Benedict Adamson 2018-19.
  *
@@ -22,6 +17,10 @@ import org.springframework.web.reactive.config.EnableWebFlux;
  * You should have received a copy of the GNU Affero General Public License
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.config.EnableWebFlux;
 
 /**
  *

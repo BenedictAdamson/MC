@@ -1,8 +1,4 @@
 package uk.badamson.mc;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -22,6 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 /**
  * <p>
  * End-points for the home-page
@@ -30,13 +32,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HomeController {
 
+   @GetMapping("/home")
+   public String get() {
+      return "Hello";
+   }
+
    @GetMapping("")
-   public String getEmpty() {
-      return "TODO";
+   public ResponseEntity<Void> getEmpty() {
+      return redirect();
    }
 
    @GetMapping("/")
-   public String getRoot() {
-      return "TODO";
+   public ResponseEntity<Void> getRoot() {
+      return redirect();
+   }
+
+   private ResponseEntity<Void> redirect() {
+      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
+               .header(HttpHeaders.LOCATION, "/home").build();
    }
 }

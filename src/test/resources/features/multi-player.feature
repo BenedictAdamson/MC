@@ -21,9 +21,15 @@ Feature: Multi-player
   Scenario: Potential player accesses an MC server using a web browser and a DNS name
     Given the DNS name, example.com, of an MC server
     When the potential player gives the DNS name to a web browser
-    Then the MC server serves the home-page
+    Then the MC server redirects to the home-page
 
-  Scenario: Potential player accesses an MC server using a simple URL with root path
+  Scenario: Potential player accesses an MC server using a simple URL with the root path
     Given the DNS name, example.com, of an MC server
     When the potential player gives the obvious URL http://example.com/ to a web browser
+    Then the MC server redirects to the home-page
+
+  Scenario: Potential player accesses an MC server using the URL of the home-page
+    Given the DNS name, example.com, of an MC server
+    When the potential player gives the home-page URL to a web browser
+    # The home-page URL is http://example.com/home
     Then the MC server serves the home-page

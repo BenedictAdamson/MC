@@ -18,8 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.hamcrest.collection.IsIn.isOneOf;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -41,7 +39,7 @@ import cucumber.api.java.en.When;
  * about the basic operation of an MC server.
  * </p>
  */
-@SpringBootTest(classes = TestConfig.class,
+@SpringBootTest(classes = Application.class,
          webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureWebTestClient
 public class BasicServerSteps {
@@ -77,9 +75,14 @@ public class BasicServerSteps {
       dnsName = "example.com";
    }
 
+   @Then("the MC server redirects to the home-page")
+   public void the_MC_server_redirects_to_the_home_page() throws Throwable {
+      response.expectStatus().isTemporaryRedirect();
+   }
+
    @Then("the MC server serves the home-page")
-   public void the_MC_server_serves_a_home_page() throws Throwable {
-      response.expectStatus().value(isOneOf(200, 301, 308));
+   public void the_MC_server_serves_the_home_page() throws Throwable {
+      response.expectStatus().isOk();
    }
 
    @When("the potential player gives the DNS name to a web browser")
@@ -89,11 +92,16 @@ public class BasicServerSteps {
       requestHtml(path);
    }
 
+   @When("the potential player gives the home-page URL to a web browser")
+   public void the_potential_player_gives_the_home_page_URL_to_a_web_browser()
+            throws Exception {
+      requestHtml("/home");
+   }
+
    @When("the potential player gives the obvious URL http://example.com/ to a web browser")
    public void the_potential_player_gives_the_obvious_URL_to_a_web_browser()
             throws Exception {
-      final String path = "/";
-      requestHtml(path);
+      requestHtml("/");
    }
 
 }
