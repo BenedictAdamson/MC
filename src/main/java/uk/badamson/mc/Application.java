@@ -20,6 +20,10 @@ package uk.badamson.mc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
 /**
@@ -29,6 +33,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
  */
 @SpringBootConfiguration
 @EnableWebFlux
+@EnableWebFluxSecurity
 public class Application {
 
    /**
@@ -43,4 +48,10 @@ public class Application {
       SpringApplication.run(Application.class, args);
    }
 
+   @Bean
+   public SecurityWebFilterChain securityWebFilterChain(
+            final ServerHttpSecurity http) {
+      // TODO
+      return http.build();
+   }
 }
