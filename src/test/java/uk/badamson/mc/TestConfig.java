@@ -1,4 +1,9 @@
 package uk.badamson.mc;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.config.EnableWebFlux;
+
 /*
  * © Copyright Benedict Adamson 2018-19.
  *
@@ -18,29 +23,12 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.web.reactive.config.EnableWebFlux;
-
 /**
- * <p>
- * The Spring Boot configuration of the Mission Command game.
- * </p>
+ *
  */
-@SpringBootConfiguration
+@Configuration
 @EnableWebFlux
-public class Application {
-
-   /**
-    * <p>
-    * The entry point of the Mission Command program.
-    * </p>
-    *
-    * @param args
-    *           The command line arguments of the program.
-    */
-   public static void main(final String[] args) {
-      SpringApplication.run(Application.class, args);
-   }
+@ComponentScan("uk.badamson.mc")
+public class TestConfig {
 
 }

@@ -19,6 +19,14 @@ package uk.badamson.mc;
  */
 
 import java.net.URI;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -30,11 +38,20 @@ import cucumber.api.java.en.When;
  * about the basic operation of an MC server.
  * </p>
  */
+@SpringBootTest(classes = TestConfig.class,
+         webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureWebTestClient
 public class BasicServerSteps {
 
    private final String scheme = "http";
    private String dnsName;
    private URI requestUri;
+
+   @Autowired
+   private ApplicationContext context;
+
+   @Autowired
+   private WebTestClient client;
 
    @Given("the DNS name of an MC server")
    public void the_DNS_name_of_an_MC_server() {
@@ -64,11 +81,15 @@ public class BasicServerSteps {
    @Given("the web browser gets the default HTML resource at the DNS name")
    public void the_web_browser_gets_the_default_HTML_resource_at_the_DNS_name()
             throws Exception {
+      Objects.requireNonNull(context, "context");
+      Objects.requireNonNull(client, "client");
       final String authority = dnsName;
       final String path = null;
       final String query = null;
       final String fragment = null;
       requestUri = new URI(scheme, authority, path, query, fragment);
+      client.get().uri(requestUri.getPath()).accept(MediaType.TEXT_HTML)
+               .exchange();
    }
 
 }
