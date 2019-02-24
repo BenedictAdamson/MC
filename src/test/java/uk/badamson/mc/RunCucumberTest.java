@@ -29,8 +29,7 @@ import cucumber.api.junit.Cucumber;
  * </p>
  */
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/features",
-         glue = { "uk.badamson.mc" })
+@CucumberOptions(features = "src/test/resources/features")
 public final class RunCucumberTest {
 
 }
