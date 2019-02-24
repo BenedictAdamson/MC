@@ -19,15 +19,24 @@ package uk.badamson.mc;
  */
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.reactive.config.EnableWebFlux;
 
 /**
  * <p>
  * The Spring Boot configuration of the Mission Command game.
  * </p>
  */
-@EnableAutoConfiguration
-public final class Application {
+@SpringBootConfiguration
+@EnableWebFlux
+@EnableWebFluxSecurity
+@ComponentScan("uk.badamson.mc")
+public class Application {
 
    /**
     * <p>
@@ -41,4 +50,10 @@ public final class Application {
       SpringApplication.run(Application.class, args);
    }
 
+   @Bean
+   public SecurityWebFilterChain securityWebFilterChain(
+            final ServerHttpSecurity http) {
+      // TODO
+      return http.build();
+   }
 }
