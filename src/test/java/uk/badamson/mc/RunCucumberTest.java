@@ -1,7 +1,8 @@
 package uk.badamson.mc;
-/*
+
+/* 
  * © Copyright Benedict Adamson 2018-19.
- *
+ * 
  * This file is part of MC.
  *
  * MC is free software: you can redistribute it and/or modify
@@ -17,28 +18,18 @@ package uk.badamson.mc;
  * You should have received a copy of the GNU Affero General Public License
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
+import org.junit.runner.RunWith;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import cucumber.api.CucumberOptions;
+import cucumber.api.junit.Cucumber;
 
 /**
  * <p>
- * The Spring Boot configuration of the Mission Command game.
+ * Glue to run the Cucumber BDD tests using JUnit.
  * </p>
  */
-@EnableAutoConfiguration
-public final class Application {
-
-   /**
-    * <p>
-    * The entry point of the Mission Command program.
-    * </p>
-    *
-    * @param args
-    *           The command line arguments of the program.
-    */
-   public static void main(final String[] args) {
-      SpringApplication.run(Application.class, args);
-   }
+@RunWith(Cucumber.class)
+@CucumberOptions(features = "src/test/resources/features")
+public final class RunCucumberTest {
 
 }

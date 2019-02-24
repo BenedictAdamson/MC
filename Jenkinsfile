@@ -40,8 +40,22 @@ pipeline {
         stage('Build') { 
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){ 
-                    sh 'mvn -s $MAVEN_SETTINGS clean package'
+                    sh 'mvn -s $MAVEN_SETTINGS -DskipTests=true clean package'
                 }
+            }
+        }
+        stage('Check') { 
+            steps {
+                configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){  
+                    sh 'mvn -s $MAVEN_SETTINGS spotbugs:spotbugs'
+                }
+            }
+        }
+        stage('Test') { 
+            steps {
+               configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){   
+                   sh 'mvn -s $MAVEN_SETTINGS test'
+               }
             }
         }
         stage('Deploy') {
@@ -53,14 +67,20 @@ pipeline {
             }
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){ 
-                    sh 'mvn -s $MAVEN_SETTINGS deploy'
+                    sh 'mvn -s $MAVEN_SETTINGS -DskipTests=true deploy'
                 }
             }
         }
     }
     post {
+        always {// We ESPECIALLY want the reports on failure
+            script {
+                def spotbugs = scanForIssues tool: [$class: 'SpotBugs'], pattern: 'target/spotbugsXml.xml'
+                publishIssues issues:[spotbugs]
+            } 
+        }
         success {
-            archiveArtifacts artifacts: 'pom.xml', fingerprint: true
+            archiveArtifacts artifacts: 'target/MC-*.jar', fingerprint: true
         }
     }
 }
