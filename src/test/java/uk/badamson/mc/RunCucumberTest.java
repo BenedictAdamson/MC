@@ -30,6 +30,6 @@ import cucumber.api.junit.Cucumber;
  */
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "src/test/resources/features")
-public final class RunCucumberTest {
+public class RunCucumberTest {
 
 }
