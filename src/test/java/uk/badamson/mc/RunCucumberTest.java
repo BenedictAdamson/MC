@@ -1,5 +1,4 @@
 package uk.badamson.mc;
-
 /* 
  * © Copyright Benedict Adamson 2018-19.
  * 
@@ -18,6 +17,7 @@ package uk.badamson.mc;
  * You should have received a copy of the GNU Affero General Public License
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 import org.junit.runner.RunWith;
 
 import cucumber.api.CucumberOptions;
@@ -29,7 +29,8 @@ import cucumber.api.junit.Cucumber;
  * </p>
  */
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/features")
+@CucumberOptions(features = "src/test/resources/features",
+         glue = { "uk.badamson.mc" })
 public final class RunCucumberTest {
 
 }
