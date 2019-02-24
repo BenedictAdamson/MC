@@ -18,6 +18,8 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.hamcrest.collection.IsIn.isOneOf;
+
 import java.net.URI;
 import java.util.Objects;
 
@@ -43,15 +45,16 @@ import cucumber.api.java.en.When;
 @AutoConfigureWebTestClient
 public class BasicServerSteps {
 
-   private final String scheme = "http";
-   private String dnsName;
-   private URI requestUri;
-
    @Autowired
    private ApplicationContext context;
 
    @Autowired
    private WebTestClient client;
+
+   private final String scheme = "http";
+   private String dnsName;
+   private URI requestUri;
+   private WebTestClient.ResponseSpec response;
 
    @Given("the DNS name of an MC server")
    public void the_DNS_name_of_an_MC_server() {
@@ -60,17 +63,17 @@ public class BasicServerSteps {
 
    @Given("the MC server is running")
    public void the_MC_server_is_running() {
-      // TODO
+      // Do nothing
    }
 
    @When("the MC server receives the request")
    public void the_MC_server_receives_the_request() {
-      // TODO
+      // Do nothing
    }
 
    @Then("the MC server serves a home-page")
    public void the_MC_server_serves_a_home_page() throws Throwable {
-      // TODO
+      response.expectStatus().value(isOneOf(200, 301, 308));
    }
 
    @Given("the potential player gives the DNS name to a web browser")
@@ -88,8 +91,8 @@ public class BasicServerSteps {
       final String query = null;
       final String fragment = null;
       requestUri = new URI(scheme, authority, path, query, fragment);
-      client.get().uri(requestUri.getPath()).accept(MediaType.TEXT_HTML)
-               .exchange();
+      response = client.get().uri(requestUri.getPath())
+               .accept(MediaType.TEXT_HTML).exchange();
    }
 
 }
