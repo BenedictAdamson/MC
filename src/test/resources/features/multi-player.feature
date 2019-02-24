@@ -19,6 +19,11 @@ Feature: Multi-player
   MC is a multi-player game. It should be easy for players to find each other using MC servers.
 
   Scenario: Potential player accesses an MC server using a web browser and a DNS name
-    Given the DNS name of an MC server
+    Given the DNS name, example.com, of an MC server
     When the potential player gives the DNS name to a web browser
-    Then the MC server serves a home-page
+    Then the MC server serves the home-page
+
+  Scenario: Potential player accesses an MC server using a simple URL with root path
+    Given the DNS name, example.com, of an MC server
+    When the potential player gives the obvious URL http://example.com/ to a web browser
+    Then the MC server serves the home-page

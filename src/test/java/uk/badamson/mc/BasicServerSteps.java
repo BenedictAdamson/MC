@@ -21,6 +21,7 @@ package uk.badamson.mc;
 import static org.hamcrest.collection.IsIn.isOneOf;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +57,27 @@ public class BasicServerSteps {
    private URI requestUri;
    private WebTestClient.ResponseSpec response;
 
-   @Given("the DNS name of an MC server")
+   private void requestHtml(final String path) {
+      Objects.requireNonNull(context, "context");
+      Objects.requireNonNull(client, "client");
+      final String authority = dnsName;
+      final String query = null;
+      final String fragment = null;
+      try {
+         requestUri = new URI(scheme, authority, path, query, fragment);
+      } catch (final URISyntaxException e) {
+         throw new IllegalArgumentException(e);
+      }
+      response = client.get().uri(requestUri.getPath())
+               .accept(MediaType.TEXT_HTML).exchange();
+   }
+
+   @Given("the DNS name, example.com, of an MC server")
    public void the_DNS_name_of_an_MC_server() {
       dnsName = "example.com";
    }
 
-   @Then("the MC server serves a home-page")
+   @Then("the MC server serves the home-page")
    public void the_MC_server_serves_a_home_page() throws Throwable {
       response.expectStatus().value(isOneOf(200, 301, 308));
    }
@@ -69,15 +85,15 @@ public class BasicServerSteps {
    @When("the potential player gives the DNS name to a web browser")
    public void the_potential_player_gives_the_DNS_name_to_a_web_browser()
             throws Exception {
-      Objects.requireNonNull(context, "context");
-      Objects.requireNonNull(client, "client");
-      final String authority = dnsName;
       final String path = null;
-      final String query = null;
-      final String fragment = null;
-      requestUri = new URI(scheme, authority, path, query, fragment);
-      response = client.get().uri(requestUri.getPath())
-               .accept(MediaType.TEXT_HTML).exchange();
+      requestHtml(path);
+   }
+
+   @When("the potential player gives the obvious URL http://example.com/ to a web browser")
+   public void the_potential_player_gives_the_obvious_URL_to_a_web_browser()
+            throws Exception {
+      final String path = "/";
+      requestHtml(path);
    }
 
 }
