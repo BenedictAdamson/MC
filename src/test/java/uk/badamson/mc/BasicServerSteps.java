@@ -61,28 +61,13 @@ public class BasicServerSteps {
       dnsName = "example.com";
    }
 
-   @Given("the MC server is running")
-   public void the_MC_server_is_running() {
-      // Do nothing
-   }
-
-   @When("the MC server receives the request")
-   public void the_MC_server_receives_the_request() {
-      // Do nothing
-   }
-
    @Then("the MC server serves a home-page")
    public void the_MC_server_serves_a_home_page() throws Throwable {
       response.expectStatus().value(isOneOf(200, 301, 308));
    }
 
-   @Given("the potential player gives the DNS name to a web browser")
-   public void the_potential_player_gives_the_DNS_name_to_a_web_browser() {
-      // Do nothing
-   }
-
-   @Given("the web browser gets the default HTML resource at the DNS name")
-   public void the_web_browser_gets_the_default_HTML_resource_at_the_DNS_name()
+   @When("the potential player gives the DNS name to a web browser")
+   public void the_potential_player_gives_the_DNS_name_to_a_web_browser()
             throws Exception {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
