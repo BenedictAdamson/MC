@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-Feature: Multi-player
-  MC is a multi-player game. It should be easy for players to find each other using MC servers.
+Feature: Home-page
+  It should be easy for players to access the home-page of an MC server.
 
   Scenario: Potential player accesses an MC server using a web browser and a DNS name
     Given the DNS name, example.com, of an MC server
