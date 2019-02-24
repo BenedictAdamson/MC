@@ -36,22 +36,22 @@ public class BasicServerSteps {
    private String dnsName;
    private URI requestUri;
 
-   @Given("has the DNS name of an MC server")
+   @Given("A potential player has the DNS name of an MC server")
    public void givenDnsNameOfAnMcServer() {
       dnsName = "example.com";
    }
 
-   @Given("MC server at the DNS name is running")
+   @Given("the MC server at the DNS name is running")
    public void givenMcServerAtTheDnsNameIsRunning() {
       // TODO
    }
 
-   @Given("gives the DNS name to a web browser")
+   @Given("the potential player gives the DNS name to a web browser")
    public void givenGivesTheDnsNameToAWebBrowser() {
       // Do nothing
    }
 
-   @Given("web browser gets the default HTML resource at the DNS name")
+   @Given("the web browser gets the default HTML resource at the DNS name")
    public void givenWebBrowserGetsTheDefaultHtmlResourceAtTheDnsName()
             throws Exception {
       final String authority = dnsName;
@@ -61,12 +61,12 @@ public class BasicServerSteps {
       requestUri = new URI(scheme, authority, path, query, fragment);
    }
 
-   @When("MC server receives the request")
+   @When("the MC server receives the request")
    public void whenMcServerReceivesTheRequest() {
       // TODO
    }
 
-   @Then("MC server serves a home-page")
+   @Then("the MC server serves a home-page")
    public void thenMcServerServesAHomePage() throws Throwable {
       // TODO
    }

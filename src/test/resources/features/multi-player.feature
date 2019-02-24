@@ -24,4 +24,4 @@ Feature: Multi-player
     And the potential player gives the DNS name to a web browser
     And the web browser gets the default HTML resource at the DNS name
     When the MC server receives the request
-    Then the MC server serves a home-page.
+    Then the MC server serves a home-page
