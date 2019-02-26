@@ -55,6 +55,11 @@ public class BasicServerSteps {
    private URI requestUri;
    private WebTestClient.ResponseSpec response;
 
+   @Then("MC serves the players page")
+   public void mc_serves_the_players_page() {
+      responseIsOk();
+   }
+
    private void requestHtml(final String path) {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
@@ -70,6 +75,15 @@ public class BasicServerSteps {
                .accept(MediaType.TEXT_HTML).exchange();
    }
 
+   private void responseIsOk() {
+      response.expectStatus().isOk();
+   }
+
+   @When("someone uses a web browser to navigate to the players page")
+   public void someone_uses_a_web_browser_to_navigate_to_the_players_page() {
+      requestHtml("/player");
+   }
+
    @Given("the DNS name, example.com, of an MC server")
    public void the_DNS_name_of_an_MC_server() {
       dnsName = "example.com";
@@ -82,25 +96,22 @@ public class BasicServerSteps {
 
    @Then("the MC server serves the home-page")
    public void the_MC_server_serves_the_home_page() throws Throwable {
-      response.expectStatus().isOk();
+      responseIsOk();
    }
 
    @When("the potential player gives the DNS name to a web browser")
-   public void the_potential_player_gives_the_DNS_name_to_a_web_browser()
-            throws Exception {
+   public void the_potential_player_gives_the_DNS_name_to_a_web_browser() {
       final String path = null;
       requestHtml(path);
    }
 
    @When("the potential player gives the home-page URL to a web browser")
-   public void the_potential_player_gives_the_home_page_URL_to_a_web_browser()
-            throws Exception {
+   public void the_potential_player_gives_the_home_page_URL_to_a_web_browser() {
       requestHtml("/home");
    }
 
    @When("the potential player gives the obvious URL http://example.com/ to a web browser")
-   public void the_potential_player_gives_the_obvious_URL_to_a_web_browser()
-            throws Exception {
+   public void the_potential_player_gives_the_obvious_URL_to_a_web_browser() {
       requestHtml("/");
    }
 
