@@ -55,12 +55,30 @@ public class BasicServerSteps {
    private URI requestUri;
    private WebTestClient.ResponseSpec response;
 
-   @Then("MC serves the players page")
-   public void mc_serves_the_players_page() {
+   @When("getting the players resource")
+   public void getting_the_players_resource() {
+      requestJson("/player");
+   }
+
+   @Then("MC serves the resource")
+   public void mc_serves_the_players_resource() {
+      responseIsOk();
+   }
+
+   @Then("MC serves the web page")
+   public void mc_serves_the_web_page() {
       responseIsOk();
    }
 
    private void requestHtml(final String path) {
+      requestResource(path, MediaType.TEXT_HTML);
+   }
+
+   private void requestJson(final String path) {
+      requestResource(path, MediaType.APPLICATION_JSON_UTF8);
+   }
+
+   private void requestResource(final String path, final MediaType mediaType) {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
       final String authority = dnsName;
@@ -71,8 +89,8 @@ public class BasicServerSteps {
       } catch (final URISyntaxException e) {
          throw new IllegalArgumentException(e);
       }
-      response = client.get().uri(requestUri.getPath())
-               .accept(MediaType.TEXT_HTML).exchange();
+      response = client.get().uri(requestUri.getPath()).accept(mediaType)
+               .exchange();
    }
 
    private void responseIsOk() {
@@ -92,11 +110,6 @@ public class BasicServerSteps {
    @Then("the MC server redirects to the home-page")
    public void the_MC_server_redirects_to_the_home_page() throws Throwable {
       response.expectStatus().isTemporaryRedirect();
-   }
-
-   @Then("the MC server serves the home-page")
-   public void the_MC_server_serves_the_home_page() throws Throwable {
-      responseIsOk();
    }
 
    @When("the potential player gives the DNS name to a web browser")

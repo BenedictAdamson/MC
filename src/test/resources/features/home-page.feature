@@ -32,4 +32,4 @@ Feature: Home-page
     Given the DNS name, example.com, of an MC server
     When the potential player gives the home-page URL to a web browser
     # The home-page URL is http://example.com/home
-    Then the MC server serves the home-page
+    Then MC serves the web page
