@@ -18,21 +18,11 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 /**
  * <p>
- * End-points for the players and player pages.
+ * A player of the Mission Command game.
  * </p>
  */
-@RestController
-public class PlayerController {
+public class Player {
 
-   @GetMapping("/player")
-   public List<Object> get() {
-      return List.of();
-   }
 }

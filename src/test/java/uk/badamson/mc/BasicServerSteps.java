@@ -97,11 +97,6 @@ public class BasicServerSteps {
       response.expectStatus().isOk();
    }
 
-   @When("someone uses a web browser to navigate to the players page")
-   public void someone_uses_a_web_browser_to_navigate_to_the_players_page() {
-      requestHtml("/player");
-   }
-
    @Given("the DNS name, example.com, of an MC server")
    public void the_DNS_name_of_an_MC_server() {
       dnsName = "example.com";
@@ -126,6 +121,11 @@ public class BasicServerSteps {
    @When("the potential player gives the obvious URL http://example.com/ to a web browser")
    public void the_potential_player_gives_the_obvious_URL_to_a_web_browser() {
       requestHtml("/");
+   }
+
+   @Then("the response is a list of players")
+   public void the_response_is_a_list_of_players() {
+      response.expectBodyList(Player.class);
    }
 
 }
