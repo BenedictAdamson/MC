@@ -28,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -54,6 +55,12 @@ public class BasicServerSteps {
    private String dnsName;
    private URI requestUri;
    private WebTestClient.ResponseSpec response;
+   ListBodySpec<Player> responsePlayerList;
+
+   @Given("a fresh instance of MC")
+   public void a_fresh_instance_of_MC() {
+      // Do nothing
+   }
 
    @When("getting the players resource")
    public void getting_the_players_resource() {
@@ -102,6 +109,16 @@ public class BasicServerSteps {
       dnsName = "example.com";
    }
 
+   @Then("the list of players includes a player named {string}")
+   public void the_list_of_players_includes_a_player_named(final String name) {
+      responsePlayerList.contains(new Player(name));
+   }
+
+   @Then("the list of players includes the administrator")
+   public void the_list_of_players_includes_the_administrator() {
+      responsePlayerList.contains(Player.DEFAULT_ADMINISTRATOR);
+   }
+
    @Then("the MC server redirects to the home-page")
    public void the_MC_server_redirects_to_the_home_page() throws Throwable {
       response.expectStatus().isTemporaryRedirect();
@@ -125,7 +142,12 @@ public class BasicServerSteps {
 
    @Then("the response is a list of players")
    public void the_response_is_a_list_of_players() {
-      response.expectBodyList(Player.class);
+      responsePlayerList = response.expectBodyList(Player.class);
+   }
+
+   @Then("the response is a singleton list of players")
+   public void the_response_is_a_singleton_list_of_players() {
+      responsePlayerList.hasSize(1);
    }
 
 }

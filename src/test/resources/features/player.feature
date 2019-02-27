@@ -19,8 +19,13 @@ Feature: Player
   Mission Command is a multi-player game.
   To conserve resources, play on a server is restricted to only known (and presumably trusted) users.
 
-  Scenario: Get players resource
+  Scenario: Get players resource of fresh instance
+    Given a fresh instance of MC
     When getting the players resource
     # The path of the players resource is /player
     Then MC serves the resource
+    # And there is only one player, the administrator, with the default name
     And the response is a list of players
+    And the response is a singleton list of players
+    And the list of players includes the administrator
+    And the list of players includes a player named "Administrator"

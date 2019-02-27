@@ -18,11 +18,70 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * <p>
  * A player of the Mission Command game.
  * </p>
  */
 public class Player {
+
+   public static final Player DEFAULT_ADMINISTRATOR = new Player(
+            "Administrator");
+
+   private final String name;
+
+   @JsonCreator
+   public Player(@JsonProperty("name") final String name) {
+      this.name = name;
+   }
+
+   @Override
+   public boolean equals(final Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj == null) {
+         return false;
+      }
+      if (!(obj instanceof Player)) {
+         return false;
+      }
+      final Player other = (Player) obj;
+      if (name == null) {
+         if (other.name != null) {
+            return false;
+         }
+      } else if (!name.equals(other.name)) {
+         return false;
+      }
+      return true;
+   }
+
+   /**
+    * <p>
+    * The human readable ID used for the player.
+    * </p>
+    *
+    * @return the name
+    */
+   public final String getName() {
+      return name;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + (name == null ? 0 : name.hashCode());
+      return result;
+   }
+
+   @Override
+   public String toString() {
+      return "Player [name=" + name + "]";
+   }
 
 }

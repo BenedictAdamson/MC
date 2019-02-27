@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlayerController {
 
    @GetMapping("/player")
-   public List<Object> get() {
-      return List.of();
+   public List<Player> get() {
+      return List.of(Player.DEFAULT_ADMINISTRATOR);
    }
 }
