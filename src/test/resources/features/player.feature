@@ -25,7 +25,7 @@ Feature: Player
     # The path of the players resource is /player
     Then MC serves the resource
     # And there is only one player, the administrator, with the default name
-    And the response is a list of players
-    And the response is a singleton list of players
-    And the list of players includes the administrator
-    And the list of players includes a player named "Administrator"
+    And the response message is a list of players
+    And the response message is a singleton list of players
+    And the list of players in the response message includes the administrator
+    And the list of players in the response message includes a player named "Administrator"
