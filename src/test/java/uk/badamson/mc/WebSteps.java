@@ -43,7 +43,7 @@ import cucumber.api.java.en.When;
 @SpringBootTest(classes = Application.class,
          webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureWebTestClient
-public class BasicServerSteps {
+public class WebSteps {
 
    @Autowired
    private ApplicationContext context;
