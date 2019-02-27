@@ -23,6 +23,8 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import reactor.core.publisher.Flux;
+
 /**
  * <p>
  * End-points for the players and player pages.
@@ -32,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlayerController {
 
    @GetMapping("/player")
-   public List<Player> get() {
-      return List.of(Player.DEFAULT_ADMINISTRATOR);
+   public Flux<Player> get() {
+      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
    }
 }
