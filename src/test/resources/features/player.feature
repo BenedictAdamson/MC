@@ -34,3 +34,4 @@ Feature: Player
     Given a fresh MC service
     When getting the players
     Then the administrator is the only player
+    Then the administrator is named "Administrator"

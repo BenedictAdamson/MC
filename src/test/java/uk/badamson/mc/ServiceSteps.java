@@ -18,6 +18,8 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Objects;
 
 import cucumber.api.java.en.Given;
@@ -46,6 +48,11 @@ public class ServiceSteps {
    public void getting_the_players() {
       Objects.requireNonNull(service, "service");
       players = ServiceTest.getPlayers(service);
+   }
+
+   @Then("the administrator is named {string}")
+   public void the_administrator_is_named(final String name) {
+      assertEquals("name", name, Player.DEFAULT_ADMINISTRATOR.getName());
    }
 
    @Then("the administrator is the only player")
