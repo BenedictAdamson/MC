@@ -29,7 +29,7 @@ import cucumber.api.junit.Cucumber;
  * </p>
  */
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/features")
+@CucumberOptions(features = "src/it/resources/features")
 public class RunCucumberTest {
 
 }
