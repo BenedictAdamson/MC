@@ -29,9 +29,3 @@ Feature: Player
     And the response message is a singleton list of players
     And the list of players in the response message includes the administrator
     And the list of players in the response message includes a player named "Administrator"
-
-  Scenario: Get players of fresh instance
-    Given a fresh MC service
-    When getting the players
-    Then the administrator is the only player
-    Then the administrator is named "Administrator"
