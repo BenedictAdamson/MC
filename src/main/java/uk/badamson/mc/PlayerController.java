@@ -19,11 +19,14 @@ package uk.badamson.mc;
  */
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * <p>
@@ -33,8 +36,19 @@ import reactor.core.publisher.Flux;
 @RestController
 public class PlayerController {
 
+   @PostMapping("/player")
+   public Mono<Void> add(final Player player) {
+      Objects.requireNonNull(player, "player");
+      return null;// FIXME
+   }
+
    @GetMapping("/player")
-   public Flux<Player> get() {
+   public Flux<Player> getAll() {
       return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
+   }
+
+   @PostMapping("/login")
+   public Mono<Void> login(final String name) {
+      return null;// FIXME
    }
 }

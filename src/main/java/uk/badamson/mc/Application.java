@@ -54,6 +54,6 @@ public class Application {
    public SecurityWebFilterChain securityWebFilterChain(
             final ServerHttpSecurity http) {
       // TODO
-      return http.build();
+      return http.formLogin().and().build();
    }
 }
