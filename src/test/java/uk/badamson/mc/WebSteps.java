@@ -62,8 +62,8 @@ public class WebSteps {
       // Do nothing
    }
 
-   @When("getting the players resource")
-   public void getting_the_players_resource() {
+   @When("getting the players")
+   public void getting_the_players() {
       requestJson("/player");
    }
 
@@ -109,14 +109,18 @@ public class WebSteps {
       dnsName = "example.com";
    }
 
-   @Then("the list of players in the response message includes a player named {string}")
-   public void the_list_of_players_in_the_response_message_includes_a_player_named(
-            final String name) {
+   @Then("the list of players has one player")
+   public void the_list_of_players_has_one_player() {
+      responsePlayerList.hasSize(1);
+   }
+
+   @Then("the list of players includes a player named {string}")
+   public void the_list_of_players_includes_a_player_named(final String name) {
       responsePlayerList.contains(new Player(name));
    }
 
-   @Then("the list of players in the response message includes the administrator")
-   public void the_list_of_players_in_the_response_message_includes_the_administrator() {
+   @Then("the list of players includes the administrator")
+   public void the_list_of_players_includes_the_administrator() {
       responsePlayerList.contains(Player.DEFAULT_ADMINISTRATOR);
    }
 
@@ -134,11 +138,6 @@ public class WebSteps {
    @Then("the response message is a list of players")
    public void the_response_message_is_a_list_of_players() {
       responsePlayerList = response.expectBodyList(Player.class);
-   }
-
-   @Then("the response message is a singleton list of players")
-   public void the_response_message_is_a_singleton_list_of_players() {
-      responsePlayerList.hasSize(1);
    }
 
 }
