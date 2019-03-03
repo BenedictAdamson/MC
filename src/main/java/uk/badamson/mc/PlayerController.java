@@ -18,20 +18,23 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import reactor.core.publisher.Flux;
+
 /**
  * <p>
- * End-points for the home-page
+ * End-points for the players and player pages.
  * </p>
  */
 @RestController
-public class HomeController {
+public class PlayerController {
 
-   @GetMapping("/")
-   public String get() {
-      return "Hello";
+   @GetMapping("/player")
+   public Flux<Player> get() {
+      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
    }
-
 }

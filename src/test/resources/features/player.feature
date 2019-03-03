@@ -15,10 +15,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-Feature: Home-page
-  It should be easy for players to access the home-page of an MC server.
+Feature: Player
+  Mission Command is a multi-player game.
+  To conserve resources, play on a server is restricted to only known (and presumably trusted) users.
 
-  Scenario: Potential player accesses an MC server using a simple URL with the root path
-    Given the DNS name, example.com, of an MC server
-    When the potential player gives the obvious URL http://example.com/ to a web browser
-    Then MC serves the web page
+  Scenario: Get players of fresh instance
+    Given a fresh instance of MC
+    When getting the players
+    # The path of the players resource is /player
+    Then MC serves the resource
+    # And there is only one player, the administrator, with the default name
+    And the response message is a list of players
+    And the list of players has one player
+    And the list of players includes the administrator
+    And the list of players includes a player named "Administrator"

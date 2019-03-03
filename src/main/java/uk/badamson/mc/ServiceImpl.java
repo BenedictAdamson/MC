@@ -18,20 +18,20 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+import reactor.core.publisher.Flux;
 
 /**
  * <p>
- * End-points for the home-page
+ * The concrete implementation of the service layer of the Mission Command game.
  * </p>
  */
-@RestController
-public class HomeController {
+public class ServiceImpl implements Service {
 
-   @GetMapping("/")
-   public String get() {
-      return "Hello";
+   @Override
+   public Flux<Player> getPlayers() {
+      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
    }
 
 }

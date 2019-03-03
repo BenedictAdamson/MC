@@ -28,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -42,7 +43,7 @@ import cucumber.api.java.en.When;
 @SpringBootTest(classes = Application.class,
          webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureWebTestClient
-public class BasicServerSteps {
+public class WebSteps {
 
    @Autowired
    private ApplicationContext context;
@@ -54,8 +55,37 @@ public class BasicServerSteps {
    private String dnsName;
    private URI requestUri;
    private WebTestClient.ResponseSpec response;
+   ListBodySpec<Player> responsePlayerList;
+
+   @Given("a fresh instance of MC")
+   public void a_fresh_instance_of_MC() {
+      // Do nothing
+   }
+
+   @When("getting the players")
+   public void getting_the_players() {
+      requestJson("/player");
+   }
+
+   @Then("MC serves the resource")
+   public void mc_serves_the_players_resource() {
+      responseIsOk();
+   }
+
+   @Then("MC serves the web page")
+   public void mc_serves_the_web_page() {
+      responseIsOk();
+   }
 
    private void requestHtml(final String path) {
+      requestResource(path, MediaType.TEXT_HTML);
+   }
+
+   private void requestJson(final String path) {
+      requestResource(path, MediaType.APPLICATION_JSON_UTF8);
+   }
+
+   private void requestResource(final String path, final MediaType mediaType) {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
       final String authority = dnsName;
@@ -66,8 +96,12 @@ public class BasicServerSteps {
       } catch (final URISyntaxException e) {
          throw new IllegalArgumentException(e);
       }
-      response = client.get().uri(requestUri.getPath())
-               .accept(MediaType.TEXT_HTML).exchange();
+      response = client.get().uri(requestUri.getPath()).accept(mediaType)
+               .exchange();
+   }
+
+   private void responseIsOk() {
+      response.expectStatus().isOk();
    }
 
    @Given("the DNS name, example.com, of an MC server")
@@ -75,33 +109,35 @@ public class BasicServerSteps {
       dnsName = "example.com";
    }
 
-   @Then("the MC server redirects to the home-page")
-   public void the_MC_server_redirects_to_the_home_page() throws Throwable {
-      response.expectStatus().isTemporaryRedirect();
+   @Then("the list of players has one player")
+   public void the_list_of_players_has_one_player() {
+      responsePlayerList.hasSize(1);
    }
 
-   @Then("the MC server serves the home-page")
-   public void the_MC_server_serves_the_home_page() throws Throwable {
-      response.expectStatus().isOk();
+   @Then("the list of players includes a player named {string}")
+   public void the_list_of_players_includes_a_player_named(final String name) {
+      responsePlayerList.contains(new Player(name));
+   }
+
+   @Then("the list of players includes the administrator")
+   public void the_list_of_players_includes_the_administrator() {
+      responsePlayerList.contains(Player.DEFAULT_ADMINISTRATOR);
    }
 
    @When("the potential player gives the DNS name to a web browser")
-   public void the_potential_player_gives_the_DNS_name_to_a_web_browser()
-            throws Exception {
+   public void the_potential_player_gives_the_DNS_name_to_a_web_browser() {
       final String path = null;
       requestHtml(path);
    }
 
-   @When("the potential player gives the home-page URL to a web browser")
-   public void the_potential_player_gives_the_home_page_URL_to_a_web_browser()
-            throws Exception {
-      requestHtml("/home");
+   @When("the potential player gives the obvious URL http://example.com/ to a web browser")
+   public void the_potential_player_gives_the_obvious_URL_to_a_web_browser() {
+      requestHtml("/");
    }
 
-   @When("the potential player gives the obvious URL http://example.com/ to a web browser")
-   public void the_potential_player_gives_the_obvious_URL_to_a_web_browser()
-            throws Exception {
-      requestHtml("/");
+   @Then("the response message is a list of players")
+   public void the_response_message_is_a_list_of_players() {
+      responsePlayerList = response.expectBodyList(Player.class);
    }
 
 }

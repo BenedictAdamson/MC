@@ -18,20 +18,32 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.concurrent.Flow.Subscriber;
+
+import org.reactivestreams.Publisher;
+
+import reactor.core.publisher.Flux;
 
 /**
  * <p>
- * End-points for the home-page
+ * The service layer of the Mission Command game.
  * </p>
  */
-@RestController
-public class HomeController {
+public interface Service {
 
-   @GetMapping("/")
-   public String get() {
-      return "Hello";
-   }
-
+   /**
+    * <p>
+    * Retrieve a list of the current players of this instance of the Mission
+    * Command game.
+    * </p>
+    * <ul>
+    * <li>Always returns a (non null) publisher.</li>
+    * <li>As for all publishers, the returned publisher will not
+    * {@linkplain Subscriber#onNext(Object) provide} null elements to a
+    * subscriber.</li>
+    * </ul>
+    *
+    * @return a {@linkplain Publisher publisher} of the players.
+    */
+   public Flux<Player> getPlayers();
 }
