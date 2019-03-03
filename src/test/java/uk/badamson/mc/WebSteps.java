@@ -120,20 +120,10 @@ public class WebSteps {
       responsePlayerList.contains(Player.DEFAULT_ADMINISTRATOR);
    }
 
-   @Then("the MC server redirects to the home-page")
-   public void the_MC_server_redirects_to_the_home_page() throws Throwable {
-      response.expectStatus().isTemporaryRedirect();
-   }
-
    @When("the potential player gives the DNS name to a web browser")
    public void the_potential_player_gives_the_DNS_name_to_a_web_browser() {
       final String path = null;
       requestHtml(path);
-   }
-
-   @When("the potential player gives the home-page URL to a web browser")
-   public void the_potential_player_gives_the_home_page_URL_to_a_web_browser() {
-      requestHtml("/home");
    }
 
    @When("the potential player gives the obvious URL http://example.com/ to a web browser")
