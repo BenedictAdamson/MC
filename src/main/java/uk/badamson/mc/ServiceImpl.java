@@ -19,15 +19,33 @@ package uk.badamson.mc;
  */
 
 import java.util.List;
+import java.util.Objects;
+
+import org.springframework.security.core.userdetails.UserDetails;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * <p>
  * The concrete implementation of the service layer of the Mission Command game.
  * </p>
  */
+@org.springframework.stereotype.Service
 public class ServiceImpl implements Service {
+
+   @Override
+   public Mono<Void> add(final Player player) {
+      Objects.requireNonNull(player, "player");
+      return Mono.empty();// TODO
+   }
+
+   @Override
+   public Mono<UserDetails> findByUsername(final String username) {
+      Objects.requireNonNull(username, "username");
+      // TODO Auto-generated method stub
+      return null;
+   }
 
    @Override
    public Flux<Player> getPlayers() {

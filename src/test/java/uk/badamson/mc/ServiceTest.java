@@ -30,8 +30,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 /**
@@ -82,8 +84,27 @@ public class ServiceTest {
       }
    }// class
 
+   public static Mono<Void> add(final Service service, final Player player) {
+      final var publisher = service.add(player);
+
+      assertInvariants(service);
+      assertNotNull(publisher, "Always returns a (non null) publisher.");
+
+      return publisher;
+   }
+
    public static void assertInvariants(final Service service) {
       // Do nothing
+   }
+
+   public static Mono<UserDetails> findByUsername(final Service service,
+            final String username) {
+      final var userDetails = service.findByUsername(username);
+
+      assertInvariants(service);
+      assertNotNull(userDetails, "Non null user details");
+
+      return userDetails;
    }
 
    public static Flux<Player> getPlayers(final Service service) {

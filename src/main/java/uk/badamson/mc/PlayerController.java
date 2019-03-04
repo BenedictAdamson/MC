@@ -21,6 +21,7 @@ package uk.badamson.mc;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,15 +37,50 @@ import reactor.core.publisher.Mono;
 @RestController
 public class PlayerController {
 
+   private final Service service;
+
+   /**
+    * <p>
+    * Construct a controller that associates with a given service layer
+    * instance.
+    * </p>
+    * <ul>
+    * <li>The {@linkplain #getService() service layer} of this controller is the
+    * given service layer.</li>
+    * </ul>
+    *
+    * @param service
+    *           The service layer instance that this uses.
+    * @throws NullPointerException
+    *            If {@code service} is null
+    */
+   @Autowired
+   public PlayerController(final Service service) {
+      this.service = Objects.requireNonNull(service, "service");
+   }
+
    @PostMapping("/player")
    public Mono<Void> add(final Player player) {
-      Objects.requireNonNull(player, "player");
-      return null;// FIXME
+      return service.add(player);
    }
 
    @GetMapping("/player")
    public Flux<Player> getAll() {
       return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
+   }
+
+   /**
+    * <p>
+    * The service layer instance that this uses.
+    * </p>
+    * <ul>
+    * <li>Always associates with a (non null) service.</li>
+    * </ul>
+    *
+    * @return the service
+    */
+   public final Service getService() {
+      return service;
    }
 
    @PostMapping("/login")

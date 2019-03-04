@@ -22,6 +22,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -50,10 +51,24 @@ public class Application {
       SpringApplication.run(Application.class, args);
    }
 
+   private void authorizeAdministration(final ServerHttpSecurity http) {
+      http.authorizeExchange().pathMatchers(HttpMethod.POST, "/player")
+               .permitAll();
+   }
+
+   private void authorizePublic(final ServerHttpSecurity http) {
+      http.authorizeExchange().pathMatchers(HttpMethod.GET, "/", "/player")
+               .permitAll();
+   }
+
    @Bean
    public SecurityWebFilterChain securityWebFilterChain(
             final ServerHttpSecurity http) {
+      http.formLogin();
+      authorizeAdministration(http);
+      authorizePublic(http);
       // TODO
-      return http.formLogin().and().build();
+      return http.build();
    }
+
 }

@@ -18,18 +18,41 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.concurrent.Flow.Subscriber;
-
 import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * <p>
  * The service layer of the Mission Command game.
  * </p>
  */
-public interface Service {
+public interface Service extends ReactiveUserDetailsService {
+
+   /**
+    * <p>
+    * Add a player to the {@linkplain #getPlayers() list of players}.
+    * </p>
+    * <ul>
+    * <li>Always returns a (non null) publisher.</li>
+    * <li>As for all publishers, the returned publisher will not
+    * {@linkplain Subscriber#onNext(Object) provide} a null element to a
+    * subscriber.</li>
+    * </ul>
+    *
+    * @param player
+    *           The player to add
+    * @return a {@linkplain Publisher publisher} that
+    *         {@linkplain Subscriber#onComplete() completes} on addition of the
+    *         player or {@linkplain Subscriber#onError(Throwable) publishes an
+    *         error condition} if the addition fails.
+    * @throws NullPointerException
+    *            If {@code player} is null
+    */
+   public Mono<Void> add(final Player player);
 
    /**
     * <p>
@@ -39,7 +62,7 @@ public interface Service {
     * <ul>
     * <li>Always returns a (non null) publisher.</li>
     * <li>As for all publishers, the returned publisher will not
-    * {@linkplain Subscriber#onNext(Object) provide} null elements to a
+    * {@linkplain Subscriber#onNext(Object) provide} a null element to a
     * subscriber.</li>
     * </ul>
     *
