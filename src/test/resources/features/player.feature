@@ -35,7 +35,7 @@ Feature: Player
     Then MC accepts the login
     
   Scenario Outline: Add player
-    Given logged in as "Adminnistrator"
+    Given logged in as "Administrator"
     When adding a player named "<name>"
     Then MC accepts the addition
     And can get the list of players
