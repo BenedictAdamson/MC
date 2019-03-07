@@ -109,7 +109,7 @@ public class WebSteps {
 
    @Then("MC accepts the addition")
    public void mc_accepts_the_addition() {
-      response.expectStatus().is2xxSuccessful();
+      response.expectStatus().isCreated();
    }
 
    @Then("MC accepts the login")

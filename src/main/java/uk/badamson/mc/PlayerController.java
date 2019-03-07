@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
@@ -60,6 +62,7 @@ public class PlayerController {
    }
 
    @PostMapping("/player")
+   @ResponseStatus(HttpStatus.CREATED)
    public Mono<Void> add(final Player player) {
       return service.add(player);
    }
