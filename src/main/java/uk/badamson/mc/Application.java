@@ -67,6 +67,7 @@ public class Application {
       http.formLogin();
       authorizeAdministration(http);
       authorizePublic(http);
+      http.csrf().disable();// TODO
       // TODO
       return http.build();
    }
