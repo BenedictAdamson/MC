@@ -68,7 +68,7 @@ public class WebSteps {
    @When("adding a player named {string}")
    public void adding_a_player_named(final String name) {
       Objects.requireNonNull(name);
-      postResource("/player", name);
+      postResource("/player", new Player(name));
    }
 
    @Then("can get the list of players")
@@ -140,7 +140,8 @@ public class WebSteps {
       } catch (final URISyntaxException e) {
          throw new IllegalArgumentException(e);
       }
-      response = client.post().uri(requestUri.getPath()).syncBody(body)
+      response = client.post().uri(requestUri.getPath())
+               .contentType(MediaType.APPLICATION_JSON_UTF8).syncBody(body)
                .accept(MediaType.APPLICATION_JSON_UTF8).exchange();
    }
 

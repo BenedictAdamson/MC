@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -63,13 +64,14 @@ public class PlayerController {
 
    @PostMapping("/player")
    @ResponseStatus(HttpStatus.CREATED)
-   public Mono<Void> add(final Player player) {
-      return service.add(player);
+   public Flux<Player> add(@RequestBody final Player player) {
+      service.add(player).block();
+      return getAll();
    }
 
    @GetMapping("/player")
    public Flux<Player> getAll() {
-      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
+      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));// TODO
    }
 
    /**
