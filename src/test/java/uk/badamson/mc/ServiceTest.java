@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -70,6 +71,8 @@ public class ServiceTest {
       private void then_the_list_of_players_includes_a_player_named_Administrator() {
          final List<Player> playersList = new ArrayList<>(1);
          players.subscribe(p -> playersList.add(p));
+         playersList.forEach(Assertions::assertNotNull);
+         playersList.forEach(PlayerTest::assertInvariants);
          assertThat(
                   "the list of players includes a player named \"Administrator\"",
                   playersList, containsInAnyOrder(new Player("Administrator")));

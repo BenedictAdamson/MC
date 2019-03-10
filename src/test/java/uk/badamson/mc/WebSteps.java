@@ -67,7 +67,8 @@ public class WebSteps {
 
    @When("adding a player named {string}")
    public void adding_a_player_named(final String name) {
-      postResource("/player", new Player(name));
+      Objects.requireNonNull(name);
+      postResource("/player", name);
    }
 
    @Then("can get the list of players")
