@@ -20,8 +20,8 @@ package uk.badamson.mc;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.reactivestreams.Publisher;
 
@@ -44,7 +44,7 @@ public class PlayerRepositoryTest {
          }
       }
 
-      private final Map<String, Player> players = new HashMap<>();
+      private final Map<String, Player> players = new ConcurrentHashMap<>();
 
       @Override
       public Mono<Long> count() {
