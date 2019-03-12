@@ -105,7 +105,8 @@ public class PlayerRepositoryTest {
 
       @Override
       public Flux<Player> findAll() {
-         return Flux.fromStream(players.values().stream());
+         return Mono.fromSupplier(() -> players.values())
+                  .flatMapIterable(c -> c);
       }
 
       private Flux<Player> findAllByFluxOfUsernames(
