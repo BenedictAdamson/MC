@@ -48,7 +48,7 @@ public class PlayerRepositoryTest {
 
       @Override
       public Mono<Long> count() {
-         return Mono.just(Long.valueOf(players.size()));
+         return Mono.fromSupplier(() -> Long.valueOf(players.size()));
       }
 
       @Override
@@ -59,8 +59,7 @@ public class PlayerRepositoryTest {
 
       @Override
       public Mono<Void> deleteAll() {
-         players.clear();
-         return Mono.empty();
+         return Mono.fromRunnable(() -> players.clear());
       }
 
       @Override
@@ -89,8 +88,7 @@ public class PlayerRepositoryTest {
       @Override
       public Mono<Void> deleteById(final String username) {
          requireNonNull(username, "username");
-         players.remove(username);
-         return Mono.empty();
+         return Mono.fromRunnable(() -> players.remove(username));
       }
 
       @Override
@@ -102,7 +100,7 @@ public class PlayerRepositoryTest {
       @Override
       public Mono<Boolean> existsById(final String username) {
          requireNonNull(username, "username");
-         return Mono.just(players.containsKey(username));
+         return Mono.fromSupplier(() -> players.containsKey(username));
       }
 
       @Override
@@ -137,14 +135,17 @@ public class PlayerRepositoryTest {
       @Override
       public Mono<Player> findById(final String username) {
          requireNonNull(username, "username");
-         return Mono.justOrEmpty(players.get(username));
+         return Mono.fromSupplier(() -> players.get(username))
+                  .filter(p -> p != null);
       }
 
       @Override
       public Mono<Player> save(final Player player) {
          requireNonNull(player, "player");
-         players.put(player.getUsername(), player);
-         return Mono.just(player);
+         return Mono.fromSupplier(() -> {
+            players.put(player.getUsername(), player);
+            return player;
+         });
       }
 
       @Override
