@@ -18,9 +18,9 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.List;
 import java.util.Objects;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import reactor.core.publisher.Flux;
@@ -34,10 +34,39 @@ import reactor.core.publisher.Mono;
 @org.springframework.stereotype.Service
 public class ServiceImpl implements Service {
 
+   private static void prepareRepository(
+            final PlayerRepository playerRepository) {
+      // TODO do not add if already present
+      playerRepository.save(Player.DEFAULT_ADMINISTRATOR).block();
+   }
+
+   private final PlayerRepository playerRepository;
+
+   /**
+    * <p>
+    * Construct a service layer instance that uses a given repository.
+    * </p>
+    * <ul>
+    * <li>The {@linkplain #getPlayerRepository() player repository} of this
+    * service is the given player repository.</li>
+    * </ul>
+    *
+    * @param playerRepository
+    *           The {@link Player} repository that this service layer instance
+    *           uses.
+    * @throws NullPointerException
+    *            If {@code playerRepository} is null.
+    */
+   public ServiceImpl(@NonNull final PlayerRepository playerRepository) {
+      this.playerRepository = Objects.requireNonNull(playerRepository,
+               "playerRepository");
+      prepareRepository(playerRepository);
+   }
+
    @Override
    public Mono<Void> add(final Player player) {
       Objects.requireNonNull(player, "player");
-      return Mono.empty();// TODO
+      return playerRepository.save(player).then();
    }
 
    @Override
@@ -47,9 +76,21 @@ public class ServiceImpl implements Service {
       return null;
    }
 
+   /**
+    * <p>
+    * The {@link Player} repository that this service layer instance uses.
+    * </p>
+    * <ul>
+    * <li>Always have a (non null) player repository.</li>
+    * </ul>
+    */
+   public final PlayerRepository getPlayerRepository() {
+      return playerRepository;
+   }
+
    @Override
    public Flux<Player> getPlayers() {
-      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
+      return playerRepository.findAll();
    }
 
 }

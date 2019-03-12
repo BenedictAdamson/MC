@@ -41,6 +41,9 @@ public interface Service extends ReactiveUserDetailsService {
     * <li>As for all publishers, the returned publisher will not
     * {@linkplain Subscriber#onNext(Object) provide} a null element to a
     * subscriber.</li>
+    * <li>A subsequently retrieved {@linkplain #getPlayers() sequence of the
+    * players} will include a {@linkplain Player player}
+    * {@linkplain Player#equals(Object) equivalent to} the given player.</li>
     * </ul>
     *
     * @param player
@@ -56,14 +59,16 @@ public interface Service extends ReactiveUserDetailsService {
 
    /**
     * <p>
-    * Retrieve a list of the current players of this instance of the Mission
-    * Command game.
+    * Retrieve a publisher of the list of the current players of this instance
+    * of the Mission Command game.
     * </p>
     * <ul>
     * <li>Always returns a (non null) publisher.</li>
     * <li>As for all publishers, the returned publisher will not
     * {@linkplain Subscriber#onNext(Object) provide} a null element to a
     * subscriber.</li>
+    * <li>The list of players always {@linkplain Flux#hasElement(Object) has} an
+    * {@linkplain Player#DEFAULT_ADMINISTRATOR administrator}.</li>
     * </ul>
     *
     * @return a {@linkplain Publisher publisher} of the players.
