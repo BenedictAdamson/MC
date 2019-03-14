@@ -18,6 +18,7 @@ package uk.badamson.mc.service;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,10 +51,14 @@ public class ServiceTest {
    public static void add_1(final Service service, final Player player) {
       add(service, player).block();
       final Flux<Player> players = service.getPlayers();
+      final UserDetails userDetails = findByUsername(service,
+               player.getUsername()).block();
       StepVerifier.create(players.filter(p -> player.equals(p)))
                .expectNext(player)
                .as("A subsequently retrieved sequence of the players will include a player equivalent to the given player.")
                .verifyComplete();
+      assertEquals(player, userDetails,
+               "Subsequently finding user details using the username of the given player will retrieve user details equivalent to the user details of the given player.");
    }
 
    public static void add_2(final Service service, final Player player1,

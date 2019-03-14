@@ -100,7 +100,10 @@ public class WebSteps {
 
    @When("log in as {string}")
    public void log_in_as(final String string) {
-      throw new cucumber.api.PendingException();
+      Objects.requireNonNull(context, "context");
+      Objects.requireNonNull(client, "client");
+      response = client.post().uri("/login").attribute("username", string)
+               .attribute("password", string).exchange();
    }
 
    @Given("logged in as {string}")
@@ -115,8 +118,7 @@ public class WebSteps {
 
    @Then("MC accepts the login")
    public void mc_accepts_the_login() {
-      // Write code here that turns the phrase above into concrete actions
-      throw new cucumber.api.PendingException();
+      response.expectStatus().is3xxRedirection();
    }
 
    @Then("MC serves the resource")

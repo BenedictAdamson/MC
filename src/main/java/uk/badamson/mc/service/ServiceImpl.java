@@ -74,8 +74,7 @@ public class ServiceImpl implements Service {
    @Override
    public Mono<UserDetails> findByUsername(final String username) {
       Objects.requireNonNull(username, "username");
-      // TODO Auto-generated method stub
-      return null;
+      return playerRepository.findById(username).cast(UserDetails.class);
    }
 
    /**

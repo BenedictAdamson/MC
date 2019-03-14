@@ -21,6 +21,7 @@ package uk.badamson.mc.service;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -45,6 +46,10 @@ public interface Service extends ReactiveUserDetailsService {
     * <li>A subsequently retrieved {@linkplain #getPlayers() sequence of the
     * players} will include a {@linkplain Player player}
     * {@linkplain Player#equals(Object) equivalent to} the given player.</li>
+    * <li>Subsequently {@linkplain #findByUsername(String) finding user details}
+    * using the {@linkplain Player#getUsername() username} of the given player
+    * will retrieve {@linkplain UserDetails user details} equivalent to the user
+    * details of the given player.</li>
     * </ul>
     *
     * @param player
