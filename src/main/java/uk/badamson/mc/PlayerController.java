@@ -18,7 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +70,7 @@ public class PlayerController {
 
    @GetMapping("/player")
    public Flux<Player> getAll() {
-      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));// TODO
+      return service.getPlayers();
    }
 
    /**
