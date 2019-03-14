@@ -1,4 +1,4 @@
-package uk.badamson.mc;
+package uk.badamson.mc.presentation;
 /*
  * © Copyright Benedict Adamson 2018-19.
  *
@@ -18,8 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpMethod;
@@ -30,26 +28,14 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 
 /**
  * <p>
- * The Spring Boot configuration of the Mission Command game.
+ * The Spring Boot configuration for the presentation layer of the Mission
+ * Command game.
  * </p>
  */
-@SpringBootConfiguration
 @EnableWebFlux
 @EnableWebFluxSecurity
-@ComponentScan("uk.badamson.mc")
-public class Application {
-
-   /**
-    * <p>
-    * The entry point of the Mission Command program.
-    * </p>
-    *
-    * @param args
-    *           The command line arguments of the program.
-    */
-   public static void main(final String[] args) {
-      SpringApplication.run(Application.class, args);
-   }
+@ComponentScan("uk.badamson.mc.presentation")
+public class PresentationLayerSpringConfiguration {
 
    private void authorizeAdministration(final ServerHttpSecurity http) {
       http.authorizeExchange().pathMatchers(HttpMethod.POST, "/player")

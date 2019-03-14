@@ -20,13 +20,11 @@ package uk.badamson.mc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.context.annotation.Import;
+
+import uk.badamson.mc.presentation.PresentationLayerSpringConfiguration;
+import uk.badamson.mc.repository.RepositoryLayerSpringConfiguration;
+import uk.badamson.mc.service.ServiceLayerSpringConfiguration;
 
 /**
  * <p>
@@ -34,9 +32,9 @@ import org.springframework.web.reactive.config.EnableWebFlux;
  * </p>
  */
 @SpringBootConfiguration
-@EnableWebFlux
-@EnableWebFluxSecurity
-@ComponentScan("uk.badamson.mc")
+@Import(value = { PresentationLayerSpringConfiguration.class,
+         RepositoryLayerSpringConfiguration.class,
+         ServiceLayerSpringConfiguration.class })
 public class Application {
 
    /**
@@ -49,27 +47,6 @@ public class Application {
     */
    public static void main(final String[] args) {
       SpringApplication.run(Application.class, args);
-   }
-
-   private void authorizeAdministration(final ServerHttpSecurity http) {
-      http.authorizeExchange().pathMatchers(HttpMethod.POST, "/player")
-               .permitAll();
-   }
-
-   private void authorizePublic(final ServerHttpSecurity http) {
-      http.authorizeExchange().pathMatchers(HttpMethod.GET, "/", "/player")
-               .permitAll();
-   }
-
-   @Bean
-   public SecurityWebFilterChain securityWebFilterChain(
-            final ServerHttpSecurity http) {
-      http.formLogin();
-      authorizeAdministration(http);
-      authorizePublic(http);
-      http.csrf().disable();// TODO
-      // TODO
-      return http.build();
    }
 
 }

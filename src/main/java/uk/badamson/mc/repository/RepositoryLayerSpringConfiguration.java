@@ -1,4 +1,4 @@
-package uk.badamson.mc;
+package uk.badamson.mc.repository;
 /*
  * © Copyright Benedict Adamson 2018-19.
  *
@@ -18,58 +18,14 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.web.reactive.config.EnableWebFlux;
 
 /**
  * <p>
  * The Spring Boot configuration of the Mission Command game.
  * </p>
  */
-@SpringBootConfiguration
-@EnableWebFlux
-@EnableWebFluxSecurity
-@ComponentScan("uk.badamson.mc")
-public class Application {
-
-   /**
-    * <p>
-    * The entry point of the Mission Command program.
-    * </p>
-    *
-    * @param args
-    *           The command line arguments of the program.
-    */
-   public static void main(final String[] args) {
-      SpringApplication.run(Application.class, args);
-   }
-
-   private void authorizeAdministration(final ServerHttpSecurity http) {
-      http.authorizeExchange().pathMatchers(HttpMethod.POST, "/player")
-               .permitAll();
-   }
-
-   private void authorizePublic(final ServerHttpSecurity http) {
-      http.authorizeExchange().pathMatchers(HttpMethod.GET, "/", "/player")
-               .permitAll();
-   }
-
-   @Bean
-   public SecurityWebFilterChain securityWebFilterChain(
-            final ServerHttpSecurity http) {
-      http.formLogin();
-      authorizeAdministration(http);
-      authorizePublic(http);
-      http.csrf().disable();// TODO
-      // TODO
-      return http.build();
-   }
+@ComponentScan("uk.badamson.mc.repository")
+public class RepositoryLayerSpringConfiguration {
 
 }
