@@ -1,4 +1,4 @@
-package uk.badamson.mc;
+package uk.badamson.mc.repository;
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -18,23 +18,17 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.List;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import reactor.core.publisher.Flux;
+import uk.badamson.mc.Player;
 
 /**
  * <p>
- * End-points for the players and player pages.
+ * Interface for generic CRUD operations on a repository for {@link Player}
+ * objects.
  * </p>
  */
-@RestController
-public class PlayerController {
+public interface PlayerRepository
+         extends ReactiveCrudRepository<Player, String> {
 
-   @GetMapping("/player")
-   public Flux<Player> get() {
-      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
-   }
 }

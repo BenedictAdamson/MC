@@ -29,3 +29,19 @@ Feature: Player
     And the list of players has one player
     And the list of players includes the administrator
     And the list of players includes a player named "Administrator"
+    
+  Scenario: Login as Administrator
+    When log in as "Administrator"
+    Then MC accepts the login
+    
+  Scenario Outline: Add player
+    Given logged in as "Administrator"
+    When adding a player named "<name>"
+    Then MC accepts the addition
+    And can get the list of players
+    And the list of players includes a player named "<name>"
+    
+    Examples:
+      |name|
+      |John|
+      |Jeff Death|

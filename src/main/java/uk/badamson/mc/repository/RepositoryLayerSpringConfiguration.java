@@ -1,6 +1,6 @@
-package uk.badamson.mc;
+package uk.badamson.mc.repository;
 /*
- * © Copyright Benedict Adamson 2019.
+ * © Copyright Benedict Adamson 2018-19.
  *
  * This file is part of MC.
  *
@@ -18,20 +18,14 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.List;
-
-import reactor.core.publisher.Flux;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * <p>
- * The concrete implementation of the service layer of the Mission Command game.
+ * The Spring Boot configuration of the Mission Command game.
  * </p>
  */
-public class ServiceImpl implements Service {
-
-   @Override
-   public Flux<Player> getPlayers() {
-      return Flux.fromIterable(List.of(Player.DEFAULT_ADMINISTRATOR));
-   }
+@ComponentScan("uk.badamson.mc.repository")
+public class RepositoryLayerSpringConfiguration {
 
 }
