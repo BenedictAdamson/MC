@@ -43,7 +43,7 @@ import cucumber.api.java.en.When;
  * about the basic operation of an MC server.
  * </p>
  */
-@SpringBootTest(classes = Application.class,
+@SpringBootTest(classes = ApplicationTest.class,
          webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureWebTestClient
 public class WebSteps {
