@@ -19,7 +19,6 @@ package uk.badamson.mc;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -90,18 +89,15 @@ public class PlayerTest {
    private static final String USERNAME_B = "Alan";
 
    public static void assertInvariants(final Player player) {
-      assertNotNull(player.getAuthorities(), "Non null, authorities");
-      assertNotNull(player.getUsername(), "Non null, username");
-      assertEquals(player, player, "An objectis always equivalent to itself.");
+      UserDetailsTest.assertInvariants(player);
+      assertEquals(player, player, "An object is always equivalent to itself.");
    }
 
    public static void assertInvariants(final Player player1,
             final Player player2) {
+      UserDetailsTest.assertInvariants(player1, player2);
       final boolean equals = player1.equals(player2);
       assertTrue(!(equals && !player2.equals(player1)),
                "Equality is symmetric");
-      assertTrue(!(equals
-               && !player1.getUsername().equals(player2.getUsername())),
-               "Equivalence requires equivalent username values");
    }
 }
