@@ -1,4 +1,4 @@
-package uk.badamson.mc;
+package uk.badamson.mc.service;
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import uk.badamson.mc.Player;
 
 /**
  * <p>

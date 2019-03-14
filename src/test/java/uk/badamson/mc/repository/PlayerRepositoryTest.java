@@ -1,4 +1,4 @@
-package uk.badamson.mc;
+package uk.badamson.mc.repository;
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -27,6 +27,8 @@ import org.reactivestreams.Publisher;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import uk.badamson.mc.Player;
+import uk.badamson.mc.PlayerTest;
 
 /**
  * <p>

@@ -1,4 +1,4 @@
-package uk.badamson.mc;
+package uk.badamson.mc.repository;
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -19,6 +19,8 @@ package uk.badamson.mc;
  */
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+
+import uk.badamson.mc.Player;
 
 /**
  * <p>

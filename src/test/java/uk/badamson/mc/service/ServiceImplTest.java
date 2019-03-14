@@ -1,4 +1,4 @@
-package uk.badamson.mc;
+package uk.badamson.mc.service;
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -36,6 +36,10 @@ import org.junit.runner.RunWith;
 
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
+import uk.badamson.mc.Player;
+import uk.badamson.mc.PlayerTest;
+import uk.badamson.mc.repository.PlayerRepository;
+import uk.badamson.mc.repository.PlayerRepositoryTest;
 
 /**
  * <p>

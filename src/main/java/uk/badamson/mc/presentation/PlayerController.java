@@ -1,4 +1,4 @@
-package uk.badamson.mc;
+package uk.badamson.mc.presentation;
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import uk.badamson.mc.Player;
+import uk.badamson.mc.service.Service;
 
 /**
  * <p>
