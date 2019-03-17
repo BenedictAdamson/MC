@@ -43,7 +43,10 @@ public class PresentationLayerSpringConfiguration {
    }
 
    private void authorizePublic(final ServerHttpSecurity http) {
-      http.authorizeExchange().pathMatchers(HttpMethod.GET, "/", "/player")
+      http.authorizeExchange()
+               .pathMatchers(HttpMethod.GET, "/", "/login", "/player")
+               .permitAll();
+      http.authorizeExchange().pathMatchers(HttpMethod.POST, "/login")
                .permitAll();
    }
 

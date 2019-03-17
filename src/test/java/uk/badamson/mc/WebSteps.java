@@ -103,16 +103,6 @@ public class WebSteps {
       requestJson("/player");
    }
 
-   @When("log in as {string}")
-   public void log_in_as(final String username) {
-      Objects.requireNonNull(username, "username");
-      Objects.requireNonNull(context, "context");
-      Objects.requireNonNull(client, "client");
-
-      response = client.post().uri("/login").attribute("username", username)
-               .attribute("password", username).exchange();
-   }
-
    @When("log in as {string} using password {string}")
    public void log_in_as_using_password(final String player,
             final String password) {
@@ -121,8 +111,10 @@ public class WebSteps {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
 
-      response = client.post().uri("/login").attribute("username", player)
-               .attribute("password", password).exchange();
+      response = client.post()
+               .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+               .attribute("username", player).attribute("password", password)
+               .exchange();
    }
 
    @Given("logged in as {string}")
@@ -137,13 +129,8 @@ public class WebSteps {
 
    @Then("MC accepts the login")
    public void mc_accepts_the_login() {
-      response.expectStatus().isFound();
-   }
-
-   @Then("MC redirects to the home-page")
-   public void mc_redurects_to_the_home_page() {
       response.expectStatus().isFound().expectHeader().valueEquals("Location",
-               "/");
+               "/login");
    }
 
    @Then("MC serves the resource")
