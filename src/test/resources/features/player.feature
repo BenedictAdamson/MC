@@ -30,18 +30,24 @@ Feature: Player
     And the list of players includes the administrator
     And the list of players includes a player named "Administrator"
     
-  Scenario: Login as Administrator
-    When log in as "Administrator"
+  Scenario Outline: Login
+    Given that player "<player>" exists with  password "<password>"
+    When log in as "<player>" using password "<password>"
     Then MC accepts the login
+    
+    Examples:
+      |player|password|
+      |Administrator|letmein|
+      |John|pasword123|
     
   Scenario Outline: Add player
     Given logged in as "Administrator"
-    When adding a player named "<name>"
+    When adding a player named "<name>" with  password "<password>"
     Then MC accepts the addition
     And can get the list of players
     And the list of players includes a player named "<name>"
     
     Examples:
-      |name|
-      |John|
-      |Jeff Death|
+      |name|password|
+      |John|letmein|
+      |Jeff Death|password123|

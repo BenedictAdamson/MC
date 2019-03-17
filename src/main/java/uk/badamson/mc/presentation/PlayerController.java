@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import uk.badamson.mc.Player;
 import uk.badamson.mc.service.Service;
 
@@ -87,10 +86,5 @@ public class PlayerController {
     */
    public final Service getService() {
       return service;
-   }
-
-   @PostMapping("/login")
-   public Mono<Void> login(final String name) {
-      return null;// FIXME
    }
 }

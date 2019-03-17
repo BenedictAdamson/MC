@@ -43,17 +43,25 @@ public class PlayerTest {
 
          @Test
          public void a() {
-            test(USERNAME_A);
+            test(USERNAME_A, PASSWORD_A);
          }
 
          @Test
          public void b() {
-            test(USERNAME_B);
+            test(USERNAME_B, PASSWORD_B);
          }
 
-         private void test(@NonNull final String username) {
-            final var player1 = new Player(username);
-            final var player2 = new Player(new String(username));
+         @Test
+         public void c() {
+            final String password = null;
+            test(USERNAME_A, password);
+         }
+
+         private void test(@NonNull final String username,
+                  final String password) {
+            final var player1 = new Player(username, password);
+            final var player2 = new Player(new String(username),
+                     password == null ? password : new String(password));
 
             assertInvariants(player1, player2);
             assertEquals(player1, player2);
@@ -63,20 +71,29 @@ public class PlayerTest {
 
       @Test
       public void a() {
-         test(USERNAME_A);
+         test(USERNAME_A, PASSWORD_A);
       }
 
       @Test
       public void b() {
-         test(USERNAME_B);
+         test(USERNAME_B, PASSWORD_B);
       }
 
-      private Player test(@NonNull final String username) {
-         final var player = new Player(username);
+      @Test
+      public void c() {
+         final String password = null;
+         test(USERNAME_A, password);
+      }
+
+      private Player test(@NonNull final String username,
+               final String password) {
+         final var player = new Player(username, password);
 
          assertInvariants(player);
          assertSame(username, player.getUsername(),
                   "The username of this player is the given username.");
+         assertSame(password, player.getPassword(),
+                  "The password of this player is the given password.");
          assertTrue(player.getAuthorities().isEmpty(),
                   "This player has no granted authorities.");
 
@@ -87,6 +104,10 @@ public class PlayerTest {
    private static final String USERNAME_A = "John";
 
    private static final String USERNAME_B = "Alan";
+
+   private static final String PASSWORD_A = "letmein";
+
+   private static final String PASSWORD_B = "password123";
 
    public static void assertInvariants(final Player player) {
       UserDetailsTest.assertInvariants(player);
