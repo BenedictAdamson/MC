@@ -106,7 +106,7 @@ public final class Player implements UserDetails {
 
    @Override
    public final Collection<? extends GrantedAuthority> getAuthorities() {
-      return Collections.emptySet();// TODO
+      return Collections.emptySet();// TODO players have repositories
    }
 
    @Override
@@ -130,25 +130,25 @@ public final class Player implements UserDetails {
 
    @Override
    public final boolean isAccountNonExpired() {
-      // TODO Auto-generated method stub
+      // TODO player accounts can expire
       return false;
    }
 
    @Override
    public final boolean isAccountNonLocked() {
-      // TODO Auto-generated method stub
+      // TODO player acccounts can be locked
       return false;
    }
 
    @Override
    public final boolean isCredentialsNonExpired() {
-      // TODO Auto-generated method stub
+      // TODO player credentials can expire
       return false;
    }
 
    @Override
    public final boolean isEnabled() {
-      // TODO Auto-generated method stub
+      // TODO players can be disabled
       return false;
    }
 
