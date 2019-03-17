@@ -36,6 +36,7 @@ import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import uk.badamson.mc.service.Service;
 
 /**
  * <p>
@@ -54,6 +55,9 @@ public class WebSteps {
    @Autowired
    private WebTestClient client;
 
+   @Autowired
+   private Service service;
+
    private final String scheme = "http";
    private String dnsName;
    private URI requestUri;
@@ -65,10 +69,11 @@ public class WebSteps {
       // Do nothing
    }
 
-   @When("adding a player named {string}")
-   public void adding_a_player_named(final String name) {
-      Objects.requireNonNull(name);
-      postResource("/player", new Player(name));
+   @When("adding a player named {string} with  password {string}")
+   public void adding_a_player_named(final String name, final String password) {
+      Objects.requireNonNull(name, "name");
+      Objects.requireNonNull(password, "password");
+      postResource("/player", new Player(name, password));
    }
 
    @Then("can get the list of players")
@@ -99,11 +104,25 @@ public class WebSteps {
    }
 
    @When("log in as {string}")
-   public void log_in_as(final String string) {
+   public void log_in_as(final String username) {
+      Objects.requireNonNull(username, "username");
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
-      response = client.post().uri("/login").attribute("username", string)
-               .attribute("password", string).exchange();
+
+      response = client.post().uri("/login").attribute("username", username)
+               .attribute("password", username).exchange();
+   }
+
+   @When("log in as {string} using password {string}")
+   public void log_in_as_using_password(final String player,
+            final String password) {
+      Objects.requireNonNull(player, "player");
+      Objects.requireNonNull(password, "password");
+      Objects.requireNonNull(context, "context");
+      Objects.requireNonNull(client, "client");
+
+      response = client.post().uri("/login").attribute("username", player)
+               .attribute("password", password).exchange();
    }
 
    @Given("logged in as {string}")
@@ -118,7 +137,13 @@ public class WebSteps {
 
    @Then("MC accepts the login")
    public void mc_accepts_the_login() {
-      response.expectStatus().is3xxRedirection();
+      response.expectStatus().isFound();
+   }
+
+   @Then("MC redirects to the home-page")
+   public void mc_redurects_to_the_home_page() {
+      response.expectStatus().isFound().expectHeader().valueEquals("Location",
+               "/");
    }
 
    @Then("MC serves the resource")
@@ -159,6 +184,15 @@ public class WebSteps {
       response.expectStatus().isOk();
    }
 
+   @Given("that player {string} exists with  password {string}")
+   public void that_player_exists_with_password(final String player,
+            final String password) {
+      Objects.requireNonNull(player, "player");
+      Objects.requireNonNull(password, "password");
+      Objects.requireNonNull(service, "service");
+      service.add(new Player(player, password));
+   }
+
    @Given("the DNS name, example.com, of an MC server")
    public void the_DNS_name_of_an_MC_server() {
       dnsName = "example.com";
@@ -172,7 +206,7 @@ public class WebSteps {
    @Then("the list of players includes a player named {string}")
    public void the_list_of_players_includes_a_player_named(final String name) {
       assertNotNull(responsePlayerList, "player list");
-      responsePlayerList.contains(new Player(name));
+      responsePlayerList.contains(new Player(name, null));
    }
 
    @Then("the list of players includes the administrator")

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -39,9 +40,10 @@ public final class Player implements UserDetails {
    private static final long serialVersionUID = 1L;
 
    public static final Player DEFAULT_ADMINISTRATOR = new Player(
-            "Administrator");
+            "Administrator", "password123");// TODO proper default administrator
 
    private final String username;
+   private final String password;
 
    /**
     * <p>
@@ -50,18 +52,26 @@ public final class Player implements UserDetails {
     * <ul>
     * <li>The {@linkplain #getUsername() username} of this player is the given
     * username.</li>
+    * <li>The {@linkplain #getPassword() password} of this player is the given
+    * password.</li>
     * <li>This player {@linkplain Collection#isEmpty() has no} granted
     * {@linkplain #getAuthorities() authorities}.</li>
     * </ul>
     *
     * @param username
     *           the username used to authenticate the player
+    * @param password
+    *           the password used to authenticate the user, or null if the
+    *           password is being hidden or is unknown. This might be the
+    *           password in an encrypted form.
     * @throws NullPointerException
     *            If {@code username} is null
     */
    @JsonCreator
-   public Player(@NonNull @JsonProperty("username") final String username) {
+   public Player(@NonNull @JsonProperty("username") final String username,
+            @Nullable @JsonProperty("password") final String password) {
       this.username = Objects.requireNonNull(username, "username");
+      this.password = password;
    }
 
    /**
@@ -101,8 +111,7 @@ public final class Player implements UserDetails {
 
    @Override
    public final String getPassword() {
-      // TODO Auto-generated method stub
-      return null;
+      return password;
    }
 
    @Override

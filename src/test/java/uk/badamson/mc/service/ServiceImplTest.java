@@ -139,7 +139,8 @@ public class ServiceImplTest {
          playersList.forEach(PlayerTest::assertInvariants);
          assertThat(
                   "the list of players includes a player named \"Administrator\"",
-                  playersList, containsInAnyOrder(new Player("Administrator")));
+                  playersList,
+                  containsInAnyOrder(new Player("Administrator", null)));
       }
 
       private void then_the_list_of_players_includes_the_administrator() {
@@ -192,9 +193,9 @@ public class ServiceImplTest {
 
    @BeforeEach
    public void setUpPlayers() {
-      playerA = new Player("John");
-      playerB = new Player("Alan");
-      playerC = new Player("Gweezer");
+      playerA = new Player("John", "letmein");
+      playerB = new Player("Alan", "password123");
+      playerC = new Player("Gweezer", "secret");
    }
 
    @BeforeEach
