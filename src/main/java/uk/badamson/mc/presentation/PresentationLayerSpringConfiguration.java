@@ -56,7 +56,6 @@ public class PresentationLayerSpringConfiguration {
       http.formLogin();
       authorizeAdministration(http);
       authorizePublic(http);
-      http.csrf().disable();// TODO enables CSRF
       return http.build();
    }
 

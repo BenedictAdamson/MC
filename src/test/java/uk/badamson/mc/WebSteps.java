@@ -20,6 +20,7 @@ package uk.badamson.mc;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import java.net.URI;
@@ -70,7 +71,7 @@ public class WebSteps {
       // Do nothing
    }
 
-   @When("adding a player named {string} with  password {string}")
+   @When("adding a player named {string} with  password {string} with CSRF protection")
    public void adding_a_player_named(final String name, final String password) {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(password, "password");
@@ -104,7 +105,7 @@ public class WebSteps {
       requestJson("/player");
    }
 
-   @When("log in as {string} using password {string}")
+   @When("log in as {string} using password {string} with CSRF protection")
    public void log_in_as_using_password(final String player,
             final String password) {
       Objects.requireNonNull(player, "player");
@@ -112,7 +113,7 @@ public class WebSteps {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
 
-      response = client.post()
+      response = client.mutateWith(csrf()).post()
                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                .attribute("username", player).attribute("password", password)
                .exchange();
@@ -155,7 +156,7 @@ public class WebSteps {
       } catch (final URISyntaxException e) {
          throw new IllegalArgumentException(e);
       }
-      response = client.post().uri(requestUri.getPath())
+      response = client.mutateWith(csrf()).post().uri(requestUri.getPath())
                .contentType(MediaType.APPLICATION_JSON_UTF8).syncBody(body)
                .accept(MediaType.APPLICATION_JSON_UTF8).exchange();
    }

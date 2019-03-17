@@ -32,7 +32,7 @@ Feature: Player
     
   Scenario Outline: Login
     Given that player "<player>" exists with  password "<password>"
-    When log in as "<player>" using password "<password>"
+    When log in as "<player>" using password "<password>" with CSRF protection
     Then MC accepts the login
     
     Examples:
@@ -42,7 +42,7 @@ Feature: Player
     
   Scenario Outline: Add player
     Given logged in as "Administrator"
-    When adding a player named "<name>" with  password "<password>"
+    When adding a player named "<name>" with  password "<password>" with CSRF protection
     Then MC accepts the addition
     And can get the list of players
     And the list of players includes a player named "<name>"
