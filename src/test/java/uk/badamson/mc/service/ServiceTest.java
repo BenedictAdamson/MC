@@ -30,6 +30,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import uk.badamson.mc.Player;
+import uk.badamson.mc.UserDetailsTest;
 
 /**
  * <p>
@@ -78,12 +79,20 @@ public class ServiceTest {
 
    public static Mono<UserDetails> findByUsername(final Service service,
             final String username) {
-      final var userDetails = service.findByUsername(username);
+      final var publisher = service.findByUsername(username);
 
       assertInvariants(service);
-      assertNotNull(userDetails, "Non null user details");
+      assertNotNull(publisher, "Non null user details publisher");
+      final var userDetails = publisher.block();
+      assertTrue(
+               !(Player.ADMINISTRATOR_USERNAME.equals(username)
+                        && userDetails == null),
+               "Always have user details for the administrator.");
+      if (userDetails != null) {
+         UserDetailsTest.assertInvariants(userDetails);
+      }
 
-      return userDetails;
+      return publisher;
    }
 
    public static Flux<Player> getPlayers(final Service service) {

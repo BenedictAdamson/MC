@@ -18,6 +18,7 @@ package uk.badamson.mc.repository;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
@@ -145,6 +146,9 @@ public class PlayerRepositoryTest {
       @Override
       public Mono<Player> save(final Player player) {
          requireNonNull(player, "player");
+         if (Player.ADMINISTRATOR_USERNAME.equals(player.getUsername())) {
+            throw new IllegalArgumentException("Player is administrator");
+         }
          return Mono.fromSupplier(() -> {
             players.put(player.getUsername(), player);
             return player;
@@ -165,7 +169,11 @@ public class PlayerRepositoryTest {
 
       private <P extends Player> Flux<P> saveAllOfFlux(final Flux<P> players) {
          return players.map(player -> {
-            this.players.put(player.getUsername(), player);
+            final var username = player.getUsername();
+            if (Player.ADMINISTRATOR_USERNAME.equals(username)) {
+               throw new IllegalArgumentException("Player is administrator");
+            }
+            this.players.put(username, player);
             return player;
          });
       }
@@ -182,6 +190,12 @@ public class PlayerRepositoryTest {
 
       assertInvariants(repository);
       assertNotNull(publisher, "result");
+      final var player = publisher.block();
+      if (player != null) {
+         PlayerTest.assertInvariants(player);
+         assertEquals(username, player.getUsername(),
+                  "Found the player with the given ID");
+      }
 
       return publisher;
    }

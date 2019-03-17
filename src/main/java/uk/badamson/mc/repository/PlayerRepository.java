@@ -27,6 +27,13 @@ import uk.badamson.mc.Player;
  * Interface for generic CRUD operations on a repository for {@link Player}
  * objects.
  * </p>
+ * <ul>
+ * <li>The repository does not {@linkplain #findById(String) contain} an entry
+ * for the special {@linkplain Player#ADMINISTRATOR_USERNAME administrator}
+ * player.</li>
+ * <li>Attempting to {@linkplain #save(Player) save} an administrator player
+ * will result in an {@link IllegalArgumentException}.</li>
+ * </ul>
  */
 public interface PlayerRepository
          extends ReactiveCrudRepository<Player, String> {

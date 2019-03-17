@@ -33,8 +33,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import uk.badamson.mc.Player;
 import uk.badamson.mc.PlayerTest;
@@ -169,11 +171,21 @@ public class ServiceImplTest {
       assertSame(playerRepository, service.getPlayerRepository(),
                "The player repository of this service is the given player repository.");
       getPlayers(service);
+      findByUsername(service, Player.ADMINISTRATOR_USERNAME);
 
       return service;
    }
 
-   private static Flux<Player> getPlayers(final ServiceImpl service) {
+   public static Mono<UserDetails> findByUsername(final ServiceImpl service,
+            final String username) {
+      final var publisher = ServiceTest.findByUsername(service, username);
+
+      assertInvariants(service);
+
+      return publisher;
+   }
+
+   public static Flux<Player> getPlayers(final ServiceImpl service) {
       final Flux<Player> players = ServiceTest.getPlayers(service);// inherited
 
       assertInvariants(service);

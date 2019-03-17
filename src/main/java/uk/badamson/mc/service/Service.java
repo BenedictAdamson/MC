@@ -60,8 +60,23 @@ public interface Service extends ReactiveUserDetailsService {
     *         error condition} if the addition fails.
     * @throws NullPointerException
     *            If {@code player} is null
+    * @throws IllegalArgumentException
+    *            If the {@linkplain Player#getUsername() username} of
+    *            {@code player} indicates it is the
+    *            {@linkplain Player#ADMINISTRATOR_USERNAME administrator}.
     */
    public Mono<Void> add(final Player player);
+
+   /**
+    * {@inheritDoc}
+    *
+    * <ul>
+    * <li>Always have user details for the
+    * {@linkplain Player#ADMINISTRATOR_USERNAME administrator}.</li>
+    * </ul>
+    */
+   @Override
+   public Mono<UserDetails> findByUsername(String username);
 
    /**
     * <p>
@@ -80,4 +95,5 @@ public interface Service extends ReactiveUserDetailsService {
     * @return a {@linkplain Publisher publisher} of the players.
     */
    public Flux<Player> getPlayers();
+
 }

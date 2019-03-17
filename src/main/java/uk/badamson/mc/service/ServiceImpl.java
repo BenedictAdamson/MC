@@ -36,13 +36,9 @@ import uk.badamson.mc.repository.PlayerRepository;
 @org.springframework.stereotype.Service
 public class ServiceImpl implements Service {
 
-   private static void prepareRepository(
-            final PlayerRepository playerRepository) {
-      // TODO do not add if already present
-      playerRepository.save(Player.DEFAULT_ADMINISTRATOR).block();
-   }
-
    private final PlayerRepository playerRepository;
+   private final Player administrator = new Player(
+            Player.ADMINISTRATOR_USERNAME, "FIXME");
 
    /**
     * <p>
@@ -62,19 +58,25 @@ public class ServiceImpl implements Service {
    public ServiceImpl(@NonNull final PlayerRepository playerRepository) {
       this.playerRepository = Objects.requireNonNull(playerRepository,
                "playerRepository");
-      prepareRepository(playerRepository);
    }
 
    @Override
    public Mono<Void> add(final Player player) {
       Objects.requireNonNull(player, "player");
+      if (Player.ADMINISTRATOR_USERNAME.equals(player.getUsername())) {
+         throw new IllegalArgumentException("Player is administrator");
+      }
       return playerRepository.save(player).then();
    }
 
    @Override
    public Mono<UserDetails> findByUsername(final String username) {
       Objects.requireNonNull(username, "username");
-      return playerRepository.findById(username).cast(UserDetails.class);
+      if (Player.ADMINISTRATOR_USERNAME.equals(username)) {
+         return Mono.just(administrator);
+      } else {
+         return playerRepository.findById(username).cast(UserDetails.class);
+      }
    }
 
    /**
@@ -91,7 +93,7 @@ public class ServiceImpl implements Service {
 
    @Override
    public Flux<Player> getPlayers() {
-      return playerRepository.findAll();
+      return Flux.concat(Mono.just(administrator), playerRepository.findAll());
    }
 
 }

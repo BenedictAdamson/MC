@@ -37,8 +37,8 @@ Feature: Player
     
     Examples:
       |player|password|
-      |Administrator|letmein|
-      |John|pasword123|
+      |John|letmein|
+      |Jeff|pasword123|
     
   Scenario Outline: Add player
     Given logged in as "Administrator"
@@ -50,4 +50,4 @@ Feature: Player
     Examples:
       |name|password|
       |John|letmein|
-      |Jeff Death|password123|
+      |Jeff|password123|
