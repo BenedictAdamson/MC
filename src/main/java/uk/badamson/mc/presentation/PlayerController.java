@@ -88,9 +88,4 @@ public class PlayerController {
    public final Service getService() {
       return service;
    }
-
-   @PostMapping("/login")
-   public Mono<Void> login(final String name) {
-      return null;// FIXME
-   }
 }
