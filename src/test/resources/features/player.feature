@@ -41,7 +41,7 @@ Feature: Player
       |Jeff|pasword123|
     
   Scenario Outline: Add player
-    Given logged in as "Administrator"
+    Given logged in as Administrator
     When adding a player named "<name>" with  password "<password>" with CSRF protection
     Then MC accepts the addition
     And can get the list of players
@@ -51,3 +51,13 @@ Feature: Player
       |name|password|
       |John|letmein|
       |Jeff|password123|
+    
+  Scenario Outline: Only administrator may add player
+    Given logged in as "<name>"
+    When adding a player named "<new-name>" with  password "<password>" with CSRF protection
+    Then MC forbids the request
+    
+    Examples:
+      |name|new-name|password|
+      |John|Jeff|letmein|
+      |Jeff|John|password123|

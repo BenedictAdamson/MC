@@ -18,6 +18,9 @@ package uk.badamson.mc.service;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.hamcrest.CoreMatchers.anything;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,17 +82,20 @@ public class ServiceTest {
 
    public static Mono<UserDetails> findByUsername(final Service service,
             final String username) {
+      final var administrator = Player.ADMINISTRATOR_USERNAME.equals(username);
+
       final var publisher = service.findByUsername(username);
 
       assertInvariants(service);
       assertNotNull(publisher, "Non null user details publisher");
       final var userDetails = publisher.block();
-      assertTrue(
-               !(Player.ADMINISTRATOR_USERNAME.equals(username)
-                        && userDetails == null),
+      assertTrue(!(administrator && userDetails == null),
                "Always have user details for the administrator.");
       if (userDetails != null) {
          UserDetailsTest.assertInvariants(userDetails);
+         assertThat("The administrator has a complete set of authorities.",
+                  userDetails.getAuthorities(),
+                  administrator ? is(Authority.ALL) : anything());
       }
 
       return publisher;

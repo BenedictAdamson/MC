@@ -73,6 +73,9 @@ public interface Service extends ReactiveUserDetailsService {
     * <ul>
     * <li>Always have user details for the
     * {@linkplain Player#ADMINISTRATOR_USERNAME administrator}.</li>
+    * <li>The {@linkplain Player#ADMINISTRATOR_USERNAME administrator} has a
+    * complete {@linkplain Authority set} of
+    * {@linkplain UserDetails#getAuthorities() authorities}.</li>
     * </ul>
     */
    @Override

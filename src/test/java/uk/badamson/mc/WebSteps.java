@@ -26,12 +26,14 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
 
@@ -75,7 +77,7 @@ public class WebSteps {
    public void adding_a_player_named(final String name, final String password) {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(password, "password");
-      postResource("/player", new Player(name, password));
+      postResource("/player", new Player(name, password, Set.of()));
    }
 
    @Then("can get the list of players")
@@ -124,6 +126,13 @@ public class WebSteps {
       client.mutateWith(mockUser(name));
    }
 
+   @Given("logged in as Administrator")
+   public void logged_in_as_Administrator() {
+      final UserDetails administrator = service
+               .findByUsername(Player.ADMINISTRATOR_USERNAME).block();
+      client.mutateWith(mockUser(administrator));
+   }
+
    @Then("MC accepts the addition")
    public void mc_accepts_the_addition() {
       response.expectStatus().isCreated();
@@ -133,6 +142,11 @@ public class WebSteps {
    public void mc_accepts_the_login() {
       response.expectStatus().isFound().expectHeader().valueEquals("Location",
                "/login");
+   }
+
+   @Then("MC forbids the request")
+   public void mc_forbids_the_request() {
+      response.expectStatus().isForbidden();
    }
 
    @Then("MC serves the resource")
@@ -156,9 +170,11 @@ public class WebSteps {
       } catch (final URISyntaxException e) {
          throw new IllegalArgumentException(e);
       }
-      response = client.mutateWith(csrf()).post().uri(requestUri.getPath())
+      final var request = client.mutateWith(csrf()).post()
+               .uri(requestUri.getPath())
                .contentType(MediaType.APPLICATION_JSON_UTF8).syncBody(body)
-               .accept(MediaType.APPLICATION_JSON_UTF8).exchange();
+               .accept(MediaType.APPLICATION_JSON_UTF8);
+      response = request.exchange();
    }
 
    private void requestHtml(final String path) {
@@ -179,7 +195,7 @@ public class WebSteps {
       Objects.requireNonNull(player, "player");
       Objects.requireNonNull(password, "password");
       Objects.requireNonNull(service, "service");
-      service.add(new Player(player, password));
+      service.add(new Player(player, password, Set.of()));
    }
 
    @Given("the DNS name, example.com, of an MC server")
@@ -195,7 +211,7 @@ public class WebSteps {
    @Then("the list of players includes a player named {string}")
    public void the_list_of_players_includes_a_player_named(final String name) {
       assertNotNull(responsePlayerList, "player list");
-      responsePlayerList.contains(new Player(name, null));
+      responsePlayerList.contains(new Player(name, null, Set.of()));
    }
 
    @Then("the list of players includes the administrator")

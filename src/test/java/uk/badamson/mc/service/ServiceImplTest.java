@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -142,8 +143,9 @@ public class ServiceImplTest {
          playersList.forEach(PlayerTest::assertInvariants);
          assertThat(
                   "the list of players includes a player named \"Administrator\"",
-                  playersList, containsInAnyOrder(
-                           new Player(Player.ADMINISTRATOR_USERNAME, null)));
+                  playersList,
+                  containsInAnyOrder(new Player(Player.ADMINISTRATOR_USERNAME,
+                           null, Authority.ALL)));
       }
 
       private void then_the_list_of_players_includes_the_administrator() {
@@ -219,9 +221,9 @@ public class ServiceImplTest {
 
    @BeforeEach
    public void setUpPlayers() {
-      playerA = new Player("John", PASSWORD_A);
-      playerB = new Player("Alan", PASSWORD_B);
-      playerC = new Player("Gweezer", PASSWORD_C);
+      playerA = new Player("John", PASSWORD_A, Set.of());
+      playerB = new Player("Alan", PASSWORD_B, Authority.ALL);
+      playerC = new Player("Gweezer", PASSWORD_C, Set.of());
    }
 
    @BeforeEach

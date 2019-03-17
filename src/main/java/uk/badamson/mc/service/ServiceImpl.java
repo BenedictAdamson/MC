@@ -71,7 +71,7 @@ public class ServiceImpl implements Service {
                "playerRepository");
       Objects.requireNonNull(administratorPassword, "administratorPassword");
       administrator = new Player(Player.ADMINISTRATOR_USERNAME,
-               administratorPassword);
+               administratorPassword, Authority.ALL);
    }
 
    @Override
