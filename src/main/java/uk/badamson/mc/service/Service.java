@@ -88,8 +88,9 @@ public interface Service extends ReactiveUserDetailsService {
     * <li>As for all publishers, the returned publisher will not
     * {@linkplain Subscriber#onNext(Object) provide} a null element to a
     * subscriber.</li>
-    * <li>The list of players always {@linkplain Flux#hasElement(Object) has} an
-    * {@linkplain Player#DEFAULT_ADMINISTRATOR administrator}.</li>
+    * <li>The list of players always {@linkplain Flux#hasElement(Object) has a}
+    * player with the {@linkplain Player#ADMINISTRATOR_USERNAME administrator
+    * username} as its {@linkplain Player#getUsername() username}.</li>
     * </ul>
     *
     * @return a {@linkplain Publisher publisher} of the players.

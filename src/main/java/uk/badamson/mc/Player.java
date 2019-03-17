@@ -46,9 +46,6 @@ public final class Player implements UserDetails {
     */
    public static final String ADMINISTRATOR_USERNAME = "Administrator";
 
-   public static final Player DEFAULT_ADMINISTRATOR = new Player(
-            "Administrator", "password123");// TODO proper default administrator
-
    private final String username;
    private final String password;
 

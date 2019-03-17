@@ -100,9 +100,9 @@ public class ServiceTest {
 
       assertInvariants(service);
       assertNotNull(players, "Always returns a (non null) publisher.");
-      assertTrue(
-               players.any(p -> Player.DEFAULT_ADMINISTRATOR.equals(p)).block(),
-               "The list of players always has an administrator.");
+      assertTrue(players
+               .any(p -> Player.ADMINISTRATOR_USERNAME.equals(p.getUsername()))
+               .block(), "The list of players always has an administrator.");
 
       return players;
    }

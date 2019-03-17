@@ -147,7 +147,9 @@ public class ServiceImplTest {
       }
 
       private void then_the_list_of_players_includes_the_administrator() {
-         StepVerifier.create(players).expectNext(Player.DEFAULT_ADMINISTRATOR);
+         StepVerifier.create(players)
+                  .expectNextMatches(player -> Player.ADMINISTRATOR_USERNAME
+                           .equals(player.getUsername()));
       }
 
       private void when_getting_the_players() {

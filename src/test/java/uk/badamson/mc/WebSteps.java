@@ -18,6 +18,7 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
@@ -198,7 +199,12 @@ public class WebSteps {
 
    @Then("the list of players includes the administrator")
    public void the_list_of_players_includes_the_administrator() {
-      responsePlayerList.contains(Player.DEFAULT_ADMINISTRATOR);
+      responsePlayerList.value(
+               players -> players.stream()
+                        .filter(player -> Player.ADMINISTRATOR_USERNAME
+                                 .equals(player.getUsername()))
+                        .count(),
+               is(1L));
    }
 
    @When("the potential player gives the DNS name to a web browser")
