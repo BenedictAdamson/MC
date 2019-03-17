@@ -39,6 +39,13 @@ public final class Player implements UserDetails {
 
    private static final long serialVersionUID = 1L;
 
+   /**
+    * <p>
+    * The {@linkplain #getUsername() username} of the administrator player.
+    * </p>
+    */
+   public static final String ADMINISTRATOR_USERNAME = "Administrator";
+
    public static final Player DEFAULT_ADMINISTRATOR = new Player(
             "Administrator", "password123");// TODO proper default administrator
 
