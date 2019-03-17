@@ -18,14 +18,24 @@ package uk.badamson.mc.service;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
+
+import uk.badamson.mc.repository.PlayerRepository;
 
 /**
  * <p>
  * The Spring Boot configuration of the Mission Command game.
  * </p>
  */
-@ComponentScan("uk.badamson.mc.service")
+@Configuration
 public class ServiceLayerSpringConfiguration {
 
+   @Bean
+   public Service service(@NonNull final PlayerRepository playerRepository,
+            @NonNull @Value("${administrator.password:random.uuid}") final String administratorPassword) {
+      return new ServiceImpl(playerRepository, administratorPassword);
+   }
 }

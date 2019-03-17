@@ -37,8 +37,7 @@ import uk.badamson.mc.repository.PlayerRepository;
 public class ServiceImpl implements Service {
 
    private final PlayerRepository playerRepository;
-   private final Player administrator = new Player(
-            Player.ADMINISTRATOR_USERNAME, "FIXME");
+   private final Player administrator;
 
    /**
     * <p>
@@ -47,17 +46,32 @@ public class ServiceImpl implements Service {
     * <ul>
     * <li>The {@linkplain #getPlayerRepository() player repository} of this
     * service is the given player repository.</li>
+    * <li>The {@linkplain Player#getPassword() password} of the
+    * {@linkplain Player#ADMINISTRATOR_USERNAME administrator}
+    * {@linkplain #findByUsername(String) user details found through this
+    * service} is {@linkplain String#equals(Object) equal to} the given
+    * administrator password.</li>
     * </ul>
     *
     * @param playerRepository
     *           The {@link Player} repository that this service layer instance
     *           uses.
+    * @param administratorPassword
+    *           The (encrypted) {@linkplain Player#getPassword() password} of
+    *           the {@linkplain Player#ADMINISTRATOR_USERNAME administrator}
     * @throws NullPointerException
-    *            If {@code playerRepository} is null.
+    *            <ul>
+    *            <li>If {@code playerRepository} is null.</li>
+    *            <li>If {@code administratorPasword} is null.</li>
+    *            </ul>
     */
-   public ServiceImpl(@NonNull final PlayerRepository playerRepository) {
+   public ServiceImpl(@NonNull final PlayerRepository playerRepository,
+            @NonNull final String administratorPassword) {
       this.playerRepository = Objects.requireNonNull(playerRepository,
                "playerRepository");
+      Objects.requireNonNull(administratorPassword, "administratorPassword");
+      administrator = new Player(Player.ADMINISTRATOR_USERNAME,
+               administratorPassword);
    }
 
    @Override
