@@ -64,6 +64,10 @@ public class ServiceTest {
                .verifyComplete();
       assertEquals(player, userDetails,
                "Subsequently finding user details using the username of the given player will retrieve user details equivalent to the user details of the given player.");
+      assertTrue(
+               service.getPasswordEncoder().matches(player.getPassword(),
+                        userDetails.getPassword()),
+               "Recorded password has been encrypted using the pasword encoder of this service.");
    }
 
    public static void add_2(final Service service, final Player player1,
@@ -89,6 +93,9 @@ public class ServiceTest {
 
       assertInvariants(service);
       assertNotNull(publisher, "Non null user details publisher");
+      assertNotNull(service.getPasswordEncoder(),
+               "Always have a (non-null) password encoder");
+
       final var userDetails = publisher.block();
       assertTrue(!(administrator && userDetails == null),
                "Always have user details for the administrator.");

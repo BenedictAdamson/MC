@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,6 +38,7 @@ import uk.badamson.mc.repository.PlayerRepository;
 @org.springframework.stereotype.Service
 public class ServiceImpl implements Service {
 
+   private final PasswordEncoder passwordEncoder;
    private final PlayerRepository playerRepository;
    private final Player administrator;
 
@@ -47,18 +49,22 @@ public class ServiceImpl implements Service {
     * <ul>
     * <li>The {@linkplain #getPlayerRepository() player repository} of this
     * service is the given player repository.</li>
+    * <li>The {@linkplain #getPasswordEncoder() password encoder} of this
+    * service is the given password encoder.</li>
     * <li>The {@linkplain Player#getPassword() password} of the
     * {@linkplain Player#ADMINISTRATOR_USERNAME administrator}
     * {@linkplain #findByUsername(String) user details found through this
     * service} is {@linkplain String#equals(Object) equal to} the given
-    * administrator password.</li>
+    * administrator password encrypted by the given password encoder.</li>
     * </ul>
     *
+    * @param passwordEncoder
+    *           The encoder that this service uses to encrypt passwords.
     * @param playerRepository
     *           The {@link Player} repository that this service layer instance
     *           uses.
     * @param administratorPassword
-    *           The (encrypted) {@linkplain Player#getPassword() password} of
+    *           The (unencrypted) {@linkplain Player#getPassword() password} of
     *           the {@linkplain Player#ADMINISTRATOR_USERNAME administrator}
     * @throws NullPointerException
     *            <ul>
@@ -66,21 +72,27 @@ public class ServiceImpl implements Service {
     *            <li>If {@code administratorPasword} is null.</li>
     *            </ul>
     */
-   public ServiceImpl(@NonNull final PlayerRepository playerRepository,
+   public ServiceImpl(@NonNull final PasswordEncoder passwordEncoder,
+            @NonNull final PlayerRepository playerRepository,
             @NonNull final String administratorPassword) {
       this.playerRepository = Objects.requireNonNull(playerRepository,
                "playerRepository");
       Objects.requireNonNull(administratorPassword, "administratorPassword");
+      this.passwordEncoder = Objects.requireNonNull(passwordEncoder,
+               "passwordEncoder");
       administrator = new Player(Player.ADMINISTRATOR_USERNAME,
-               administratorPassword, Authority.ALL);
+               passwordEncoder.encode(administratorPassword), Authority.ALL);
    }
 
    @Override
-   public Mono<Void> add(final Player player) {
+   public Mono<Void> add(Player player) {
       Objects.requireNonNull(player, "player");
       if (Player.ADMINISTRATOR_USERNAME.equals(player.getUsername())) {
          throw new IllegalArgumentException("Player is administrator");
       }
+      player = new Player(player.getUsername(),
+               passwordEncoder.encode(player.getPassword()),
+               player.getAuthorities());
       return playerRepository.save(player).then();
    }
 
@@ -92,6 +104,11 @@ public class ServiceImpl implements Service {
       } else {
          return playerRepository.findById(username).cast(UserDetails.class);
       }
+   }
+
+   @Override
+   public final PasswordEncoder getPasswordEncoder() {
+      return passwordEncoder;
    }
 
    /**

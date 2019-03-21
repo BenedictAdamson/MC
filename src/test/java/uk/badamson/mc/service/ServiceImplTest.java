@@ -21,9 +21,9 @@ package uk.badamson.mc.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -62,16 +64,18 @@ public class ServiceImplTest {
 
          @Test
          public void a() {
-            test(playerA);
+            test(playerA, passwordEncoderA);
          }
 
          @Test
          public void b() {
-            test(playerB);
+            test(playerB, passwordEncoderB);
          }
 
-         private void test(final Player player) {
-            final var service = new ServiceImpl(playerRepositoryA, PASSWORD_A);
+         private void test(final Player player,
+                  final PasswordEncoder passwordEncoder) {
+            final var service = new ServiceImpl(passwordEncoder,
+                     playerRepositoryA, PASSWORD_A);
             ServiceTest.add_1(service, player);
             StepVerifier.create(service.getPlayers()).expectNextCount(2)
                      .verifyComplete();
@@ -92,7 +96,8 @@ public class ServiceImplTest {
          }
 
          private void test(final Player player1, final Player player2) {
-            final var service = new ServiceImpl(playerRepositoryA, PASSWORD_A);
+            final var service = new ServiceImpl(passwordEncoderA,
+                     playerRepositoryA, PASSWORD_A);
             ServiceTest.add_2(service, player1, player2);
             StepVerifier.create(service.getPlayers()).expectNextCount(3)
                      .verifyComplete();
@@ -105,12 +110,12 @@ public class ServiceImplTest {
 
       @Test
       public void a() {
-         constructor(playerRepositoryA, PASSWORD_A);
+         constructor(passwordEncoderA, playerRepositoryA, PASSWORD_A);
       }
 
       @Test
       public void b() {
-         constructor(playerRepositoryB, PASSWORD_B);
+         constructor(passwordEncoderB, playerRepositoryB, PASSWORD_B);
       }
    }// class
 
@@ -130,7 +135,8 @@ public class ServiceImplTest {
       }
 
       private void given_a_fresh_instance_of_MC() {
-         service = new ServiceImpl(playerRepositoryA, PASSWORD_A);
+         service = new ServiceImpl(passwordEncoderA, playerRepositoryA,
+                  PASSWORD_A);
       }
 
       private void then_the_list_of_players_has_one_player() {
@@ -175,20 +181,24 @@ public class ServiceImplTest {
       PlayerRepositoryTest.assertInvariants(playerRepository);
    }
 
-   private static ServiceImpl constructor(
+   private static ServiceImpl constructor(final PasswordEncoder passwordEncoder,
             final PlayerRepository playerRepository,
             final String administratorPassword) {
-      final var service = new ServiceImpl(playerRepository,
+      final var service = new ServiceImpl(passwordEncoder, playerRepository,
                administratorPassword);
 
       assertInvariants(service);
       assertSame(playerRepository, service.getPlayerRepository(),
                "The player repository of this service is the given player repository.");
+      assertSame(passwordEncoder, service.getPasswordEncoder(),
+               "The password encoder of this service is the given password encoder.");
       getPlayers(service);
-      assertEquals(administratorPassword,
-               findByUsername(service, Player.ADMINISTRATOR_USERNAME).block()
-                        .getPassword(),
-               "The password of the administrator user details found through this service is equal to the given administrator password.");
+      final var encryptedAdminPassword = findByUsername(service,
+               Player.ADMINISTRATOR_USERNAME).block().getPassword();
+      assertTrue(
+               passwordEncoder.matches(administratorPassword,
+                        encryptedAdminPassword),
+               "The password of the administrator user details found through this service is equal to the given administrator password encrypted by the given password encoder.");
 
       return service;
    }
@@ -209,6 +219,12 @@ public class ServiceImplTest {
 
       return players;
    }
+
+   private final PasswordEncoder passwordEncoderA = new BCryptPasswordEncoder(
+            4);
+
+   private final PasswordEncoder passwordEncoderB = new BCryptPasswordEncoder(
+            5);
 
    private PlayerRepository playerRepositoryA;
 

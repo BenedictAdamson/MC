@@ -22,6 +22,7 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -50,11 +51,15 @@ public interface Service extends ReactiveUserDetailsService {
     * <li>Subsequently {@linkplain #findByUsername(String) finding user details}
     * using the {@linkplain Player#getUsername() username} of the given player
     * will retrieve {@linkplain UserDetails user details} equivalent to the user
-    * details of the given player.</li>
+    * details of the given player. However, the
+    * {@linkplain UserDetails#getPassword() password} will have been encrypted
+    * using the {@linkplain #getPasswordEncoder() password encoder} of this
+    * service.</li>
     * </ul>
     *
     * @param player
-    *           The player to add
+    *           The player to add, with an unencrypted
+    *           {@linkplain Player#getPassword() password}.
     * @return a {@linkplain Publisher publisher} that
     *         {@linkplain Subscriber#onComplete() completes} on addition of the
     *         player or {@linkplain Subscriber#onError(Throwable) publishes an
@@ -81,6 +86,18 @@ public interface Service extends ReactiveUserDetailsService {
     */
    @Override
    public Mono<UserDetails> findByUsername(String username);
+
+   /**
+    * <p>
+    * The encoder that this service uses to encrypt passwords.
+    * </p>
+    * <ul>
+    * <li>Always have a non-null password encoder.</li>
+    * </ul>
+    *
+    * @return the encoder.
+    */
+   public PasswordEncoder getPasswordEncoder();
 
    /**
     * <p>

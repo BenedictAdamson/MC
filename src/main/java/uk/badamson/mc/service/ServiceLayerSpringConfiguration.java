@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import uk.badamson.mc.repository.PlayerRepository;
 
@@ -34,8 +36,15 @@ import uk.badamson.mc.repository.PlayerRepository;
 public class ServiceLayerSpringConfiguration {
 
    @Bean
-   public Service service(@NonNull final PlayerRepository playerRepository,
+   public PasswordEncoder passwordEncoder() {
+      return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+   }
+
+   @Bean
+   public Service service(@NonNull final PasswordEncoder passwordEncoder,
+            @NonNull final PlayerRepository playerRepository,
             @NonNull @Value("${administrator.password:${random.uuid}}") final String administratorPassword) {
-      return new ServiceImpl(playerRepository, administratorPassword);
+      return new ServiceImpl(passwordEncoder, playerRepository,
+               administratorPassword);
    }
 }
