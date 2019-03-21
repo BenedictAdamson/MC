@@ -40,6 +40,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import uk.badamson.mc.Authority;
 import uk.badamson.mc.Player;
 import uk.badamson.mc.PlayerTest;
 import uk.badamson.mc.repository.PlayerRepository;

@@ -30,8 +30,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.badamson.mc.service.Authority;
-
 /**
  * <p>
  * A player of the Mission Command game.

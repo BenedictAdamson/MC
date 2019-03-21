@@ -1,4 +1,4 @@
-package uk.badamson.mc.service;
+package uk.badamson.mc;
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -23,8 +23,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
-
-import uk.badamson.mc.Player;
 
 /**
  * <p>

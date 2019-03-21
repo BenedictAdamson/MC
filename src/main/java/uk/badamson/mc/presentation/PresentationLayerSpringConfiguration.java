@@ -26,7 +26,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
-import uk.badamson.mc.service.Authority;
+import uk.badamson.mc.Authority;
 
 /**
  * <p>

@@ -31,8 +31,6 @@ import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.springframework.lang.NonNull;
 
-import uk.badamson.mc.service.Authority;
-
 /**
  * <p>
  * Unit tests and auxiliary test code for the {@link Player} class
