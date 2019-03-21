@@ -35,7 +35,7 @@ public class ServiceLayerSpringConfiguration {
 
    @Bean
    public Service service(@NonNull final PlayerRepository playerRepository,
-            @NonNull @Value("${administrator.password:random.uuid}") final String administratorPassword) {
+            @NonNull @Value("${administrator.password:${random.uuid}}") final String administratorPassword) {
       return new ServiceImpl(playerRepository, administratorPassword);
    }
 }
