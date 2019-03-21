@@ -45,11 +45,10 @@ public class PresentationLayerSpringConfiguration {
    }
 
    private void authorizePublic(final ServerHttpSecurity http) {
+      http.authorizeExchange().pathMatchers(HttpMethod.GET, "/", "/login",
+               "/logout", "/player").permitAll();
       http.authorizeExchange()
-               .pathMatchers(HttpMethod.GET, "/", "/login", "/player")
-               .permitAll();
-      http.authorizeExchange().pathMatchers(HttpMethod.POST, "/login")
-               .permitAll();
+               .pathMatchers(HttpMethod.POST, "/login", "/logout").permitAll();
    }
 
    @Bean
@@ -60,5 +59,4 @@ public class PresentationLayerSpringConfiguration {
       authorizePublic(http);
       return http.build();
    }
-
 }
