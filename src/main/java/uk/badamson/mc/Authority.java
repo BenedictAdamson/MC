@@ -36,7 +36,7 @@ public enum Authority implements GrantedAuthority {
     * May {@linkplain Service#add(Player) add a player}.
     * </p>
     */
-   ADMIN;
+   ROLE_ADMIN;
 
    /**
     * <p>

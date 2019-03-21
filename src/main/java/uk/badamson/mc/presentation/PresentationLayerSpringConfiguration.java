@@ -41,7 +41,7 @@ public class PresentationLayerSpringConfiguration {
 
    private void authorizeAdministration(final ServerHttpSecurity http) {
       http.authorizeExchange().pathMatchers(HttpMethod.POST, "/player")
-               .hasAuthority(Authority.ADMIN.getAuthority());
+               .hasAuthority(Authority.ROLE_ADMIN.getAuthority());
    }
 
    private void authorizePublic(final ServerHttpSecurity http) {
