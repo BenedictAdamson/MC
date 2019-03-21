@@ -147,25 +147,25 @@ public final class Player implements UserDetails {
    @Override
    public final boolean isAccountNonExpired() {
       // TODO player accounts can expire
-      return false;
+      return true;
    }
 
    @Override
    public final boolean isAccountNonLocked() {
       // TODO player acccounts can be locked
-      return false;
+      return true;
    }
 
    @Override
    public final boolean isCredentialsNonExpired() {
       // TODO player credentials can expire
-      return false;
+      return true;
    }
 
    @Override
    public final boolean isEnabled() {
       // TODO players can be disabled
-      return false;
+      return true;
    }
 
    @Override
