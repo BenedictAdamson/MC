@@ -34,6 +34,7 @@ Feature: Player
     Given that player "<player>" exists with  password "<password>"
     When log in as "<player>" using password "<password>" with CSRF protection
     Then MC accepts the login
+    And "<player>" is logged in
     
     Examples:
       |player|password|
