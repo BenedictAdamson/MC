@@ -18,6 +18,7 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -34,6 +35,7 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import uk.badamson.mc.service.Service;
 
@@ -47,6 +49,34 @@ import uk.badamson.mc.service.Service;
          webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @RunWith(JUnitPlatform.class)
 public class ReactiveAuthenticationManagerTest {
+
+   @Nested
+   public class Valid {
+
+      @Test
+      public void a() {
+         test(USERNAME_A, PASSWORD_A, Set.of());
+      }
+
+      @Test
+      public void b() {
+         test(USERNAME_B, PASSWORD_B, Authority.ALL);
+      }
+
+      private void test(final String username, final String password,
+               final Set<Authority> authorities) {
+         final Player player = new Player(username, password, authorities);
+         service.add(player);
+
+         final Authentication authentication = authenticate_usernameAndPassword(
+                  username, password);
+
+         assertNotNull(authentication, "Able to authnticate");
+         assertEquals(username, authentication.getName(), "name");
+         assertEquals(authorities, authentication.getAuthorities(),
+                  "authorities");
+      }
+   }// class
 
    @Nested
    public class WrongPassword {
@@ -72,6 +102,10 @@ public class ReactiveAuthenticationManagerTest {
                   () -> authenticate_usernameAndPassword(username,
                            givenPassword));
       }
+   }// class
+
+   static {
+      Hooks.onOperatorDebug();
    }
 
    private static final String PASSWORD_A = "letmein";
