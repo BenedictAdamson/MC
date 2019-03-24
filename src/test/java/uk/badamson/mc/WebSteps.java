@@ -36,7 +36,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
@@ -114,8 +114,8 @@ public class WebSteps {
    @Then("{string} is logged in")
    public void is_logged_in(final String username) {
       Objects.requireNonNull(username, "username");
-      final var authentication = SecurityContextHolder.getContext()
-               .getAuthentication();
+      final var authentication = ReactiveSecurityContextHolder.getContext()
+               .block().getAuthentication();
       assertNotNull(authentication, "Have authentication information");
       final Object principal = authentication.getPrincipal();
       assertNotNull(principal, "Logged in (has a current principal)");
