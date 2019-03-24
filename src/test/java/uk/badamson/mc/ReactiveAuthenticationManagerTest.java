@@ -66,15 +66,15 @@ public class ReactiveAuthenticationManagerTest {
       private void test(final String username, final String password,
                final Set<Authority> authorities) {
          final Player player = new Player(username, password, authorities);
-         service.add(player);
+         service.add(player).block();
 
          final Authentication authentication = authenticate_usernameAndPassword(
                   username, password);
 
          assertNotNull(authentication, "Able to authnticate");
          assertEquals(username, authentication.getName(), "name");
-         assertEquals(authorities, authentication.getAuthorities(),
-                  "authorities");
+         assertEquals(authorities, Set.copyOf(authentication.getAuthorities()),
+                  "Granted all the authorities of the user");
       }
    }// class
 
@@ -96,7 +96,7 @@ public class ReactiveAuthenticationManagerTest {
          assert !password.equals(givenPassword);
 
          final Player player = new Player(username, password, Set.of());
-         service.add(player);
+         service.add(player).block();
 
          assertThrows(BadCredentialsException.class,
                   () -> authenticate_usernameAndPassword(username,
