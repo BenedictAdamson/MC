@@ -18,6 +18,9 @@ package uk.badamson.mc.service;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.hamcrest.CoreMatchers.anything;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,7 +32,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import uk.badamson.mc.Authority;
 import uk.badamson.mc.Player;
+import uk.badamson.mc.UserDetailsTest;
 
 /**
  * <p>
@@ -59,6 +64,10 @@ public class ServiceTest {
                .verifyComplete();
       assertEquals(player, userDetails,
                "Subsequently finding user details using the username of the given player will retrieve user details equivalent to the user details of the given player.");
+      assertTrue(
+               service.getPasswordEncoder().matches(player.getPassword(),
+                        userDetails.getPassword()),
+               "Recorded password has been encrypted using the pasword encoder of this service.");
    }
 
    public static void add_2(final Service service, final Player player1,
@@ -78,12 +87,26 @@ public class ServiceTest {
 
    public static Mono<UserDetails> findByUsername(final Service service,
             final String username) {
-      final var userDetails = service.findByUsername(username);
+      final var administrator = Player.ADMINISTRATOR_USERNAME.equals(username);
+
+      final var publisher = service.findByUsername(username);
 
       assertInvariants(service);
-      assertNotNull(userDetails, "Non null user details");
+      assertNotNull(publisher, "Non null user details publisher");
+      assertNotNull(service.getPasswordEncoder(),
+               "Always have a (non-null) password encoder");
 
-      return userDetails;
+      final var userDetails = publisher.block();
+      assertTrue(!(administrator && userDetails == null),
+               "Always have user details for the administrator.");
+      if (userDetails != null) {
+         UserDetailsTest.assertInvariants(userDetails);
+         assertThat("The administrator has a complete set of authorities.",
+                  userDetails.getAuthorities(),
+                  administrator ? is(Authority.ALL) : anything());
+      }
+
+      return publisher;
    }
 
    public static Flux<Player> getPlayers(final Service service) {
@@ -91,9 +114,9 @@ public class ServiceTest {
 
       assertInvariants(service);
       assertNotNull(players, "Always returns a (non null) publisher.");
-      assertTrue(
-               players.any(p -> Player.DEFAULT_ADMINISTRATOR.equals(p)).block(),
-               "The list of players always has an administrator.");
+      assertTrue(players
+               .any(p -> Player.ADMINISTRATOR_USERNAME.equals(p.getUsername()))
+               .block(), "The list of players always has an administrator.");
 
       return players;
    }

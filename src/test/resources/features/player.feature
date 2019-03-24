@@ -32,16 +32,18 @@ Feature: Player
     
   Scenario Outline: Login
     Given that player "<player>" exists with  password "<password>"
+    And presenting a valid CSRF token
     When log in as "<player>" using password "<password>"
     Then MC accepts the login
     
     Examples:
       |player|password|
-      |Administrator|letmein|
-      |John|pasword123|
+      |John|letmein|
+      |Jeff|pasword123|
     
   Scenario Outline: Add player
-    Given logged in as "Administrator"
+    Given user authenticated as Administrator
+    And presenting a valid CSRF token
     When adding a player named "<name>" with  password "<password>"
     Then MC accepts the addition
     And can get the list of players
@@ -50,4 +52,15 @@ Feature: Player
     Examples:
       |name|password|
       |John|letmein|
-      |Jeff Death|password123|
+      |Jeff|password123|
+    
+  Scenario Outline: Only administrator may add player
+    Given logged in as "<name>"
+    And presenting a valid CSRF token
+    When adding a player named "<new-name>" with  password "<password>"
+    Then MC forbids the request
+    
+    Examples:
+      |name|new-name|password|
+      |John|Jeff|letmein|
+      |Jeff|John|password123|

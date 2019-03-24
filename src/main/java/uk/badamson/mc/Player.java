@@ -18,13 +18,13 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,11 +39,16 @@ public final class Player implements UserDetails {
 
    private static final long serialVersionUID = 1L;
 
-   public static final Player DEFAULT_ADMINISTRATOR = new Player(
-            "Administrator", "password123");// TODO proper default administrator
+   /**
+    * <p>
+    * The {@linkplain #getUsername() username} of the administrator player.
+    * </p>
+    */
+   public static final String ADMINISTRATOR_USERNAME = "Administrator";
 
    private final String username;
    private final String password;
+   private final Set<Authority> authorities;
 
    /**
     * <p>
@@ -54,8 +59,8 @@ public final class Player implements UserDetails {
     * username.</li>
     * <li>The {@linkplain #getPassword() password} of this player is the given
     * password.</li>
-    * <li>This player {@linkplain Collection#isEmpty() has no} granted
-    * {@linkplain #getAuthorities() authorities}.</li>
+    * <li>The {@linkplain #getAuthorities() authorities} granted to this player
+    * are {@linkplain Set#equals(Object) equal to} the given authorities.</li>
     * </ul>
     *
     * @param username
@@ -64,14 +69,23 @@ public final class Player implements UserDetails {
     *           the password used to authenticate the user, or null if the
     *           password is being hidden or is unknown. This might be the
     *           password in an encrypted form.
+    * @param authorities
+    *           The authorities granted to the player.
     * @throws NullPointerException
-    *            If {@code username} is null
+    *            <ul>
+    *            <li>If {@code username} is null</li>
+    *            <li>If {@code authorities} is null</li>
+    *            <li>If {@code authorities} contains null</li>
+    *            </ul>
     */
    @JsonCreator
    public Player(@NonNull @JsonProperty("username") final String username,
-            @Nullable @JsonProperty("password") final String password) {
+            @Nullable @JsonProperty("password") final String password,
+            @NonNull @JsonProperty("authorities") final Set<Authority> authorities) {
       this.username = Objects.requireNonNull(username, "username");
       this.password = password;
+      this.authorities = authorities.isEmpty() ? Collections.emptySet()
+               : Collections.unmodifiableSet(EnumSet.copyOf(authorities));
    }
 
    /**
@@ -105,8 +119,8 @@ public final class Player implements UserDetails {
    }
 
    @Override
-   public final Collection<? extends GrantedAuthority> getAuthorities() {
-      return Collections.emptySet();// TODO
+   public final Set<Authority> getAuthorities() {
+      return authorities;
    }
 
    @Override
@@ -130,26 +144,26 @@ public final class Player implements UserDetails {
 
    @Override
    public final boolean isAccountNonExpired() {
-      // TODO Auto-generated method stub
-      return false;
+      // TODO player accounts can expire
+      return true;
    }
 
    @Override
    public final boolean isAccountNonLocked() {
-      // TODO Auto-generated method stub
-      return false;
+      // TODO player acccounts can be locked
+      return true;
    }
 
    @Override
    public final boolean isCredentialsNonExpired() {
-      // TODO Auto-generated method stub
-      return false;
+      // TODO player credentials can expire
+      return true;
    }
 
    @Override
    public final boolean isEnabled() {
-      // TODO Auto-generated method stub
-      return false;
+      // TODO players can be disabled
+      return true;
    }
 
    @Override

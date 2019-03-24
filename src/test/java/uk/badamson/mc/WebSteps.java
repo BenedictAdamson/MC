@@ -18,24 +18,30 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import reactor.core.publisher.Hooks;
 import uk.badamson.mc.service.Service;
 
 /**
@@ -49,6 +55,10 @@ import uk.badamson.mc.service.Service;
 @AutoConfigureWebTestClient
 public class WebSteps {
 
+   static {
+      Hooks.onOperatorDebug();
+   }
+
    @Autowired
    private ApplicationContext context;
 
@@ -59,6 +69,7 @@ public class WebSteps {
    private Service service;
 
    private final String scheme = "http";
+
    private String dnsName;
    private URI requestUri;
    private WebTestClient.ResponseSpec response;
@@ -73,7 +84,7 @@ public class WebSteps {
    public void adding_a_player_named(final String name, final String password) {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(password, "password");
-      postResource("/player", new Player(name, password));
+      postResource("/player", new Player(name, password, Set.of()));
    }
 
    @Then("can get the list of players")
@@ -111,15 +122,16 @@ public class WebSteps {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
 
-      response = client.post()
+      response = client.post().uri("/login")
                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-               .attribute("username", player).attribute("password", password)
+               .body(BodyInserters.fromFormData("username", player)
+                        .with("password", password))
                .exchange();
    }
 
    @Given("logged in as {string}")
    public void logged_in_as(final String name) {
-      client.mutateWith(mockUser(name));
+      client = client.mutateWith(mockUser(name));
    }
 
    @Then("MC accepts the addition")
@@ -130,7 +142,12 @@ public class WebSteps {
    @Then("MC accepts the login")
    public void mc_accepts_the_login() {
       response.expectStatus().isFound().expectHeader().valueEquals("Location",
-               "/login");
+               "/");
+   }
+
+   @Then("MC forbids the request")
+   public void mc_forbids_the_request() {
+      response.expectStatus().isForbidden();
    }
 
    @Then("MC serves the resource")
@@ -154,9 +171,15 @@ public class WebSteps {
       } catch (final URISyntaxException e) {
          throw new IllegalArgumentException(e);
       }
-      response = client.post().uri(requestUri.getPath())
+      final var request = client.post().uri(requestUri.getPath())
                .contentType(MediaType.APPLICATION_JSON_UTF8).syncBody(body)
-               .accept(MediaType.APPLICATION_JSON_UTF8).exchange();
+               .accept(MediaType.APPLICATION_JSON_UTF8);
+      response = request.exchange();
+   }
+
+   @Given("presenting a valid CSRF token")
+   public void presenting_a_valid_CSRF_token() {
+      client = client.mutateWith(csrf());
    }
 
    private void requestHtml(final String path) {
@@ -177,7 +200,7 @@ public class WebSteps {
       Objects.requireNonNull(player, "player");
       Objects.requireNonNull(password, "password");
       Objects.requireNonNull(service, "service");
-      service.add(new Player(player, password));
+      service.add(new Player(player, password, Set.of())).block();
    }
 
    @Given("the DNS name, example.com, of an MC server")
@@ -193,12 +216,17 @@ public class WebSteps {
    @Then("the list of players includes a player named {string}")
    public void the_list_of_players_includes_a_player_named(final String name) {
       assertNotNull(responsePlayerList, "player list");
-      responsePlayerList.contains(new Player(name, null));
+      responsePlayerList.contains(new Player(name, null, Set.of()));
    }
 
    @Then("the list of players includes the administrator")
    public void the_list_of_players_includes_the_administrator() {
-      responsePlayerList.contains(Player.DEFAULT_ADMINISTRATOR);
+      responsePlayerList.value(
+               players -> players.stream()
+                        .filter(player -> Player.ADMINISTRATOR_USERNAME
+                                 .equals(player.getUsername()))
+                        .count(),
+               is(1L));
    }
 
    @When("the potential player gives the DNS name to a web browser")
@@ -215,6 +243,14 @@ public class WebSteps {
    @Then("the response message is a list of players")
    public void the_response_message_is_a_list_of_players() {
       responsePlayerList = response.expectBodyList(Player.class);
+   }
+
+   @Given("user authenticated as Administrator")
+   public void user_authenticated_as_Administrator() {
+      final UserDetails administrator = service
+               .findByUsername(Player.ADMINISTRATOR_USERNAME).block();
+      assert administrator != null;
+      client = client.mutateWith(mockUser(administrator));
    }
 
 }

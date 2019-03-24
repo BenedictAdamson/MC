@@ -1,4 +1,4 @@
-package uk.badamson.mc.repository;
+package uk.badamson.mc;
 /*
  * © Copyright Benedict Adamson 2019.
  *
@@ -18,24 +18,37 @@ package uk.badamson.mc.repository;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
-import uk.badamson.mc.Player;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * <p>
- * Interface for generic CRUD operations on a repository for {@link Player}
- * objects.
+ * An authority that can be {@linkplain Player#getAuthorities() granted to} a
+ * {@linkplain Player player}.
  * </p>
- * <ul>
- * <li>The repository does not {@linkplain #findById(String) contain} an entry
- * for the special {@linkplain Player#ADMINISTRATOR_USERNAME administrator}
- * player.</li>
- * <li>Attempting to {@linkplain #save(Player) save} an administrator player
- * will result in an {@link IllegalArgumentException}.</li>
- * </ul>
  */
-public interface PlayerRepository
-         extends ReactiveCrudRepository<Player, String> {
+public enum Authority implements GrantedAuthority {
+   /**
+    * <p>
+    * May {@linkplain Service#add(Player) add a player}.
+    * </p>
+    */
+   ROLE_ADMIN;
+
+   /**
+    * <p>
+    * The complete set of authorities.
+    * </p>
+    */
+   public static final Set<Authority> ALL = Collections
+            .unmodifiableSet(EnumSet.allOf(Authority.class));
+
+   @Override
+   public String getAuthority() {
+      return name();
+   }
 
 }

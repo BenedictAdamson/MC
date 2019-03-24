@@ -22,9 +22,11 @@ import java.util.Objects;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import uk.badamson.mc.Authority;
 import uk.badamson.mc.Player;
 import uk.badamson.mc.repository.PlayerRepository;
 
@@ -36,13 +38,9 @@ import uk.badamson.mc.repository.PlayerRepository;
 @org.springframework.stereotype.Service
 public class ServiceImpl implements Service {
 
-   private static void prepareRepository(
-            final PlayerRepository playerRepository) {
-      // TODO do not add if already present
-      playerRepository.save(Player.DEFAULT_ADMINISTRATOR).block();
-   }
-
+   private final PasswordEncoder passwordEncoder;
    private final PlayerRepository playerRepository;
+   private final Player administrator;
 
    /**
     * <p>
@@ -51,30 +49,66 @@ public class ServiceImpl implements Service {
     * <ul>
     * <li>The {@linkplain #getPlayerRepository() player repository} of this
     * service is the given player repository.</li>
+    * <li>The {@linkplain #getPasswordEncoder() password encoder} of this
+    * service is the given password encoder.</li>
+    * <li>The {@linkplain Player#getPassword() password} of the
+    * {@linkplain Player#ADMINISTRATOR_USERNAME administrator}
+    * {@linkplain #findByUsername(String) user details found through this
+    * service} is {@linkplain String#equals(Object) equal to} the given
+    * administrator password encrypted by the given password encoder.</li>
     * </ul>
     *
+    * @param passwordEncoder
+    *           The encoder that this service uses to encrypt passwords.
     * @param playerRepository
     *           The {@link Player} repository that this service layer instance
     *           uses.
+    * @param administratorPassword
+    *           The (unencrypted) {@linkplain Player#getPassword() password} of
+    *           the {@linkplain Player#ADMINISTRATOR_USERNAME administrator}
     * @throws NullPointerException
-    *            If {@code playerRepository} is null.
+    *            <ul>
+    *            <li>If {@code playerRepository} is null.</li>
+    *            <li>If {@code administratorPasword} is null.</li>
+    *            </ul>
     */
-   public ServiceImpl(@NonNull final PlayerRepository playerRepository) {
+   public ServiceImpl(@NonNull final PasswordEncoder passwordEncoder,
+            @NonNull final PlayerRepository playerRepository,
+            @NonNull final String administratorPassword) {
       this.playerRepository = Objects.requireNonNull(playerRepository,
                "playerRepository");
-      prepareRepository(playerRepository);
+      Objects.requireNonNull(administratorPassword, "administratorPassword");
+      this.passwordEncoder = Objects.requireNonNull(passwordEncoder,
+               "passwordEncoder");
+      administrator = new Player(Player.ADMINISTRATOR_USERNAME,
+               passwordEncoder.encode(administratorPassword), Authority.ALL);
    }
 
    @Override
-   public Mono<Void> add(final Player player) {
+   public Mono<Void> add(Player player) {
       Objects.requireNonNull(player, "player");
+      if (Player.ADMINISTRATOR_USERNAME.equals(player.getUsername())) {
+         throw new IllegalArgumentException("Player is administrator");
+      }
+      player = new Player(player.getUsername(),
+               passwordEncoder.encode(player.getPassword()),
+               player.getAuthorities());
       return playerRepository.save(player).then();
    }
 
    @Override
    public Mono<UserDetails> findByUsername(final String username) {
       Objects.requireNonNull(username, "username");
-      return playerRepository.findById(username).cast(UserDetails.class);
+      if (Player.ADMINISTRATOR_USERNAME.equals(username)) {
+         return Mono.just(administrator);
+      } else {
+         return playerRepository.findById(username).cast(UserDetails.class);
+      }
+   }
+
+   @Override
+   public final PasswordEncoder getPasswordEncoder() {
+      return passwordEncoder;
    }
 
    /**
@@ -91,7 +125,7 @@ public class ServiceImpl implements Service {
 
    @Override
    public Flux<Player> getPlayers() {
-      return playerRepository.findAll();
+      return Flux.concat(Mono.just(administrator), playerRepository.findAll());
    }
 
 }

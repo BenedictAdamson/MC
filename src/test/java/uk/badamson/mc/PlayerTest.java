@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -43,25 +46,27 @@ public class PlayerTest {
 
          @Test
          public void a() {
-            test(USERNAME_A, PASSWORD_A);
+            test(USERNAME_A, PASSWORD_A, Authority.ALL);
          }
 
          @Test
          public void b() {
-            test(USERNAME_B, PASSWORD_B);
+            test(USERNAME_B, PASSWORD_B, Set.of());
          }
 
          @Test
          public void c() {
             final String password = null;
-            test(USERNAME_A, password);
+            test(USERNAME_A, password, Set.of());
          }
 
          private void test(@NonNull final String username,
-                  final String password) {
-            final var player1 = new Player(username, password);
+                  final String password, final Set<Authority> authorities) {
+            final var player1 = new Player(username, password, authorities);
             final var player2 = new Player(new String(username),
-                     password == null ? password : new String(password));
+                     password == null ? password : new String(password),
+                     authorities.isEmpty() ? authorities
+                              : EnumSet.copyOf(authorities));
 
             assertInvariants(player1, player2);
             assertEquals(player1, player2);
@@ -71,34 +76,20 @@ public class PlayerTest {
 
       @Test
       public void a() {
-         test(USERNAME_A, PASSWORD_A);
+         constructor(USERNAME_A, PASSWORD_A, Authority.ALL);
       }
 
       @Test
       public void b() {
-         test(USERNAME_B, PASSWORD_B);
+         constructor(USERNAME_B, PASSWORD_B, Set.of());
       }
 
       @Test
       public void c() {
          final String password = null;
-         test(USERNAME_A, password);
+         constructor(USERNAME_A, password, Set.of());
       }
 
-      private Player test(@NonNull final String username,
-               final String password) {
-         final var player = new Player(username, password);
-
-         assertInvariants(player);
-         assertSame(username, player.getUsername(),
-                  "The username of this player is the given username.");
-         assertSame(password, player.getPassword(),
-                  "The password of this player is the given password.");
-         assertTrue(player.getAuthorities().isEmpty(),
-                  "This player has no granted authorities.");
-
-         return player;
-      }
    }// class
 
    private static final String USERNAME_A = "John";
@@ -120,5 +111,20 @@ public class PlayerTest {
       final boolean equals = player1.equals(player2);
       assertTrue(!(equals && !player2.equals(player1)),
                "Equality is symmetric");
+   }
+
+   private static Player constructor(final String username,
+            final String password, final Set<Authority> authorities) {
+      final var player = new Player(username, password, authorities);
+
+      assertInvariants(player);
+      assertSame(username, player.getUsername(),
+               "The username of this player is the given username.");
+      assertSame(password, player.getPassword(),
+               "The password of this player is the given password.");
+      assertEquals(authorities, player.getAuthorities(),
+               "The authorities granted to this player are equal to the given authorities..");
+
+      return player;
    }
 }

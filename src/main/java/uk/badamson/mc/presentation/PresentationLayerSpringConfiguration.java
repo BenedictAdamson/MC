@@ -26,6 +26,8 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
+import uk.badamson.mc.Authority;
+
 /**
  * <p>
  * The Spring Boot configuration for the presentation layer of the Mission
@@ -39,15 +41,14 @@ public class PresentationLayerSpringConfiguration {
 
    private void authorizeAdministration(final ServerHttpSecurity http) {
       http.authorizeExchange().pathMatchers(HttpMethod.POST, "/player")
-               .permitAll();
+               .hasAuthority(Authority.ROLE_ADMIN.getAuthority());
    }
 
    private void authorizePublic(final ServerHttpSecurity http) {
+      http.authorizeExchange().pathMatchers(HttpMethod.GET, "/", "/login",
+               "/logout", "/player").permitAll();
       http.authorizeExchange()
-               .pathMatchers(HttpMethod.GET, "/", "/login", "/player")
-               .permitAll();
-      http.authorizeExchange().pathMatchers(HttpMethod.POST, "/login")
-               .permitAll();
+               .pathMatchers(HttpMethod.POST, "/login", "/logout").permitAll();
    }
 
    @Bean
@@ -56,9 +57,6 @@ public class PresentationLayerSpringConfiguration {
       http.formLogin();
       authorizeAdministration(http);
       authorizePublic(http);
-      http.csrf().disable();// TODO
-      // TODO
       return http.build();
    }
-
 }
