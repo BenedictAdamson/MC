@@ -44,6 +44,7 @@ import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import reactor.core.publisher.Hooks;
 import uk.badamson.mc.service.Service;
 
 /**
@@ -56,6 +57,10 @@ import uk.badamson.mc.service.Service;
          webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureWebTestClient
 public class WebSteps {
+
+   static {
+      Hooks.onOperatorDebug();
+   }
 
    @Autowired
    private ApplicationContext context;
