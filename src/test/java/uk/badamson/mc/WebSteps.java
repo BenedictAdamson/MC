@@ -153,6 +153,7 @@ public class WebSteps {
    public void logged_in_as_Administrator() {
       final UserDetails administrator = service
                .findByUsername(Player.ADMINISTRATOR_USERNAME).block();
+      assert administrator != null;
       client.mutateWith(mockUser(administrator));
    }
 
@@ -218,7 +219,7 @@ public class WebSteps {
       Objects.requireNonNull(player, "player");
       Objects.requireNonNull(password, "password");
       Objects.requireNonNull(service, "service");
-      service.add(new Player(player, password, Set.of()));
+      service.add(new Player(player, password, Set.of())).block();
    }
 
    @Given("the DNS name, example.com, of an MC server")
