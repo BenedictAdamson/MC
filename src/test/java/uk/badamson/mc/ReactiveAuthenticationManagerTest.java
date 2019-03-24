@@ -21,6 +21,9 @@ package uk.badamson.mc;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Set;
+
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
@@ -44,6 +47,32 @@ import uk.badamson.mc.service.Service;
          webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @RunWith(JUnitPlatform.class)
 public class ReactiveAuthenticationManagerTest {
+
+   @Nested
+   public class WrongPassword {
+
+      @Test
+      public void a() {
+         test(USERNAME_A, PASSWORD_A, PASSWORD_B);
+      }
+
+      @Test
+      public void b() {
+         test(USERNAME_B, PASSWORD_B, PASSWORD_C);
+      }
+
+      private void test(final String username, final String password,
+               final String givenPassword) {
+         assert !password.equals(givenPassword);
+
+         final Player player = new Player(username, password, Set.of());
+         service.add(player);
+
+         assertThrows(BadCredentialsException.class,
+                  () -> authenticate_usernameAndPassword(username,
+                           givenPassword));
+      }
+   }
 
    private static final String PASSWORD_A = "letmein";
 
@@ -77,6 +106,12 @@ public class ReactiveAuthenticationManagerTest {
    @Autowired
    private ReactiveAuthenticationManager authenticationManager;
 
+   @Test
+   public void authenticate_unknonwUsername() {
+      assertThrows(BadCredentialsException.class,
+               () -> authenticate_usernameAndPassword(USERNAME_A, PASSWORD_A));
+   }
+
    private Authentication authenticate_usernameAndPassword(
             final String username, final String password) {
       final Authentication token = new UsernamePasswordAuthenticationToken(
@@ -85,11 +120,5 @@ public class ReactiveAuthenticationManagerTest {
       final var publisher = authenticate(authenticationManager, token);
 
       return publisher.block();
-   }
-
-   @Test
-   public void authenticate_usernameAndPassword_unknonwUsername() {
-      assertThrows(BadCredentialsException.class,
-               () -> authenticate_usernameAndPassword(USERNAME_A, PASSWORD_A));
    }
 }
