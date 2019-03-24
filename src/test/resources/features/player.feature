@@ -41,8 +41,9 @@ Feature: Player
       |Jeff|pasword123|
     
   Scenario Outline: Add player
-    Given logged in as Administrator
-    When adding a player named "<name>" with  password "<password>" with CSRF protection
+    Given user authenticated as Administrator
+    And a valid CSRF token
+    When adding a player named "<name>" with  password "<password>"
     Then MC accepts the addition
     And can get the list of players
     And the list of players includes a player named "<name>"
@@ -54,7 +55,8 @@ Feature: Player
     
   Scenario Outline: Only administrator may add player
     Given logged in as "<name>"
-    When adding a player named "<new-name>" with  password "<password>" with CSRF protection
+    And a valid CSRF token
+    When adding a player named "<new-name>" with  password "<password>"
     Then MC forbids the request
     
     Examples:

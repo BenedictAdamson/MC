@@ -69,6 +69,7 @@ public class WebSteps {
    private Service service;
 
    private final String scheme = "http";
+
    private String dnsName;
    private URI requestUri;
    private WebTestClient.ResponseSpec response;
@@ -79,7 +80,12 @@ public class WebSteps {
       // Do nothing
    }
 
-   @When("adding a player named {string} with  password {string} with CSRF protection")
+   @Given("a valid CSRF token")
+   public void a_valid_CSRF_token() {
+      client.mutateWith(csrf());
+   }
+
+   @When("adding a player named {string} with  password {string}")
    public void adding_a_player_named(final String name, final String password) {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(password, "password");
@@ -133,14 +139,6 @@ public class WebSteps {
       client.mutateWith(mockUser(name));
    }
 
-   @Given("logged in as Administrator")
-   public void logged_in_as_Administrator() {
-      final UserDetails administrator = service
-               .findByUsername(Player.ADMINISTRATOR_USERNAME).block();
-      assert administrator != null;
-      client.mutateWith(mockUser(administrator));
-   }
-
    @Then("MC accepts the addition")
    public void mc_accepts_the_addition() {
       response.expectStatus().isCreated();
@@ -178,8 +176,7 @@ public class WebSteps {
       } catch (final URISyntaxException e) {
          throw new IllegalArgumentException(e);
       }
-      final var request = client.mutateWith(csrf()).post()
-               .uri(requestUri.getPath())
+      final var request = client.post().uri(requestUri.getPath())
                .contentType(MediaType.APPLICATION_JSON_UTF8).syncBody(body)
                .accept(MediaType.APPLICATION_JSON_UTF8);
       response = request.exchange();
@@ -246,6 +243,14 @@ public class WebSteps {
    @Then("the response message is a list of players")
    public void the_response_message_is_a_list_of_players() {
       responsePlayerList = response.expectBodyList(Player.class);
+   }
+
+   @Given("user authenticated as Administrator")
+   public void user_authenticated_as_Administrator() {
+      final UserDetails administrator = service
+               .findByUsername(Player.ADMINISTRATOR_USERNAME).block();
+      assert administrator != null;
+      client.mutateWith(mockUser(administrator));
    }
 
 }
