@@ -80,11 +80,6 @@ public class WebSteps {
       // Do nothing
    }
 
-   @Given("a valid CSRF token")
-   public void a_valid_CSRF_token() {
-      client.mutateWith(csrf());
-   }
-
    @When("adding a player named {string} with  password {string}")
    public void adding_a_player_named(final String name, final String password) {
       Objects.requireNonNull(name, "name");
@@ -119,7 +114,7 @@ public class WebSteps {
       requestJson("/player");
    }
 
-   @When("log in as {string} using password {string} with CSRF protection")
+   @When("log in as {string} using password {string}")
    public void log_in_as_using_password(final String player,
             final String password) {
       Objects.requireNonNull(player, "player");
@@ -127,7 +122,7 @@ public class WebSteps {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
 
-      response = client.mutateWith(csrf()).post().uri("/login")
+      response = client.post().uri("/login")
                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                .body(BodyInserters.fromFormData("username", player)
                         .with("password", password))
@@ -136,7 +131,7 @@ public class WebSteps {
 
    @Given("logged in as {string}")
    public void logged_in_as(final String name) {
-      client.mutateWith(mockUser(name));
+      client = client.mutateWith(mockUser(name));
    }
 
    @Then("MC accepts the addition")
@@ -180,6 +175,11 @@ public class WebSteps {
                .contentType(MediaType.APPLICATION_JSON_UTF8).syncBody(body)
                .accept(MediaType.APPLICATION_JSON_UTF8);
       response = request.exchange();
+   }
+
+   @Given("presenting a valid CSRF token")
+   public void presenting_a_valid_CSRF_token() {
+      client = client.mutateWith(csrf());
    }
 
    private void requestHtml(final String path) {
@@ -250,7 +250,7 @@ public class WebSteps {
       final UserDetails administrator = service
                .findByUsername(Player.ADMINISTRATOR_USERNAME).block();
       assert administrator != null;
-      client.mutateWith(mockUser(administrator));
+      client = client.mutateWith(mockUser(administrator));
    }
 
 }
