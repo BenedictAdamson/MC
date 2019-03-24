@@ -18,10 +18,7 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
@@ -36,10 +33,10 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -116,20 +113,6 @@ public class WebSteps {
       requestJson("/player");
    }
 
-   @Then("{string} is logged in")
-   public void is_logged_in(final String username) {
-      Objects.requireNonNull(username, "username");
-      final var authentication = ReactiveSecurityContextHolder.getContext()
-               .block().getAuthentication();
-      assertNotNull(authentication, "Have authentication information");
-      final Object principal = authentication.getPrincipal();
-      assertNotNull(principal, "Logged in (has a current principal)");
-      assertThat("Have UserDetails of logged in user", principal,
-               is(instanceOf(UserDetails.class)));
-      assertEquals(username, ((UserDetails) principal).getUsername(),
-               "username");
-   }
-
    @When("log in as {string} using password {string} with CSRF protection")
    public void log_in_as_using_password(final String player,
             final String password) {
@@ -140,7 +123,8 @@ public class WebSteps {
 
       response = client.mutateWith(csrf()).post().uri("/login")
                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-               .attribute("username", player).attribute("password", password)
+               .body(BodyInserters.fromFormData("username", player)
+                        .with("password", password))
                .exchange();
    }
 
@@ -164,8 +148,8 @@ public class WebSteps {
 
    @Then("MC accepts the login")
    public void mc_accepts_the_login() {
-      response.expectStatus().isOk().expectHeader().valueEquals("Location",
-               "/login");
+      response.expectStatus().isFound().expectHeader().valueEquals("Location",
+               "/");
    }
 
    @Then("MC forbids the request")
