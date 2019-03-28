@@ -25,7 +25,8 @@ LABEL version="${MC_VERSION}"
 LABEL description="The Mission Command game server."
 LABEL maintainer="badamson@spamcop.net"
 EXPOSE 8080
-RUN useradd -c "Mission Command server" --create-home mc
+RUN groupadd -g 1024 mc
+RUN useradd -c "Mission Command server" --create-home -u 1024 -g 1024 mc
 USER mc
 WORKDIR /home/mc
 COPY MC-${MC_VERSION}.jar MC.jar
