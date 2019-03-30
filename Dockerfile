@@ -1,5 +1,5 @@
-# Dockerfile for the use in the Jenkinsfile for the MC project,
-# to set up the build environment for Jenkins to use.
+# Dockerfile for the MC project,
+# to produce the MC server in a container.
 
 # © Copyright Benedict Adamson 2018-19.
 # 
@@ -19,22 +19,17 @@
 # along with MC-des.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# Need Docker, Java 11 and Maven
-
-FROM ubuntu:18.04
-RUN apt-get -y update && apt-get -y install \
-   apt-transport-https \
-   ca-certificates \
-   curl \
-   gnupg-agent \
-   maven \
-   openjdk-11-jdk-headless \
-   software-properties-common
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-RUN add-apt-repository -y \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-RUN apt-get -y update && apt-get -y install \
-   containerd.io \
-   docker-ce \
-   docker-ce-cli
-   
+FROM openjdk:11
+ARG VERSION
+LABEL version="${VERSION}"
+LABEL description="The Mission Command game server."
+LABEL maintainer="badamson@spamcop.net"
+EXPOSE 8080
+RUN groupadd -g 1024 mc
+RUN useradd -c "Mission Command server" --create-home -u 1024 -g 1024 mc
+USER mc
+WORKDIR /home/mc
+COPY MC-${VERSION}.jar MC.jar
+ENTRYPOINT ["java","-jar","MC.jar"]
+CMD []
+HEALTHCHECK --interval=5m --timeout=3s CMD curl -f http://localhost:8080/ || exit 1
