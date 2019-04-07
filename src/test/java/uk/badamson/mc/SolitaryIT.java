@@ -18,13 +18,19 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.WaitingConsumer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -43,6 +49,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  */
 @Testcontainers
 public class SolitaryIT {
+
+   public static final String EXPECTED_START_MESSAGE = "Starting Application";
+   public static final String EXPECTED_ERROR_MESSAGE = "ERROR";
 
    private static final Path TARGET_DIR = Paths.get("target");
    private static final Path DOCKERFILE = Paths.get("Dockerfile");
@@ -64,7 +73,27 @@ public class SolitaryIT {
 
    @Test
    public void test() {
-      assertTrue(true);
-      // TODO
+      final var consumer = new WaitingConsumer();
+      container.followOutput(consumer);
+      try {
+         consumer.waitUntil(
+                  frame -> frame.getUtf8String()
+                           .contains(EXPECTED_START_MESSAGE),
+                  7000, TimeUnit.MILLISECONDS);
+         consumer.waitUntil(
+                  frame -> frame.getUtf8String()
+                           .contains(EXPECTED_ERROR_MESSAGE),
+                  7000, TimeUnit.MILLISECONDS);
+      } catch (final TimeoutException e) {
+         // Fall through to the assertion check (which will fail)
+      }
+
+      final var logs = container.getLogs();
+      assertAll("Log suitable messages",
+               () -> assertThat(logs, containsString(EXPECTED_START_MESSAGE)),
+               () -> assertThat(logs, containsString(EXPECTED_ERROR_MESSAGE)),
+               () -> assertThat(logs,
+                        not(containsString("Exception encountered"))),
+               () -> assertThat(logs, not(containsString("Unable to start"))));
    }
 }
