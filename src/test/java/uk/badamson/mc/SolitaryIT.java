@@ -50,8 +50,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class SolitaryIT {
 
-   public static final String EXPECTED_START_MESSAGE = "Starting Application";
-   public static final String EXPECTED_ERROR_MESSAGE = "ERROR";
+   public static final String EXPECTED_STARTED_MESSAGE = "Started Application";
+   public static final String EXPECTED_ERROR_MESSAGE = "Connection refused";
 
    private static final Path TARGET_DIR = Paths.get("target");
    private static final Path DOCKERFILE = Paths.get("Dockerfile");
@@ -72,17 +72,13 @@ public class SolitaryIT {
                      .withFileFromPath("target/MC-.jar", JAR));
 
    @Test
-   public void test() {
+   public void start() {
       final var consumer = new WaitingConsumer();
       container.followOutput(consumer);
       try {
          consumer.waitUntil(
                   frame -> frame.getUtf8String()
-                           .contains(EXPECTED_START_MESSAGE),
-                  7000, TimeUnit.MILLISECONDS);
-         consumer.waitUntil(
-                  frame -> frame.getUtf8String()
-                           .contains(EXPECTED_ERROR_MESSAGE),
+                           .contains(EXPECTED_STARTED_MESSAGE),
                   7000, TimeUnit.MILLISECONDS);
       } catch (final TimeoutException e) {
          // Fall through to the assertion check (which will fail)
@@ -90,10 +86,8 @@ public class SolitaryIT {
 
       final var logs = container.getLogs();
       assertAll("Log suitable messages",
-               () -> assertThat(logs, containsString(EXPECTED_START_MESSAGE)),
+               () -> assertThat(logs, containsString(EXPECTED_STARTED_MESSAGE)),
                () -> assertThat(logs, containsString(EXPECTED_ERROR_MESSAGE)),
-               () -> assertThat(logs,
-                        not(containsString("Exception encountered"))),
                () -> assertThat(logs, not(containsString("Unable to start"))));
    }
 }
