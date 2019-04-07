@@ -20,6 +20,7 @@ package uk.badamson.mc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import uk.badamson.mc.presentation.PresentationLayerSpringConfiguration;
@@ -32,6 +33,7 @@ import uk.badamson.mc.service.ServiceLayerSpringConfiguration;
  * </p>
  */
 @SpringBootConfiguration
+@EnableAutoConfiguration
 @Import(value = { PresentationLayerSpringConfiguration.class,
          RepositoryLayerSpringConfiguration.class,
          ServiceLayerSpringConfiguration.class })
