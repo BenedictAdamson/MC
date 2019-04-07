@@ -46,20 +46,21 @@ public class SolitaryIT {
 
    private static final Path TARGET_DIR = Paths.get("target");
    private static final Path DOCKERFILE = Paths.get("Dockerfile");
-   private static final String SUT_VERSION = System.getProperty("sutVersion",
-            "");
 
+   private static final String SUT_VERSION;
    static {
+      SUT_VERSION = System.getProperty("sutVersion", "");
       if (SUT_VERSION == null || SUT_VERSION.isEmpty()) {
          throw new IllegalStateException("setVersion property not set");
       }
    }
+   private static final Path JAR = TARGET_DIR
+            .resolve("MC-" + SUT_VERSION + ".jar");
 
    @Container
    private final GenericContainer<?> container = new GenericContainer<>(
             new ImageFromDockerfile().withFileFromPath("Dockerfile", DOCKERFILE)
-                     .withFileFromPath("target/MC-.jar", TARGET_DIR
-                              .resolve("MC-" + SUT_VERSION + ".jar")));
+                     .withFileFromPath("target/MC-.jar", JAR));
 
    @Test
    public void test() {
