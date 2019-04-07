@@ -84,7 +84,7 @@ public class PristineIT {
          consumer.waitUntil(
                   frame -> frame.getUtf8String()
                            .contains(EXPECTED_STARTED_MESSAGE),
-                  7000, TimeUnit.MILLISECONDS);
+                  30, TimeUnit.SECONDS);
       } catch (final TimeoutException e) {
          // Fall through to the assertion check (which will fail)
       }
