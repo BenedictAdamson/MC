@@ -22,6 +22,7 @@ Feature: Player
   Scenario: Get players of fresh instance
     Given a fresh instance of MC
     And not logged in
+    And not presenting a CSRF token
     When getting the players
     # The path of the players resource is /player
     Then MC serves the resource

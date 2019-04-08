@@ -21,4 +21,6 @@ Feature: Home-page
   Scenario: Potential player accesses an MC server using a simple URL with the root path
     Given the DNS name, example.com, of an MC server
     When the potential player gives the obvious URL http://example.com/ to a web browser
+    And not logged in
+    And not presenting a CSRF token
     Then MC serves the web page

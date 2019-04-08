@@ -72,6 +72,7 @@ public class WebSteps {
 
    private String dnsName;
    private URI requestUri;
+   private Boolean csrfSet;
    private Boolean userSet;
    private WebTestClient.ResponseSpec response;
    ListBodySpec<Player> responsePlayerList;
@@ -169,6 +170,12 @@ public class WebSteps {
       userSet = Boolean.FALSE;
    }
 
+   @Given("not presenting a CSRF token")
+   public void not_presenting_a_VSRF_token() {
+      requireUnsetCsrf();
+      csrfSet = Boolean.FALSE;
+   }
+
    private void postResource(final String path, final Object body) {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
@@ -188,6 +195,8 @@ public class WebSteps {
 
    @Given("presenting a valid CSRF token")
    public void presenting_a_valid_CSRF_token() {
+      requireUnsetCsrf();
+      csrfSet = Boolean.TRUE;
       client = client.mutateWith(csrf());
    }
 
@@ -197,6 +206,12 @@ public class WebSteps {
 
    private void requestJson(final String path) {
       getResource(path, MediaType.APPLICATION_JSON_UTF8);
+   }
+
+   private void requireUnsetCsrf() {
+      if (csrfSet != null) {
+         throw new IllegalStateException("Contradictory CSRF settings");
+      }
    }
 
    private void requireUnsetUser() {
