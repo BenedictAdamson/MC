@@ -72,6 +72,7 @@ public class WebSteps {
 
    private String dnsName;
    private URI requestUri;
+   private Boolean userSet;
    private WebTestClient.ResponseSpec response;
    ListBodySpec<Player> responsePlayerList;
 
@@ -131,6 +132,8 @@ public class WebSteps {
 
    @Given("logged in as {string}")
    public void logged_in_as(final String name) {
+      requireUnsetUser();
+      userSet = Boolean.TRUE;
       client = client.mutateWith(mockUser(name));
    }
 
@@ -158,6 +161,12 @@ public class WebSteps {
    @Then("MC serves the web page")
    public void mc_serves_the_web_page() {
       responseIsOk();
+   }
+
+   @Given("not logged in")
+   public void not_logged_in() {
+      requireUnsetUser();
+      userSet = Boolean.FALSE;
    }
 
    private void postResource(final String path, final Object body) {
@@ -188,6 +197,12 @@ public class WebSteps {
 
    private void requestJson(final String path) {
       getResource(path, MediaType.APPLICATION_JSON_UTF8);
+   }
+
+   private void requireUnsetUser() {
+      if (userSet != null) {
+         throw new IllegalStateException("Contradictory user settings");
+      }
    }
 
    private void responseIsOk() {
