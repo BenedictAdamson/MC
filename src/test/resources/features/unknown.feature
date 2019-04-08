@@ -29,3 +29,17 @@ Feature: Unknown
       |path|
       |/xxxxx|
       |/players|
+
+  Scenario Outline: Modify unknown resource
+    Given a fresh instance of MC
+    And not logged in
+    And not presenting a CSRF token
+    When modifying the unknown resource with a "<verb>" at "<path>"
+    Then MC replies with Forbidden
+
+    Examples: 
+      |verb|path|
+      |POST|/xxxxx|
+      |PUT|/players|
+      |DELETE|/players|
+      

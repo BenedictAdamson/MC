@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.DirtiesContext;
@@ -162,6 +163,11 @@ public class WebSteps {
       response.expectStatus().isForbidden();
    }
 
+   @Then("MC replies with Forbidden")
+   public void mc_replies_with_forbidden() {
+      response.expectStatus().isForbidden();
+   }
+
    @Then("MC replies with Not Found")
    public void mc_replies_with_not_found() {
       response.expectStatus().isNotFound();
@@ -175,6 +181,20 @@ public class WebSteps {
    @Then("MC serves the web page")
    public void mc_serves_the_web_page() {
       responseIsOk();
+   }
+
+   @When("modifying the unknown resource with a {string} at {string}")
+   public void modifying_the_unknown_resource_with_a(final String verb,
+            final String path) {
+      Objects.requireNonNull(context, "context");
+      Objects.requireNonNull(client, "client");
+      setRequestUri(path);
+      final HttpMethod method = HttpMethod.valueOf(verb);
+      if (method == null) {
+         throw new IllegalArgumentException("verb " + verb);
+      }
+      response = client.method(method).uri(requestUri.getPath())
+               .contentType(MediaType.APPLICATION_JSON_UTF8).exchange();
    }
 
    @Given("not logged in")

@@ -57,8 +57,8 @@ public class PresentationLayerSpringConfiguration {
       http.formLogin();
       authorizeAdministration(http);
       authorizePublic(http);
-      // TODO Deny all other POSTs, PUTs and DELETEs
-      // Ensure Not Found response for unknown resources:
+      // All other POSTs, PUTs and DELETEs will be Forbidden.
+      // Ensure Not Found response for GET unknown resources:
       http.authorizeExchange().anyExchange().permitAll();
       return http.build();
    }
