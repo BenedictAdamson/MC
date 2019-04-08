@@ -118,9 +118,9 @@ public class PristineIT {
    }
 
    @Test
-   public void getPlayers() {
+   public void getPlayerDirectory() {
       waitUntilStarted();
-      final var response = getJson("/players", null, null);
+      final var response = getJson("/player", null, null);
 
       assertThatNoErrorMessagesLogged(mcContainer.getLogs());
       response.expectStatus().isOk();
