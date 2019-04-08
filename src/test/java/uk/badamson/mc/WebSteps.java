@@ -101,14 +101,7 @@ public class WebSteps {
    private void getResource(final String path, final MediaType mediaType) {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
-      final String authority = dnsName;
-      final String query = null;
-      final String fragment = null;
-      try {
-         requestUri = new URI(scheme, authority, path, query, fragment);
-      } catch (final URISyntaxException e) {
-         throw new IllegalArgumentException(e);
-      }
+      setRequestUri(path);
       response = client.get().uri(requestUri.getPath()).accept(mediaType)
                .exchange();
    }
@@ -181,14 +174,7 @@ public class WebSteps {
    private void postResource(final String path, final Object body) {
       Objects.requireNonNull(context, "context");
       Objects.requireNonNull(client, "client");
-      final String authority = dnsName;
-      final String query = null;
-      final String fragment = null;
-      try {
-         requestUri = new URI(scheme, authority, path, query, fragment);
-      } catch (final URISyntaxException e) {
-         throw new IllegalArgumentException(e);
-      }
+      setRequestUri(path);
       final var request = client.post().uri(requestUri.getPath())
                .contentType(MediaType.APPLICATION_JSON_UTF8).syncBody(body)
                .accept(MediaType.APPLICATION_JSON_UTF8);
@@ -224,6 +210,17 @@ public class WebSteps {
 
    private void responseIsOk() {
       response.expectStatus().isOk();
+   }
+
+   private void setRequestUri(final String path) {
+      final String authority = dnsName;
+      final String query = null;
+      final String fragment = null;
+      try {
+         requestUri = new URI(scheme, authority, path, query, fragment);
+      } catch (final URISyntaxException e) {
+         throw new IllegalArgumentException(e);
+      }
    }
 
    @Given("that player {string} exists with  password {string}")
