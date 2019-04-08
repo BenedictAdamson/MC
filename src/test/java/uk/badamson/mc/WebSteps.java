@@ -74,7 +74,7 @@ public class WebSteps {
 
    private String dnsName;
    private URI requestUri;
-   private Boolean csrfSet;
+   private Boolean csrfTokenSet;
    private Boolean userSet;
    private WebTestClient.ResponseSpec response;
    ListBodySpec<Player> responsePlayerList;
@@ -136,7 +136,7 @@ public class WebSteps {
 
    @Given("logged in as {string}")
    public void logged_in_as(final String name) {
-      requireUnsetUser();
+      requireUnspecifiedUser();
       userSet = Boolean.TRUE;
       client = client.mutateWith(mockUser(name));
    }
@@ -169,14 +169,14 @@ public class WebSteps {
 
    @Given("not logged in")
    public void not_logged_in() {
-      requireUnsetUser();
+      requireUnspecifiedUser();
       userSet = Boolean.FALSE;
    }
 
    @Given("not presenting a CSRF token")
-   public void not_presenting_a_VSRF_token() {
-      requireUnsetCsrf();
-      csrfSet = Boolean.FALSE;
+   public void not_presenting_a_CSRF_token() {
+      requireUnspecifiedCsrfToken();
+      csrfTokenSet = Boolean.FALSE;
    }
 
    private void postResource(final String path, final Object body) {
@@ -191,18 +191,18 @@ public class WebSteps {
 
    @Given("presenting a valid CSRF token")
    public void presenting_a_valid_CSRF_token() {
-      requireUnsetCsrf();
-      csrfSet = Boolean.TRUE;
+      requireUnspecifiedCsrfToken();
+      csrfTokenSet = Boolean.TRUE;
       client = client.mutateWith(csrf());
    }
 
-   private void requireUnsetCsrf() {
-      if (csrfSet != null) {
+   private void requireUnspecifiedCsrfToken() {
+      if (csrfTokenSet != null) {
          throw new IllegalStateException("Contradictory CSRF settings");
       }
    }
 
-   private void requireUnsetUser() {
+   private void requireUnspecifiedUser() {
       if (userSet != null) {
          throw new IllegalStateException("Contradictory user settings");
       }
@@ -276,7 +276,7 @@ public class WebSteps {
 
    @Given("user authenticated as Administrator")
    public void user_authenticated_as_Administrator() {
-      requireUnsetUser();
+      requireUnspecifiedUser();
       userSet = Boolean.TRUE;
       final UserDetails administrator = service
                .findByUsername(Player.ADMINISTRATOR_USERNAME).block();
