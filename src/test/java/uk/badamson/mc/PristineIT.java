@@ -85,6 +85,10 @@ public class PristineIT {
                               .withCommand("--spring.data.mongodb.host=db")
                               .withExposedPorts(MC_LISTENING_POSRT);
 
+   private void assertThatNoErrorMessagesLogged(final String logs) {
+      assertThat(logs, not(containsString("ERROR")));
+   }
+
    private WebTestClient connectWebTestClient(final String path,
             final String query, final String fragment) {
       final var scheme = "http";
@@ -104,6 +108,7 @@ public class PristineIT {
    public void getHomePage() {
       waitUntilStarted();
       getJson("/", null, null).expectStatus().isOk();
+      assertThatNoErrorMessagesLogged(mcContainer.getLogs());
    }
 
    private ResponseSpec getJson(final String path, final String query,
@@ -115,7 +120,10 @@ public class PristineIT {
    @Test
    public void getPlayers() {
       waitUntilStarted();
-      getJson("/players", null, null).expectStatus().isOk();
+      final var response = getJson("/players", null, null);
+
+      assertThatNoErrorMessagesLogged(mcContainer.getLogs());
+      response.expectStatus().isOk();
    }
 
    @Test
@@ -127,7 +135,7 @@ public class PristineIT {
                () -> assertThat(logs, containsString(EXPECTED_STARTED_MESSAGE)),
                () -> assertThat(logs,
                         containsString("successfully connected to server")),
-               () -> assertThat(logs, not(containsString("ERROR"))),
+               () -> assertThatNoErrorMessagesLogged(logs),
                () -> assertThat(logs, not(containsString("Unable to start"))));
    }
 
