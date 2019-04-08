@@ -51,7 +51,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class PristineIT {
 
-   public static final int MC_LISTENING_POSRT = 8080;
+   public static final int MC_LISTENING_PORT = 8080;
 
    public static final String EXPECTED_STARTED_MESSAGE = "Started Application";
 
@@ -83,7 +83,7 @@ public class PristineIT {
                               .withNetwork(containersNetwork)
                               .withNetworkAliases("mc")
                               .withCommand("--spring.data.mongodb.host=db")
-                              .withExposedPorts(MC_LISTENING_POSRT);
+                              .withExposedPorts(MC_LISTENING_PORT);
 
    private void assertThatNoErrorMessagesLogged(final String logs) {
       assertThat(logs, not(containsString("ERROR")));
