@@ -23,12 +23,17 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.WaitingConsumer;
@@ -46,10 +51,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class PristineIT {
 
+   public static final int MC_LISTENING_PORT = 8080;
+
    public static final String EXPECTED_STARTED_MESSAGE = "Started Application";
 
-   private static final Path TARGET_DIR = Paths.get("target");
-   private static final Path DOCKERFILE = Paths.get("Dockerfile");
+   public static final Path TARGET_DIR = Paths.get("target");
+
+   public static final Path DOCKERFILE = Paths.get("Dockerfile");
 
    private static final String SUT_VERSION;
    static {
@@ -74,10 +82,64 @@ public class PristineIT {
                      .withFileFromPath("target/MC-.jar", JAR))
                               .withNetwork(containersNetwork)
                               .withNetworkAliases("mc")
-                              .withCommand("--spring.data.mongodb.host=db");
+                              .withCommand("--spring.data.mongodb.host=db")
+                              .withExposedPorts(MC_LISTENING_PORT);
+
+   private void assertThatNoErrorMessagesLogged(final String logs) {
+      assertThat(logs, not(containsString("ERROR")));
+   }
+
+   private WebTestClient connectWebTestClient(final String path,
+            final String query, final String fragment) {
+      final var scheme = "http";
+      final String userInfo = null;
+      final String host = mcContainer.getContainerIpAddress();
+      final int port = mcContainer.getMappedPort(8080);
+      final URI uri;
+      try {
+         uri = new URI(scheme, userInfo, host, port, path, query, fragment);
+      } catch (final URISyntaxException e) {
+         throw new IllegalArgumentException(e);
+      }
+      return WebTestClient.bindToServer().baseUrl(uri.toString()).build();
+   }
+
+   @Test
+   public void getHomePage() {
+      waitUntilStarted();
+      getJson("/", null, null).expectStatus().isOk();
+      assertThatNoErrorMessagesLogged(mcContainer.getLogs());
+   }
+
+   private ResponseSpec getJson(final String path, final String query,
+            final String fragment) {
+      return connectWebTestClient(path, query, fragment).get()
+               .accept(MediaType.APPLICATION_JSON_UTF8).exchange();
+   }
+
+   @Test
+   public void getPlayerDirectory() {
+      waitUntilStarted();
+      final var response = getJson("/player", null, null);
+
+      assertThatNoErrorMessagesLogged(mcContainer.getLogs());
+      response.expectStatus().isOk();
+   }
 
    @Test
    public void start() {
+      waitUntilStarted();
+
+      final var logs = mcContainer.getLogs();
+      assertAll("Log suitable messages",
+               () -> assertThat(logs, containsString(EXPECTED_STARTED_MESSAGE)),
+               () -> assertThat(logs,
+                        containsString("successfully connected to server")),
+               () -> assertThatNoErrorMessagesLogged(logs),
+               () -> assertThat(logs, not(containsString("Unable to start"))));
+   }
+
+   private void waitUntilStarted() {
       final var consumer = new WaitingConsumer();
       mcContainer.followOutput(consumer);
       try {
@@ -88,13 +150,5 @@ public class PristineIT {
       } catch (final TimeoutException e) {
          // Fall through to the assertion check (which will fail)
       }
-
-      final var logs = mcContainer.getLogs();
-      assertAll("Log suitable messages",
-               () -> assertThat(logs, containsString(EXPECTED_STARTED_MESSAGE)),
-               () -> assertThat(logs,
-                        containsString("successfully connected to server")),
-               () -> assertThat(logs, not(containsString("ERROR"))),
-               () -> assertThat(logs, not(containsString("Unable to start"))));
    }
 }

@@ -15,12 +15,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-Feature: Home-page
-  It should be easy for players to access the home-page of an MC server.
+Feature: Unknown
+  Attempts to access unknown or incorrectly named things should give useful error responses.
 
-  Scenario: Potential player accesses an MC server using a simple URL with the root path
-    Given the DNS name, example.com, of an MC server
-    When the potential player gives the obvious URL http://example.com/ to a web browser
+  Scenario Outline: Get unknown resource
+    Given a fresh instance of MC
     And not logged in
     And not presenting a CSRF token
-    Then MC serves the web page
+    When getting the unknown resource at "<path>"
+    Then MC replies with Not Found
+
+    Examples: 
+      |path|
+      |/xxxxx|
+      |/players|
+
+  Scenario Outline: Modify unknown resource
+    Given a fresh instance of MC
+    And not logged in
+    And not presenting a CSRF token
+    When modifying the unknown resource with a "<verb>" at "<path>"
+    Then MC replies with Forbidden
+
+    Examples: 
+      |verb|path|
+      |POST|/xxxxx|
+      |PUT|/players|
+      |DELETE|/players|
+      
