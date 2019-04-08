@@ -119,6 +119,11 @@ public class WebSteps {
       getJson("/player");
    }
 
+   @When("getting the unknown resource at {string}")
+   public void getting_the_unknown_resource_at(final String path) {
+      getJson(path);
+   }
+
    @When("log in as {string} using password {string}")
    public void log_in_as_using_password(final String player,
             final String password) {
@@ -155,6 +160,11 @@ public class WebSteps {
    @Then("MC forbids the request")
    public void mc_forbids_the_request() {
       response.expectStatus().isForbidden();
+   }
+
+   @Then("MC replies with Not Found")
+   public void mc_replies_with_not_found() {
+      response.expectStatus().isNotFound();
    }
 
    @Then("MC serves the resource")
