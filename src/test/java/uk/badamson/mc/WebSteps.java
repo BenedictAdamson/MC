@@ -262,6 +262,8 @@ public class WebSteps {
 
    @Given("user authenticated as Administrator")
    public void user_authenticated_as_Administrator() {
+      requireUnsetUser();
+      userSet = Boolean.TRUE;
       final UserDetails administrator = service
                .findByUsername(Player.ADMINISTRATOR_USERNAME).block();
       assert administrator != null;
