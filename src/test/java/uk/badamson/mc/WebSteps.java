@@ -93,9 +93,17 @@ public class WebSteps {
 
    @Then("can get the list of players")
    public void can_get_the_list_of_players() {
-      requestJson("/player");
+      getJson("/player");
       responseIsOk();
       responsePlayerList = response.expectBodyList(Player.class);
+   }
+
+   private void getHtml(final String path) {
+      getResource(path, MediaType.TEXT_HTML);
+   }
+
+   private void getJson(final String path) {
+      getResource(path, MediaType.APPLICATION_JSON_UTF8);
    }
 
    private void getResource(final String path, final MediaType mediaType) {
@@ -108,7 +116,7 @@ public class WebSteps {
 
    @When("getting the players")
    public void getting_the_players() {
-      requestJson("/player");
+      getJson("/player");
    }
 
    @When("log in as {string} using password {string}")
@@ -188,14 +196,6 @@ public class WebSteps {
       client = client.mutateWith(csrf());
    }
 
-   private void requestHtml(final String path) {
-      getResource(path, MediaType.TEXT_HTML);
-   }
-
-   private void requestJson(final String path) {
-      getResource(path, MediaType.APPLICATION_JSON_UTF8);
-   }
-
    private void requireUnsetCsrf() {
       if (csrfSet != null) {
          throw new IllegalStateException("Contradictory CSRF settings");
@@ -261,12 +261,12 @@ public class WebSteps {
    @When("the potential player gives the DNS name to a web browser")
    public void the_potential_player_gives_the_DNS_name_to_a_web_browser() {
       final String path = null;
-      requestHtml(path);
+      getHtml(path);
    }
 
    @When("the potential player gives the obvious URL http://example.com/ to a web browser")
    public void the_potential_player_gives_the_obvious_URL_to_a_web_browser() {
-      requestHtml("/");
+      getHtml("/");
    }
 
    @Then("the response message is a list of players")
