@@ -125,7 +125,10 @@ public class ServiceImpl implements Service {
 
    @Override
    public Flux<Player> getPlayers() {
-      return Flux.concat(Mono.just(administrator), playerRepository.findAll());
+      return Flux.concat(Mono.just(administrator),
+               playerRepository.findAll()
+                        .filter(player -> !Player.ADMINISTRATOR_USERNAME
+                                 .equals(player.getUsername())));
    }
 
 }

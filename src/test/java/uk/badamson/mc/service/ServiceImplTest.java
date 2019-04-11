@@ -236,6 +236,20 @@ public class ServiceImplTest {
 
    private Player playerC;
 
+   @Test
+   public void administratorInRepository() {
+      final var passwordEncoder = passwordEncoderA;
+      final var repository = playerRepositoryA;
+      final var service = new ServiceImpl(passwordEncoder, repository,
+               PASSWORD_A);
+      repository
+               .save(new Player(Player.ADMINISTRATOR_USERNAME,
+                        passwordEncoder.encode(PASSWORD_B), Authority.ALL))
+               .block();
+
+      getPlayers(service);
+   }
+
    @BeforeEach
    public void setUpPlayers() {
       playerA = new Player("John", PASSWORD_A, Set.of());

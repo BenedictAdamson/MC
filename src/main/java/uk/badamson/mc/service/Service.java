@@ -112,6 +112,8 @@ public interface Service extends ReactiveUserDetailsService {
     * <li>The list of players always {@linkplain Flux#hasElement(Object) has a}
     * player with the {@linkplain Player#ADMINISTRATOR_USERNAME administrator
     * username} as its {@linkplain Player#getUsername() username}.</li>
+    * <li>Does not contain players with duplicate
+    * {@linkplain Player#getUsername() usernames}.</li>
     * </ul>
     *
     * @return a {@linkplain Publisher publisher} of the players.
