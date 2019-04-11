@@ -20,6 +20,7 @@ package uk.badamson.mc.service;
 
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -71,6 +72,7 @@ public interface Service extends ReactiveUserDetailsService {
     *            {@code player} indicates it is the
     *            {@linkplain Player#ADMINISTRATOR_USERNAME administrator}.
     */
+   @Secured("ROLE_ADMIN")
    public Mono<Void> add(final Player player);
 
    /**
@@ -112,6 +114,8 @@ public interface Service extends ReactiveUserDetailsService {
     * <li>The list of players always {@linkplain Flux#hasElement(Object) has a}
     * player with the {@linkplain Player#ADMINISTRATOR_USERNAME administrator
     * username} as its {@linkplain Player#getUsername() username}.</li>
+    * <li>Does not contain players with duplicate
+    * {@linkplain Player#getUsername() usernames}.</li>
     * </ul>
     *
     * @return a {@linkplain Publisher publisher} of the players.

@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
@@ -44,6 +45,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import reactor.core.publisher.Hooks;
+import uk.badamson.mc.repository.PlayerRepository;
 import uk.badamson.mc.service.Service;
 
 /**
@@ -70,6 +72,12 @@ public class WebSteps {
 
    @Autowired
    private Service service;
+
+   @Autowired
+   private PlayerRepository playerRepository;
+
+   @Autowired
+   private PasswordEncoder passwordEncoder;
 
    private final String scheme = "http";
 
@@ -259,7 +267,9 @@ public class WebSteps {
       Objects.requireNonNull(player, "player");
       Objects.requireNonNull(password, "password");
       Objects.requireNonNull(service, "service");
-      service.add(new Player(player, password, Set.of())).block();
+      playerRepository.save(
+               new Player(player, passwordEncoder.encode(password), Set.of()))
+               .block();
    }
 
    @Given("the DNS name, example.com, of an MC server")

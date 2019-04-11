@@ -25,6 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -117,6 +121,12 @@ public class ServiceTest {
       assertTrue(players
                .any(p -> Player.ADMINISTRATOR_USERNAME.equals(p.getUsername()))
                .block(), "The list of players always has an administrator.");
+      final List<Player> playersList = players.collectList().block();
+      final Set<String> userNames = playersList.stream()
+               .map(player -> player.getUsername())
+               .collect(Collectors.toUnmodifiableSet());
+      assertEquals(userNames.size(), playersList.size(),
+               "Does not contain players with duplicate usernames.");
 
       return players;
    }
