@@ -34,10 +34,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
-import uk.badamson.mc.service.Service;
+import uk.badamson.mc.repository.PlayerRepository;
 
 /**
  * <p>
@@ -65,8 +66,9 @@ public class ReactiveAuthenticationManagerTest {
 
       private void test(final String username, final String password,
                final Set<Authority> authorities) {
-         final Player player = new Player(username, password, authorities);
-         service.add(player).block();
+         final Player player = new Player(username,
+                  passwordEncoder.encode(password), authorities);
+         playerRepository.save(player).block();
 
          final Authentication authentication = authenticate_usernameAndPassword(
                   username, password);
@@ -95,8 +97,9 @@ public class ReactiveAuthenticationManagerTest {
                final String givenPassword) {
          assert !password.equals(givenPassword);
 
-         final Player player = new Player(username, password, Set.of());
-         service.add(player).block();
+         final Player player = new Player(username,
+                  passwordEncoder.encode(password), Set.of());
+         playerRepository.save(player).block();
 
          assertThrows(BadCredentialsException.class,
                   () -> authenticate_usernameAndPassword(username,
@@ -135,10 +138,13 @@ public class ReactiveAuthenticationManagerTest {
    }
 
    @Autowired
-   private Service service;
+   private PlayerRepository playerRepository;
 
    @Autowired
    private ReactiveAuthenticationManager authenticationManager;
+
+   @Autowired
+   private PasswordEncoder passwordEncoder;
 
    @Test
    public void authenticate_unknonwUsername() {
