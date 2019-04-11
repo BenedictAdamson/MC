@@ -146,9 +146,6 @@ public class PlayerRepositoryTest {
       @Override
       public Mono<Player> save(final Player player) {
          requireNonNull(player, "player");
-         if (Player.ADMINISTRATOR_USERNAME.equals(player.getUsername())) {
-            throw new IllegalArgumentException("Player is administrator");
-         }
          return Mono.fromSupplier(() -> {
             players.put(player.getUsername(), player);
             return player;
@@ -169,11 +166,7 @@ public class PlayerRepositoryTest {
 
       private <P extends Player> Flux<P> saveAllOfFlux(final Flux<P> players) {
          return players.map(player -> {
-            final var username = player.getUsername();
-            if (Player.ADMINISTRATOR_USERNAME.equals(username)) {
-               throw new IllegalArgumentException("Player is administrator");
-            }
-            this.players.put(username, player);
+            this.players.put(player.getUsername(), player);
             return player;
          });
       }
