@@ -7,21 +7,9 @@
 		<artifactId>MC</artifactId>
 		<version>2.5.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>MC-database</artifactId>
-	<packaging>pom</packaging>
+	<artifactId>MC-model</artifactId>
+	<packaging>jar</packaging>
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>true</filtering>
-			</testResource>
-		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
@@ -40,39 +28,8 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<repository>index.docker.io/benedictadamson/mc-database</repository>
-					<tag>${project.version}</tag>
-					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-					<buildArgs>
-						<VERSION>${project.version}</VERSION>
-					</buildArgs>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<executions>
-					<!-- Must explicitly bind this goal because the module uses pom packaging 
-						rather than jar packaging. -->
-					<execution>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -105,20 +62,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<!-- Must explicitly bind this goal because the module uses pom packaging 
-						rather than jar packaging. -->
-					<execution>
-						<phase>process-test-resources</phase>
-						<goals>
-							<goal>testResources</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
 					<execution>
@@ -133,28 +76,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<!-- For running tests that do not need external (Maven controlled) setup 
-					and tear-down steps. This project uses the plugin to run integration tests 
-					that use Testcontainers. -->
-				<executions>
-					<execution>
-						<id>JUnit-integration-test</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<includes>
-								<include>**/*IT.java</include>
-							</includes>
-							<excludes>
-								<include>**/Abstract*.java</include>
-							</excludes>
-							<!-- Work around OpenJDK bug: -->
-							<useSystemClassLoader>false</useSystemClassLoader>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -167,11 +88,6 @@
 		</plugins>
 	</reporting>
 	<dependencies>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>com.github.spotbugs</groupId>
 			<artifactId>spotbugs-annotations</artifactId>
@@ -206,14 +122,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver-sync</artifactId>
-			<scope>test</scope>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
 		</dependency>
 	</dependencies>
 </project>
