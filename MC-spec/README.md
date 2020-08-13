@@ -31,3 +31,7 @@ language, for use with
 [Cucumber](https://docs.cucumber.io/cucumber/).
 The component uses [Maven](https://maven.apache.org/)
 to package the Gherkin files (into a JAR), for use by other modules.
+
+## Cucumber Tags
+
+* `@front-end`: only meaningful for the front-end of the system; not relevant or not testable for the back-end.

@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
+@front-end
 Feature: Home-page
   It should be easy for players to access the home-page of an MC server.
 
   Scenario: Potential player accesses an MC server using a simple URL with the root path
     Given the DNS name, example.com, of an MC server
     When the potential player gives the obvious URL http://example.com/ to a web browser
-    And not logged in
-    And not presenting a CSRF token
+    # Implicitly: And not logged in
     Then MC serves the web page
