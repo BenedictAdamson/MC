@@ -31,9 +31,9 @@ import org.springframework.lang.NonNull;
 
 /**
  * <p>
- * Unit tests and auxiliary test code for the {@link Player} class
+ * Unit tests and auxiliary test code for the {@link User} class
  */
-public class PlayerTest {
+public class UserTest {
 
    @Nested
    public class Constructor {
@@ -59,8 +59,8 @@ public class PlayerTest {
 
          private void test(@NonNull final String username,
                   final String password, final Set<Authority> authorities) {
-            final var player1 = new Player(username, password, authorities);
-            final var player2 = new Player(new String(username),
+            final var player1 = new User(username, password, authorities);
+            final var player2 = new User(new String(username),
                      password == null ? password : new String(password),
                      authorities.isEmpty() ? authorities
                               : EnumSet.copyOf(authorities));
@@ -97,22 +97,22 @@ public class PlayerTest {
 
    private static final String PASSWORD_B = "password123";
 
-   public static void assertInvariants(final Player player) {
+   public static void assertInvariants(final User player) {
       UserDetailsTest.assertInvariants(player);
       assertEquals(player, player, "An object is always equivalent to itself.");
    }
 
-   public static void assertInvariants(final Player player1,
-            final Player player2) {
+   public static void assertInvariants(final User player1,
+            final User player2) {
       UserDetailsTest.assertInvariants(player1, player2);
       final boolean equals = player1.equals(player2);
       assertTrue(!(equals && !player2.equals(player1)),
                "Equality is symmetric");
    }
 
-   private static Player constructor(final String username,
+   private static User constructor(final String username,
             final String password, final Set<Authority> authorities) {
-      final var player = new Player(username, password, authorities);
+      final var player = new User(username, password, authorities);
 
       assertInvariants(player);
       assertSame(username, player.getUsername(),

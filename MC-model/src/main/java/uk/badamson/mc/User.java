@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A player of the Mission Command game.
  * </p>
  */
-public final class Player implements UserDetails {
+public final class User implements UserDetails {
 
    private static final long serialVersionUID = 1L;
 
@@ -79,7 +79,7 @@ public final class Player implements UserDetails {
     *            </ul>
     */
    @JsonCreator
-   public Player(@NonNull @JsonProperty("username") final String username,
+   public User(@NonNull @JsonProperty("username") final String username,
             @Nullable @JsonProperty("password") final String password,
             @NonNull @JsonProperty("authorities") final Set<Authority> authorities) {
       this.username = Objects.requireNonNull(username, "username");
@@ -93,10 +93,10 @@ public final class Player implements UserDetails {
     * With this object is <dfn>equivalent</dfn> to another object.
     * </p>
     * <ul>
-    * <li>The {@link Player} class has <i>entity semantics</i>, with the
+    * <li>The {@link User} class has <i>entity semantics</i>, with the
     * {@linkplain #getUsername() username} serving as a unique ID: this object
     * is equivalent to another object if, and only of, the other object is also
-    * a {@link Player} and the two have {@linkplain String#equals(Object)
+    * a {@link User} and the two have {@linkplain String#equals(Object)
     * equivalent} {@linkplain #getUsername() usernames}.</li>
     * </ul>
     *
@@ -112,10 +112,10 @@ public final class Player implements UserDetails {
       if (that == null) {
          return false;
       }
-      if (!(that instanceof Player)) {
+      if (!(that instanceof User)) {
          return false;
       }
-      final Player other = (Player) that;
+      final User other = (User) that;
       return username.equals(other.username);
    }
 
