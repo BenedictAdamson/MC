@@ -1,5 +1,3 @@
-# Helm resource file for the MC project,
-# declaring part of the MC application in a cluster.
 # © Copyright Benedict Adamson 2019-20.
 #
 # This file is part of MC.
@@ -12,19 +10,17 @@
 # MC is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-apiVersion: v2
-appVersion: "2.5.2-SNAPSHOT"
-description: The Mission Command game.
-name: mc
-version: 2.5.2-SNAPSHOT
-sources:
-  - https://github.com/BenedictAdamson/MC
-maintainers:
-  - name: Benedict Adamson
-    email: badamson@spamcop.net
-    url: https://github.com/BenedictAdamson
+@front-end
+Feature: Home-page
+  It should be easy for players to access the home-page of an MC server.
+
+  Scenario: Potential player accesses an MC server using a simple URL with the root path
+    Given the DNS name, example.com, of an MC server
+    When the potential player gives the obvious URL http://example.com/ to a web browser
+    # Implicitly: And not logged in
+    Then MC serves the home page

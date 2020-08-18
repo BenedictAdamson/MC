@@ -20,9 +20,9 @@ Feature: Player
   To conserve resources, play on a server is restricted to only known (and presumably trusted) users.
 
   Scenario: Get players of fresh instance
-    Given a fresh instance of MC
-    And not logged in
-    And not presenting a CSRF token
+    # Implicitly a fresh instance of MC
+    # Implicitly not logged in
+    # Implicitly not presenting a CSRF token
     When getting the players
     # The path of the players resource is /api/player
     Then MC serves the resource
@@ -33,8 +33,8 @@ Feature: Player
     And the list of players includes a player named "Administrator"
     
   Scenario Outline: Login
+    # Implicitly not logged in
     Given that player "<player>" exists with  password "<password>"
-    And not logged in
     And presenting a valid CSRF token
     When log in as "<player>" using password "<password>"
     Then MC accepts the login

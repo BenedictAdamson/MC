@@ -19,9 +19,9 @@ Feature: Unknown
   Attempts to access unknown or incorrectly named things should give useful error responses.
 
   Scenario Outline: Get unknown resource
-    Given a fresh instance of MC
-    And not logged in
-    And not presenting a CSRF token
+    # Implicitly a fresh instance of MC
+    # Implicitly not logged in
+    # Implicitly not presenting a CSRF token
     When getting the unknown resource at "<path>"
     Then MC replies with Not Found
 
@@ -31,9 +31,9 @@ Feature: Unknown
       |/players|
 
   Scenario Outline: Modify unknown resource
-    Given a fresh instance of MC
-    And not logged in
-    And not presenting a CSRF token
+    # Implicitly a fresh instance of MC
+    # Implicitly not logged in
+    # Implicitly not presenting a CSRF token
     When modifying the unknown resource with a "<verb>" at "<path>"
     Then MC replies with Forbidden
 
