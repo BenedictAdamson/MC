@@ -19,8 +19,9 @@
 # along with MC-des.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-FROM quay.io/keycloak/keycloak:11.0.0
+FROM jboss/keycloak:11.0.0
 ARG VERSION
 LABEL version="${VERSION}"
 LABEL description="The Mission Command game authentication server."
 LABEL maintainer="badamson@spamcop.net"
+ENV KEYCLOAK_USER=admin
