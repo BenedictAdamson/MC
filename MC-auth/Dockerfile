@@ -24,4 +24,4 @@ ARG VERSION
 LABEL version="${VERSION}"
 LABEL description="The Mission Command game authentication server."
 LABEL maintainer="badamson@spamcop.net"
-ENV KEYCLOAK_USER=admin
+ENV KEYCLOAK_USER=admin DB_USER=keycloak DB_DATABASE=keycloak
