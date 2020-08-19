@@ -40,6 +40,8 @@ public final class McAuthContainer extends GenericContainer<McAuthContainer> {
    public static final int PORT = 8080;
 
    public static final String HOST = "auth";
+   
+   private static final String ADMIN_PASSWORD = "letmein";
 
    private static final Duration STARTUP_TIME = Duration.ofMillis(100);
 
@@ -48,6 +50,7 @@ public final class McAuthContainer extends GenericContainer<McAuthContainer> {
    public McAuthContainer() {
       super(IMAGE);
       addExposedPort(PORT);
+      withEnv("KEYCLOAK_PASSWORD", ADMIN_PASSWORD);
       withNetworkAliases(HOST);
       withMinimumRunningDuration(STARTUP_TIME);
       waitingFor(WAIT_STRATEGY);
