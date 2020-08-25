@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-Feature: Unknown
+Feature: Unknown Resource
   Attempts to access unknown or incorrectly named things should give useful error responses.
 
   Scenario Outline: Get unknown resource
