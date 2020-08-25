@@ -23,4 +23,4 @@ Feature: Home-page
     Given the DNS name, example.com, of an MC server
     When the potential user gives the obvious URL http://example.com/ to a web browser
     # Implicitly: And not logged in
-    Then MC serves the home page
+    Then MC serves the resource

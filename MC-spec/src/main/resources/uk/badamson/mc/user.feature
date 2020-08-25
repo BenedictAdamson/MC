@@ -26,7 +26,7 @@ Feature: User
     And user "<name>" has the "player" role
     When getting the users
     Then MC serves the resource
-    And the response message is a list of users
+    And the response is a list of users
     And the list of users has at least one user
     
     Examples:
@@ -62,7 +62,7 @@ Feature: User
     Given logged in as "<name>"
     And user "<name>" does not have the "user-admin" role
     When adding a user named "<new-name>" with  password "<password>"
-    Then MC forbids the request
+    Then MC replies with Forbidden
     
     Examples:
       |name|new-name|password|
