@@ -22,15 +22,17 @@ Feature: User
 
   Scenario: Get users of fresh instance
     # Implicitly a fresh instance of MC
-    # Implicitly not logged in
+    Given logged in as "<name>"
+    And user "<name>" has the "player" role
     When getting the users
-    # The path of the users resource is /api/user
     Then MC serves the resource
-    # And there is only one user, the administrator, with the default name
     And the response message is a list of users
-    And the list of users has one user
-    And the list of users includes the administrator
-    And the list of users includes a user named "Administrator"
+    And the list of users has at least one user
+    
+    Examples:
+      |name|
+      |John|
+      |Jeff|
     
   Scenario Outline: Login
     # Implicitly not logged in
@@ -44,19 +46,21 @@ Feature: User
       |Jeff|pasword123|
     
   Scenario Outline: Add user
-    Given user authenticated as Administrator
-    When adding a user named "<name>" with  password "<password>"
+    Given logged in as "<name>"
+    And user "<name>" has the "user-admin" role
+    When adding a user named "<new-name>" with  password "<password>"
     Then MC accepts the addition
     And can get the list of users
-    And the list of users includes a user named "<name>"
+    And the list of users includes a user named "<new-name>"
     
     Examples:
-      |name|password|
-      |John|letmein|
-      |Jeff|password123|
+      |name|new-name|password|
+      |Andrew|John|letmein|
+      |Zoes|Jeff|password123|
     
   Scenario Outline: Only administrator may add user
     Given logged in as "<name>"
+    And user "<name>" does not have the "user-admin" role
     When adding a user named "<new-name>" with  password "<password>"
     Then MC forbids the request
     
