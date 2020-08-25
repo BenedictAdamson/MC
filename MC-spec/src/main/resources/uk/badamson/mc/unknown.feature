@@ -21,7 +21,6 @@ Feature: Unknown
   Scenario Outline: Get unknown resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
-    # Implicitly not presenting a CSRF token
     When getting the unknown resource at "<path>"
     Then MC replies with Not Found
 
@@ -34,7 +33,6 @@ Feature: Unknown
   Scenario Outline: Modify unknown resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
-    # Implicitly not presenting a CSRF token
     When modifying the unknown resource with a "<verb>" at "<path>"
     Then MC replies with Forbidden
 

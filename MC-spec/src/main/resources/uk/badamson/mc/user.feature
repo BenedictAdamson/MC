@@ -23,7 +23,6 @@ Feature: User
   Scenario: Get users of fresh instance
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
-    # Implicitly not presenting a CSRF token
     When getting the users
     # The path of the users resource is /api/user
     Then MC serves the resource
@@ -36,7 +35,6 @@ Feature: User
   Scenario Outline: Login
     # Implicitly not logged in
     Given that user "<user>" exists with  password "<password>"
-    And presenting a valid CSRF token
     When log in as "<user>" using password "<password>"
     Then MC accepts the login
     
@@ -47,7 +45,6 @@ Feature: User
     
   Scenario Outline: Add user
     Given user authenticated as Administrator
-    And presenting a valid CSRF token
     When adding a user named "<name>" with  password "<password>"
     Then MC accepts the addition
     And can get the list of users
@@ -60,7 +57,6 @@ Feature: User
     
   Scenario Outline: Only administrator may add user
     Given logged in as "<name>"
-    And presenting a valid CSRF token
     When adding a user named "<new-name>" with  password "<password>"
     Then MC forbids the request
     
