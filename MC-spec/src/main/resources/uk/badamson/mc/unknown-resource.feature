@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
+@front-end
 Feature: Unknown Resource
   Attempts to access unknown or incorrectly named things should give useful error responses.
 
@@ -29,7 +30,6 @@ Feature: Unknown Resource
       |/xxxxx|
       |/players|
 
-  @front-end
   Scenario Outline: Modify unknown resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
