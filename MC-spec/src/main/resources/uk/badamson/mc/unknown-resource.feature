@@ -34,7 +34,9 @@ Feature: Unknown Resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
     When modifying the unknown resource with a "<verb>" at "<path>"
-    Then MC replies with Forbidden
+    Then MC replies with Not Found or Forbidden or Method Not Allowed
+    # The precise HTTP status code is determined by the ingress, rather than MC proper,
+    # and does not matter in practice to a user using a browser.
 
     Examples: 
       |verb|path|

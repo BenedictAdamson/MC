@@ -61,8 +61,7 @@ Feature: User
   Scenario Outline: Only administrator may add user
     Given logged in as "<name>"
     And user "<name>" does not have the "user-admin" role
-    When adding a user named "<new-name>" with  password "<password>"
-    Then MC replies with Forbidden
+    Then MC does not present adding a user as an option
     
     Examples:
       |name|new-name|password|
