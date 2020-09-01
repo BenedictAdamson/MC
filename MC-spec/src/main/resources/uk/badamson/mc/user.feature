@@ -22,8 +22,8 @@ Feature: User
 
   Scenario: Get users of fresh instance
     # Implicitly a fresh instance of MC
-    Given logged in as "<name>"
-    And user "<name>" has the "player" role
+    Given user "<name>" has the "player" role
+    And logged in as "<name>"
     When getting the users
     Then MC serves the resource
     And the response is a list of users
@@ -46,8 +46,8 @@ Feature: User
       |Jeff|pasword123|
     
   Scenario Outline: Add user
-    Given logged in as "<name>"
-    And user "<name>" has the "user-admin" role
+    Given user "<name>" has the "user-admin" role
+    And logged in as "<name>"
     When adding a user named "<new-name>" with  password "<password>"
     Then MC accepts the addition
     And can get the list of users
@@ -59,8 +59,8 @@ Feature: User
       |Zoes|Jeff|password123|
     
   Scenario Outline: Only administrator may add user
-    Given logged in as "<name>"
-    And user "<name>" does not have the "user-admin" role
+    Given user "<name>" does not have the "user-admin" role
+    And logged in as "<name>"
     Then MC does not present adding a user as an option
     
     Examples:
