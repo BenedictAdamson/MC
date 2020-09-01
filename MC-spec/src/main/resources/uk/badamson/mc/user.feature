@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-@front-end
+@integration
 Feature: User
   Mission Command is a multi-player game.
   To conserve resources, play on a server is restricted to only known (and presumably trusted) users.

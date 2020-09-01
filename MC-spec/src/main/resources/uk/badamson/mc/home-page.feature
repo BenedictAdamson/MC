@@ -16,6 +16,7 @@
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
 @front-end
+@integration
 Feature: Home-page
   It should be easy for users to access the home-page of an MC server.
 
