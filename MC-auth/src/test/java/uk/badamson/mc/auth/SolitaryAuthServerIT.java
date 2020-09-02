@@ -54,13 +54,9 @@ public class SolitaryAuthServerIT {
       assertThat(logs, not(containsString("ERROR")));
    }
 
-   /**
-    * The <i>Get users of fresh instance</i> scenario requires that a fresh
-    * instance of MC has a list of users that has at least one user.
-    */
    @Test
    @Order(2)
-   public void listUsers() {
+   public void listRealms() {
       try (var keycloak = container.getKeycloakInstance()) {
          final List<RealmRepresentation> realms;
          try {
@@ -69,6 +65,17 @@ public class SolitaryAuthServerIT {
             throw new AssertionError("Able to list realms", e);
          }
          assertThat(realms, not(empty()));
+      }
+   }
+
+   /**
+    * The <i>Get users of fresh instance</i> scenario requires that a fresh
+    * instance of MC has a list of users that has at least one user.
+    */
+   @Test
+   @Order(3)
+   public void listUsers() {
+      try (var keycloak = container.getKeycloakInstance()) {
          final var realm = keycloak.realm(McAuthContainer.MC_REALM);
          final List<UserRepresentation> users;
          try {
