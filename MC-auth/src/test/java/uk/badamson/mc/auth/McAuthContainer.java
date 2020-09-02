@@ -18,10 +18,14 @@ package uk.badamson.mc.auth;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 
+import org.keycloak.admin.client.Keycloak;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import uk.badamson.mc.Version;
@@ -40,20 +44,45 @@ public final class McAuthContainer extends GenericContainer<McAuthContainer> {
    public static final int PORT = 8080;
 
    public static final String HOST = "auth";
-   
+
+   public static final String DB_USER = "keycloak";
+   public static final String DB_NAME = "keycloak";
+   public static final String DB_PASSWORD = "password123";
+   public static final String MC_REALM = "MC";
+   public static final String MC_CLIENT_ID = "mc-ui";
+
+   private static final String ADMIN_USER = "admin";
    private static final String ADMIN_PASSWORD = "letmein";
+   private static final String ADMIN_REALM = "master";
+   private static final String ADMIN_CLIENT_ID = null;
 
-   private static final Duration STARTUP_TIME = Duration.ofMillis(100);
+   private static final Duration STARTUP_TIME = Duration.ofSeconds(180);
 
-   private static final WaitStrategy WAIT_STRATEGY = Wait.forListeningPort();
+   private static final WaitStrategy WAIT_STRATEGY = new WaitAllStrategy()
+            .withStartupTimeout(STARTUP_TIME)
+            .withStrategy(Wait.forListeningPort()).withStrategy(
+                     Wait.forLogMessage(".*[Aa]dmin console listening.*", 1));
 
    public McAuthContainer() {
       super(IMAGE);
       addExposedPort(PORT);
       withEnv("KEYCLOAK_PASSWORD", ADMIN_PASSWORD);
+      withEnv("DB_PASSWORD", DB_PASSWORD);
       withNetworkAliases(HOST);
-      withMinimumRunningDuration(STARTUP_TIME);
       waitingFor(WAIT_STRATEGY);
    }
 
+   public Keycloak getKeycloakInstance() {
+      return Keycloak.getInstance(getUri().toASCIIString(), ADMIN_REALM,
+               ADMIN_USER, ADMIN_PASSWORD, ADMIN_CLIENT_ID);
+   }
+
+   private URI getUri() {
+      try {
+         return new URI("http", null, getHost(), getFirstMappedPort(), "/auth",
+                  null, null);
+      } catch (final URISyntaxException e) {// never happens
+         throw new IllegalStateException(e);
+      }
+   }
 }
