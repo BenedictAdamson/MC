@@ -25,3 +25,5 @@ LABEL version="${VERSION}"
 LABEL description="The Mission Command game authentication server."
 LABEL maintainer="badamson@spamcop.net"
 ENV KEYCLOAK_USER=admin DB_USER=keycloak DB_DATABASE=keycloak
+COPY src/main/resources/opt/jboss/startup-scripts/init-mc /opt/jboss/startup-scripts/init-mc
+RUN chmod a+rx /opt/jboss/startup-scripts/init-mc
