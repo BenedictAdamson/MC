@@ -53,8 +53,8 @@ public final class McAuthContainer extends GenericContainer<McAuthContainer> {
 
    private static final String ADMIN_USER = "admin";
    private static final String ADMIN_PASSWORD = "letmein";
-   private static final String ADMIN_REALM = "master";
-   private static final String ADMIN_CLIENT_ID = null;
+   private static final String ADMIN_REALM = MC_REALM;
+   private static final String ADMIN_CLIENT_ID = MC_CLIENT_ID;
 
    private static final Duration STARTUP_TIME = Duration.ofSeconds(180);
 
