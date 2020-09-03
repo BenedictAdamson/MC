@@ -25,6 +25,8 @@ import static org.hamcrest.Matchers.empty;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
@@ -32,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
@@ -40,14 +41,17 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * Basic system test for the MC-auth Docker image, testing it operating alone,
  * using an in-memory database.
  * </p>
+ * <p>
+ * These tets are read-only, so do not need to set up fresh containers each
+ * time.
+ * </p>
  */
 @TestMethodOrder(OrderAnnotation.class)
 @Testcontainers
 @Tag("IT")
 public class SolitaryAuthServerIT {
 
-   @Container
-   private final McAuthContainer container = new McAuthContainer()
+   private static final McAuthContainer container = new McAuthContainer()
             .withEnv("DB_VENDOR", "h2");
 
    private void assertThatNoErrorMessages(final String logs) {
@@ -87,9 +91,20 @@ public class SolitaryAuthServerIT {
       }
    }
 
+   @BeforeAll
+   public static void startContainer() {
+      container.start();
+   }
+
    @Test
    @Order(1)
    public void startUp() {
       assertThatNoErrorMessages(container.getLogs());
+   }
+
+   @AfterAll
+   public static void stopContainer() {
+      container.stop();
+      container.close();
    }
 }
