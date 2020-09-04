@@ -16,10 +16,3 @@ However, the image sets the following environment variables used by the `jboss/k
 * `KEYCLOAK_USER=admin`, to specify the user name of the administrator.
 * `DB_USER=keycloak`, to specify the user name used to access the database back-end.
 * `DB_DATABASE=keycloak`, to specify the name of the database.
-* `KEYCLOAK_IMPORT`, to initialise `MC` *realm*.
-
-## Initial state
-In addition to the initial state set up by the `jboss/keycloak` image, the image sets up teh following.
-* It creates a *realm* named `MC`.
-* In that realm it creates a *client-id* named `mc-ui`.
-* It adds the Keycloak root administrator (`admin`) as a user to that realm.

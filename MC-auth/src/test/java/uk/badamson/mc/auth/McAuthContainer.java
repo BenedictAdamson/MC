@@ -18,11 +18,8 @@ package uk.badamson.mc.auth;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
 
-import org.keycloak.admin.client.Keycloak;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
@@ -51,10 +48,7 @@ public final class McAuthContainer extends GenericContainer<McAuthContainer> {
    public static final String MC_REALM = "MC";
    public static final String MC_CLIENT_ID = "mc-ui";
 
-   private static final String ADMIN_USER = "admin";
    private static final String ADMIN_PASSWORD = "letmein";
-   private static final String ADMIN_REALM = MC_REALM;
-   private static final String ADMIN_CLIENT_ID = MC_CLIENT_ID;
 
    private static final Duration STARTUP_TIME = Duration.ofSeconds(180);
 
@@ -70,19 +64,5 @@ public final class McAuthContainer extends GenericContainer<McAuthContainer> {
       withEnv("DB_PASSWORD", DB_PASSWORD);
       withNetworkAliases(HOST);
       waitingFor(WAIT_STRATEGY);
-   }
-
-   public Keycloak getKeycloakInstance() {
-      return Keycloak.getInstance(getUri().toASCIIString(), ADMIN_REALM,
-               ADMIN_USER, ADMIN_PASSWORD, ADMIN_CLIENT_ID);
-   }
-
-   private URI getUri() {
-      try {
-         return new URI("http", null, getHost(), getFirstMappedPort(), "/auth",
-                  null, null);
-      } catch (final URISyntaxException e) {// never happens
-         throw new IllegalStateException(e);
-      }
    }
 }

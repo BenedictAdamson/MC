@@ -24,5 +24,4 @@ ARG VERSION
 LABEL version="${VERSION}"
 LABEL description="The Mission Command game authentication server."
 LABEL maintainer="badamson@spamcop.net"
-COPY src/main/resources/etc/MC-realm.json /etc/MC-realm.json
-ENV KEYCLOAK_USER=admin DB_USER=keycloak DB_DATABASE=keycloak KEYCLOAK_IMPORT=/etc/MC-realm.json
+ENV KEYCLOAK_USER=admin DB_USER=keycloak DB_DATABASE=keycloak
