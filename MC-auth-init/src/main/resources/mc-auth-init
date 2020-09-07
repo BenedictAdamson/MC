@@ -1,6 +1,8 @@
 #!/bin/sh
 # mc-auth-init
 # Initialise authentication data for the Mission Command game
+# SYNOPSIS:
+# KEYCLOAK_PASSWORD=<password> mc-auth-init <host> <port>
 
 BINDIR=/opt/jboss/keycloak/bin
 ADDUSER=${BINDIR}/add-user.sh
@@ -17,10 +19,14 @@ errorMessage() {
    echo "${ME}: $1" 1>&2
 }
 
+# Check required environment variables
+
 if [ -n "$KEYCLOAK_PASSWORD" ]; then
    errorMessage "KEYCLOAK_PASSWORD environment variable not set"
    exit 1
 fi
+
+# Parse command-line
 
 if [ $# -lt 1 ]; then
    errorMessage "error: missing host argument"
@@ -40,6 +46,8 @@ while [ $# -gt 0 ]; then
    errorMessage "warning: extra argument \"$1\""
    shift
 fi
+
+# Authenticate
 
 if "${KCADM}" config credentials --server "http://${HOST}:${PORT}/auth" --realm master --user "${KEYCLOAK_USER}" --password "${KEYCLOAK_PASSWORD}"; then
    message "authenticated"
