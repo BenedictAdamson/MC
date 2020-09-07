@@ -130,7 +130,7 @@ addRoleToAdmin() {
       message "user ${KEYCLOAK_USER}@MC already has role ${role}"
    else
       message "adding role ${role} to user ${KEYCLOAK_USER}@MC"
-      if "${KCADM}" add-roles -r MC --uusername "${KEYCLOAK_USER}" --rolename "${role}; then
+      if "${KCADM}" add-roles -r MC --uusername "${KEYCLOAK_USER}" --rolename "${role}"; then
          : #OK
       else
          errorMessage "failed add role ${role} to user ${KEYCLOAK_USER}@MC"
