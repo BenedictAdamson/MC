@@ -112,7 +112,7 @@ else
    if "${KCADM}" create users -r MC -s "username=${KEYCLOAK_USER}" -s enabled=true; then
       message "setting password of user ${KEYCLOAK_USER}@MC"
       if "${KCADM}" set-password -r MC --username "${KEYCLOAK_USER}" --new-password "${KEYCLOAK_PASSWORD}"; then
-         : #OK
+         message "set password of user ${KEYCLOAK_USER}@MC"
       else
          errorMessage "error: failed to set password of user ${KEYCLOAK_USER}@MC"
          exit 2
@@ -124,6 +124,21 @@ else
 fi
 
 # Initialise roles of user admin@MC
+
+addAdminRoleToAdmin() {
+   role="$1"
+   if "${KCADM}" get-roles -r master --cclientid MC-realm --uusername "${KEYCLOAK_USER}" | grep -q "${role}"; then
+      message "user ${KEYCLOAK_USER}@MC already has role ${role}"
+   else
+      message "adding role ${role} to user ${KEYCLOAK_USER}@MC"
+      if "${KCADM}" add-roles -r master --cclientid MC-realm --uusername "${KEYCLOAK_USER}" --rolename "${role}"; then
+         : #OK
+      else
+         errorMessage "failed add role ${role} to user ${KEYCLOAK_USER}@MC"
+         exit 2
+      fi
+   fi
+}
 
 addRoleToAdmin() {
    role="$1"
@@ -140,12 +155,12 @@ addRoleToAdmin() {
    fi
 }
 
-addRoleToAdmin view-realm
-addRoleToAdmin view-users
-addRoleToAdmin view-clients
-addRoleToAdmin view-events
-addRoleToAdmin view-identity-providers
-addRoleToAdmin manage-users
+addAdminRoleToAdmin view-realm
+addAdminRoleToAdmin view-users
+addAdminRoleToAdmin view-clients
+addAdminRoleToAdmin view-events
+addAdminRoleToAdmin view-identity-providers
+addAdminRoleToAdmin manage-users
 addRoleToAdmin player
 
 
