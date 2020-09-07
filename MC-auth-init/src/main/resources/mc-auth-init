@@ -110,6 +110,7 @@ if "${KCADM}" get users -r MC -q "username=${KEYCLOAK_USER}" | grep -q "${KEYCLO
 else
    message "creating user ${KEYCLOAK_USER}@MC"
    if "${KCADM}" create users -r MC -s "username=${KEYCLOAK_USER}" -s enabled=true; then
+      message "setting password of user ${KEYCLOAK_USER}@MC"
       if "${KCADM}" set-password -r MC --username "${KEYCLOAK_USER}" --new-password "${KEYCLOAK_PASSWORD}"; then
          : #OK
       else
