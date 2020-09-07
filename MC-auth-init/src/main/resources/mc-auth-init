@@ -92,7 +92,7 @@ else
 fi
 
 # Initialise role MC:player
-if "${KCADM}" get get-roles -r MC --cclientid player | grep -q "player"; then
+if "${KCADM}" get get-roles -r MC | grep -q "player"; then
    message "role MC:player already exists"
 else
    message "creating role MC:player"
