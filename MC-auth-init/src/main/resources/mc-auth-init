@@ -105,17 +105,23 @@ else
 fi
 
 # Add the MC/realm-management:view-users role to role MC:player
-if "${KCADM}" get-roles -r MC --rname player --cclientid realm-management | grep -q "view-users"; then
-   message "role MC:player already includes the MC/realm-management:view-users role"
-else
-   message "adding role MC/realm-management:view-users to role MC:player"
-   if "${KCADM}" add-roles -r MC --rname player --cclientid realm-management --rolename view-users; then
-      : #OK
+addPlayerManagementRole () {
+   role="$1"
+   if "${KCADM}" get-roles -r MC --rname player --cclientid realm-management | grep -q "${role}"; then
+      message "role MC:player already includes the MC/realm-management:${role} role"
    else
-      errorMessage "failed add role MC/realm-management:view-users to role MC:player"
-      exit 2
+      message "adding role MC/realm-management:${role} to role MC:player"
+      if "${KCADM}" add-roles -r MC --rname player --cclientid realm-management --rolename "${role}"; then
+         : #OK
+      else
+         errorMessage "failed add role MC/realm-management:${role} to role MC:player"
+         exit 2
+      fi
    fi
-fi
+}
+
+addPlayerManagementRole query-users
+addPlayerManagementRole view-users
 
 # Initialise user admin@MC
 if "${KCADM}" get users -r MC -q "username=${KEYCLOAK_USER}" | grep -q "${KEYCLOAK_USER}"; then
