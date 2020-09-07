@@ -20,23 +20,24 @@ Feature: User
   Mission Command is a multi-player game.
   To conserve resources, play on a server is restricted to only known (and presumably trusted) users.
 
-  Scenario: Get users of fresh instance
-    # Implicitly a fresh instance of MC
-    Given user "<name>" has the "player" role
-    And logged in as "<name>"
+  Scenario: List users
+    Given that user "<user>" exists with  password "<password>"
+    And user "<user>" has the "player" role
+    And logged in as "<user>"
     When getting the users
     Then MC serves the resource
     And the response is a list of users
     And the list of users has at least one user
     
     Examples:
-      |name|
-      |John|
-      |Jeff|
+      |user|password|
+      |John|letmein|
+      |Jeff|pasword123|
     
   Scenario Outline: Login
     # Implicitly not logged in
     Given that user "<user>" exists with  password "<password>"
+    And user "<user>" has the "player" role
     When log in as "<user>" using password "<password>"
     Then MC accepts the login
     
@@ -46,7 +47,7 @@ Feature: User
       |Jeff|pasword123|
     
   Scenario Outline: Add user
-    Given user "<name>" has the "user-admin" role
+    Given user "<name>" has the "manage-users" role
     And logged in as "<name>"
     When adding a user named "<new-name>" with  password "<password>"
     Then MC accepts the addition
