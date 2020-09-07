@@ -84,7 +84,7 @@ if "${KCADM}" get clients -r MC --fields clientId | grep -q "mc-ui"; then
 else
    message "creating client MC/mc-ui"
    if "${KCADM}" create clients -r MC -s clientId=mc-ui -s enabled=true; then
-      message "created client MC/mc-ui"
+      : #OK
    else
       errorMessage "failed to create client MC/mc-ui"
       exit 2
