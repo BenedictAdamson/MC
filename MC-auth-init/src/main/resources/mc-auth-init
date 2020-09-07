@@ -21,7 +21,7 @@ errorMessage() {
 
 # Check required environment variables
 
-if [ -n "$KEYCLOAK_PASSWORD" ]; then
+if [ -z "$KEYCLOAK_PASSWORD" ]; then
    errorMessage "KEYCLOAK_PASSWORD environment variable not set"
    exit 1
 fi
