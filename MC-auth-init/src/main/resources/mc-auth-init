@@ -92,7 +92,7 @@ else
 fi
 
 # Initialise role MC:player
-if "${KCADM}" get get-roles -r MC | grep -q "player"; then
+if "${KCADM}" get-roles -r MC | grep -q "player"; then
    message "role MC:player already exists"
 else
    message "creating role MC:player"
@@ -100,6 +100,19 @@ else
       : #OK
    else
       errorMessage "failed to create role MC:player"
+      exit 2
+   fi
+fi
+
+# Add the MC/realm-management:view-users role to role MC:player
+if "${KCADM}" get-roles -r MC --rname player --cclientid realm-management | grep -q "view-users"; then
+   message "role MC:player already includes the MC/realm-management:view-users role"
+else
+   message "adding role MC/realm-management:view-users to role MC:player"
+   if "${KCADM}" add-roles -r MC --rname player --cclientid realm-management --rolename view-users; then
+      : #OK
+   else
+      errorMessage "failed add role MC/realm-management:view-users to role MC:player"
       exit 2
    fi
 fi
