@@ -106,4 +106,29 @@ else
    fi
 fi
 
+# Initialise roles of user admin@MC
+
+addRoleToAdmin() {
+   role="$1"
+   if "${KCADM}" get-roles -r MC --uusername "${KEYCLOAK_USER}" | grep -q "${role}"; then
+      message "user ${KEYCLOAK_USER}@MC already has role ${role}"
+   else
+      message "adding role ${role} to user ${KEYCLOAK_USER}@MC"
+      if "${KCADM}" add-roles -r MC --uusername "${KEYCLOAK_USER}" --rolename "${role}; then
+         message "added role ${role} to user ${KEYCLOAK_USER}@MC"
+      else
+         errorMessage "failed add role ${role} to user ${KEYCLOAK_USER}@MC"
+         exit 2
+      fi
+   fi
+}
+
+addRoleToAdmin view-realm
+addRoleToAdmin view-users
+addRoleToAdmin view-clients
+addRoleToAdmin view-events
+addRoleToAdmin view-identity-providers
+addRoleToAdmin manage-users
+addRoleToAdmin player
+
 
