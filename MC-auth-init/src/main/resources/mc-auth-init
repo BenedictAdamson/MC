@@ -71,7 +71,7 @@ if "${KCADM}" get realms --fields realm | grep -q "MC"; then
 else
    message "creating realm MC"
    if "${KCADM}" create realms -s realm=MC -s enabled=true; then
-      message "created realm MC"
+      : #OK
    else
       errorMessage "failed to create realm MC"
       exit 2
@@ -97,7 +97,7 @@ if "${KCADM}" get get-roles -r MC --cclientid player | grep -q "player"; then
 else
    message "creating role MC:player"
    if "${KCADM}" create roles -r MC -s name=player -s description="May play games"; then
-      message "created role MC:player"
+      : #OK
    else
       errorMessage "failed to create role MC:player"
       exit 2
@@ -112,7 +112,7 @@ else
    if "${KCADM}" create users -r MC -s "username=${KEYCLOAK_USER}" -s enabled=true; then
       message "created user ${KEYCLOAK_USER}@MC"
       if "${KCADM}" set-password -r MC --username "${KEYCLOAK_USER}" --new-password "${KEYCLOAK_PASSWORD}"; then
-         message "set password of user ${KEYCLOAK_USER}@MC"
+         : #OK
       else
          errorMessage "error: failed to set password of user ${KEYCLOAK_USER}@MC"
          exit 2
@@ -132,7 +132,7 @@ addRoleToAdmin() {
    else
       message "adding role ${role} to user ${KEYCLOAK_USER}@MC"
       if "${KCADM}" add-roles -r MC --uusername "${KEYCLOAK_USER}" --rolename "${role}; then
-         message "added role ${role} to user ${KEYCLOAK_USER}@MC"
+         : #OK
       else
          errorMessage "failed add role ${role} to user ${KEYCLOAK_USER}@MC"
          exit 2
