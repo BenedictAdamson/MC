@@ -127,11 +127,11 @@ fi
 
 addAdminRoleToAdmin() {
    role="$1"
-   if "${KCADM}" get-roles -r master --cclientid MC-realm --uusername "${KEYCLOAK_USER}" | grep -q "${role}"; then
+   if "${KCADM}" get-roles -r MC --cclientid realm-management --uusername "${KEYCLOAK_USER}" | grep -q "${role}"; then
       message "user ${KEYCLOAK_USER}@MC already has role ${role}"
    else
       message "adding role ${role} to user ${KEYCLOAK_USER}@MC"
-      if "${KCADM}" add-roles -r master --cclientid MC-realm --uusername "${KEYCLOAK_USER}" --rolename "${role}"; then
+      if "${KCADM}" add-roles -r MC --cclientid realm-management --uusername "${KEYCLOAK_USER}" --rolename "${role}"; then
          : #OK
       else
          errorMessage "failed add role ${role} to user ${KEYCLOAK_USER}@MC"
