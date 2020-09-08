@@ -24,5 +24,5 @@ ARG VERSION
 LABEL version="${VERSION}"
 LABEL description="The Mission Command game authentication initialisation job."
 LABEL maintainer="badamson@spamcop.net"
-COPY src/main/resources/mc-auth-init /opt/jboss/keycloak/bin
+COPY src/main/resources/opt/jboss/keycloak/bin/mc-auth-init /opt/jboss/keycloak/bin
 ENTRYPOINT [ "/opt/jboss/keycloak/bin/mc-auth-init" ]
