@@ -24,5 +24,6 @@ ARG VERSION
 LABEL version="${VERSION}"
 LABEL description="The Mission Command game authentication server."
 LABEL maintainer="badamson@spamcop.net"
+COPY src/main/resources/opt/jboss/keycloak/bin/mc-add-player /opt/jboss/keycloak/bin
 COPY src/main/resources/opt/jboss/keycloak/bin/mc-auth-init /opt/jboss/keycloak/bin
 ENV KEYCLOAK_USER=admin DB_USER=keycloak DB_DATABASE=keycloak

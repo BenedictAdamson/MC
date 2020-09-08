@@ -33,3 +33,23 @@ This program requires that the Keycloak server is up. It sets up the following.
 
 ### Environment Variables
 * `KEYCLOAK_PASSWORD` to indicate the password of the administrator
+
+## mc-add-player
+The Docker image includes a user adminnistration program, `mc-add-player`.
+
+### Synopsis
+```
+/opt/jboss/keycloak/bin/mc-add-player <player> <password>
+```
+
+### Description
+This program requires that the Keycloak server is up.
+It adds the indicated player as a user in the `MC` realm, having the `player` role.
+
+### Command-Line Arguments
+* *player*: the user-name of the player
+* *password*: the password for teh player
+
+### Environment Variables
+* `KEYCLOAK_PASSWORD` to indicate the password of the administrator
+
