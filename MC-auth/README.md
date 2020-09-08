@@ -16,3 +16,24 @@ However, the image sets the following environment variables used by the `jboss/k
 * `KEYCLOAK_USER=admin`, to specify the user name of the administrator.
 * `DB_USER=keycloak`, to specify the user name used to access the database back-end.
 * `DB_DATABASE=keycloak`, to specify the name of the database.
+
+## mc-auth-init
+The Docker image includes an initialisation program, `mc-auth-init`.
+
+### Synopsis
+```
+/opt/jboss/keycloak/bin/mc-auth-init <host> <port>
+```
+
+### Description
+This program requires that the Keycloak server is up. It sets up the following.
+* It creates a *realm* named `MC`.
+* In that realm it creates a *client-id* named `mc-ui`.
+* It adds the Keycloak root administrator (`admin`) as a user to that realm.
+
+### Command-Line Arguments
+* *host*: the DNS-name or IP address of the authentication (Keycloak) server.
+* *port*: the TCP/IP port that the authentication server listens on.
+
+### Environment Variables
+* `KEYCLOAK_PASSWORD` to indicate the password of the administrator
