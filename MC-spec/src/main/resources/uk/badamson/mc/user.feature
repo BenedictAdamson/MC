@@ -21,34 +21,22 @@ Feature: User
   To conserve resources, play on a server is restricted to only known (and presumably trusted) users.
 
   Scenario: List users
-    Given that user "<user>" exists with  password "<password>"
-    And user "<user>" has the "player" role
-    And logged in as "<user>"
+    Given user has the "player" role
+    And logged in
     When getting the users
     Then MC serves the resource
     And the response is a list of users
     And the list of users has at least one user
     
-    Examples:
-      |user|password|
-      |John|letmein|
-      |Jeff|pasword123|
-    
   Scenario Outline: Login
     # Implicitly not logged in
-    Given that user "<user>" exists with  password "<password>"
-    And user "<user>" has the "player" role
-    When log in as "<user>" using password "<password>"
+    Given user has the "player" role
+    When log in using correct password
     Then MC accepts the login
     
-    Examples:
-      |user|password|
-      |John|letmein|
-      |Jeff|pasword123|
-    
   Scenario Outline: Add user
-    Given user "<name>" has the "manage-users" role
-    And logged in as "<name>"
+    Given user has the "manage-users" role
+    And logged in
     When adding a user named "<new-name>" with  password "<password>"
     Then MC accepts the addition
     And can get the list of users
@@ -60,11 +48,6 @@ Feature: User
       |Zoes|Jeff|password123|
     
   Scenario Outline: Only administrator may add user
-    Given user "<name>" does not have the "user-admin" role
-    And logged in as "<name>"
+    Given user does not have the "manage-users" role
+    And logged in
     Then MC does not present adding a user as an option
-    
-    Examples:
-      |name|new-name|password|
-      |John|Jeff|letmein|
-      |Jeff|John|password123|
