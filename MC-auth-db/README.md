@@ -5,10 +5,10 @@ MC-auth-db is a database server of the Mission Command game, used for recording 
 
 MC-auth-db is a Docker image, based on the official [`mariadb` image](https://hub.docker.com/_/mariadb).
 A Docker image for MC-auth-db is available from the  public repository
-[https://hub.docker.com/r/benedictadamson/mc-database](https://hub.docker.com/r/benedictadamson/mc-auth-db).
+[https://hub.docker.com/r/benedictadamson/mc-auth-db](https://hub.docker.com/r/benedictadamson/mc-auth-db).
 
 ## Usage
-Use of the `mc-mc-auth-db` image is similar to use of the `mariadb` image. In particular:
+Use of the `mc-auth-db` image is similar to use of the `mariadb` image. In particular:
 * Set the environment variable `MYSQL_ROOT_PASSWORD` to initialise the password for the root user of the database.
 * Set the environment variable `MYSQL_PASSWORD` to initialise the password used by the MC-auth component.
 * The data is stored in the directory `/var/lib/mysql`, which should be a mounted volume.
