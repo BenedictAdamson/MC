@@ -5,7 +5,7 @@ MC-auth-init initialises authentication data for the Mission Command game.
 
 MC-auth-init is a Docker image, based on the official [`jboss/keycloak` image](https://hub.docker.com/r/jboss/keycloak).
 A Docker image for MC-auth-init is available from the  public repository
-[https://hub.docker.com/r/benedictadamson/mc-auth](https://hub.docker.com/r/benedictadamson/mc-auth-init).
+[https://hub.docker.com/r/benedictadamson/mc-auth-init](https://hub.docker.com/r/benedictadamson/mc-auth-init).
 
 ## Usage
 The Docker image runs a (non-daemon) program, which accepts the following command-line arguments:
