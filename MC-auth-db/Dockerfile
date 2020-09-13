@@ -1,5 +1,5 @@
-# Dockerfile for the MC-database project,
-# to produce the MC database server in a container.
+# Dockerfile for the MC project,
+# to produce the MC authentication database server in a container.
 
 # © Copyright Benedict Adamson 2018-20.
 # 
@@ -24,4 +24,4 @@ ARG VERSION
 LABEL version="${VERSION}"
 LABEL description="The Mission Command game database server."
 LABEL maintainer="badamson@spamcop.net"
-ENV MYSQL_DATABASE=keycloak MYSQL_USER=admin
+ENV MYSQL_DATABASE=keycloak MYSQL_USER=keycloak

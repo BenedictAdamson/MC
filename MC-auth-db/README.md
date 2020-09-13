@@ -15,4 +15,4 @@ Use of the `mc-auth-db` image is similar to use of the `mariadb` image. In parti
 
 However, the image sets the following environment variables used by the `mariadb` base image, so you will not be able to override these.
 * `MYSQL_DATABASE=keycloak`, to create a specific database for use with the MC-auth component.
-* `MYSQL_USER=admin`, to specify the user name for use by that component.
+* `MYSQL_USER=keycloak`, to specify the user name for use by that component.
