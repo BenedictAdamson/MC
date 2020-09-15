@@ -16,3 +16,23 @@ However, the image sets the following environment variables used by the `jboss/k
 * `KEYCLOAK_USER=admin`, to specify the user name of the administrator.
 * `DB_USER=keycloak`, to specify the user name used to access the database back-end.
 * `DB_DATABASE=keycloak`, to specify the name of the database.
+
+## mc-add-player
+The Docker image includes a user adminnistration program, `mc-add-player`.
+
+### Synopsis
+```
+/opt/jboss/keycloak/bin/mc-add-player <player> <password>
+```
+
+### Description
+This program requires that the Keycloak server is up.
+It adds the indicated player as a user in the `MC` realm, having the `player` role.
+
+### Command-Line Arguments
+* *player*: the user-name of the player
+* *password*: the password for teh player
+
+### Environment Variables
+* `KEYCLOAK_PASSWORD` to indicate the password of the administrator
+

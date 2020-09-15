@@ -15,56 +15,39 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-@front-end
+@integration
 Feature: User
   Mission Command is a multi-player game.
   To conserve resources, play on a server is restricted to only known (and presumably trusted) users.
 
-  Scenario: Get users of fresh instance
-    # Implicitly a fresh instance of MC
-    # Implicitly not logged in
-    # Implicitly not presenting a CSRF token
+  Scenario: List users
+    Given user has the "player" role
+    And logged in
     When getting the users
-    # The path of the users resource is /api/user
     Then MC serves the resource
-    # And there is only one user, the administrator, with the default name
-    And the response message is a list of users
-    And the list of users has one user
-    And the list of users includes the administrator
-    And the list of users includes a user named "Administrator"
+    And the response is a list of users
+    And the list of users has at least one user
     
   Scenario Outline: Login
     # Implicitly not logged in
-    Given that user "<user>" exists with  password "<password>"
-    And presenting a valid CSRF token
-    When log in as "<user>" using password "<password>"
+    Given user has the "player" role
+    When log in using correct password
     Then MC accepts the login
     
-    Examples:
-      |user|password|
-      |John|letmein|
-      |Jeff|pasword123|
-    
   Scenario Outline: Add user
-    Given user authenticated as Administrator
-    And presenting a valid CSRF token
-    When adding a user named "<name>" with  password "<password>"
+    Given user has the "manage-users" role
+    And logged in
+    When adding a user named "<new-name>" with  password "<password>"
     Then MC accepts the addition
     And can get the list of users
-    And the list of users includes a user named "<name>"
-    
-    Examples:
-      |name|password|
-      |John|letmein|
-      |Jeff|password123|
-    
-  Scenario Outline: Only administrator may add user
-    Given logged in as "<name>"
-    And presenting a valid CSRF token
-    When adding a user named "<new-name>" with  password "<password>"
-    Then MC forbids the request
+    And the list of users includes a user named "<new-name>"
     
     Examples:
       |name|new-name|password|
-      |John|Jeff|letmein|
-      |Jeff|John|password123|
+      |Andrew|John|letmein|
+      |Zoes|Jeff|password123|
+    
+  Scenario Outline: Only administrator may add user
+    Given user does not have the "manage-users" role
+    And logged in
+    Then MC does not present adding a user as an option

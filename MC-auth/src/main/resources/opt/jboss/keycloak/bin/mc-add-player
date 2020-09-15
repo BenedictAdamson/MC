@@ -1,0 +1,68 @@
+#!/bin/sh
+# mc-add-player
+
+BINDIR=/opt/jboss/keycloak/bin
+ADDUSER=${BINDIR}/add-user.sh
+KCADM=${BINDIR}/kcadm.sh
+KEYCLOAK_USER=admin
+HOST=localhost
+PORT=8080
+
+ME="$0"
+
+message() {
+   echo "${ME}: $1"
+}
+
+errorMessage() {
+   echo "${ME}: $1" 1>&2
+}
+
+# Check required environment variables
+
+if [ -z "$KEYCLOAK_PASSWORD" ]; then
+   errorMessage "KEYCLOAK_PASSWORD environment variable not set"
+   exit 1
+fi
+
+# Parse command-line
+
+if [ $# -eq 0 ]; then
+   errorMessage "error: missing player argument"
+   exit 1
+elif [ -z "$1" ]; then
+   errorMessage "error: empty player argument"
+   exit 1
+else
+   PLAYER="$1"
+   shift
+fi
+
+if [ $# -eq 0 ]; then
+   errorMessage "error: missing password argument"
+   exit 1
+elif [ -z "$1" ]; then
+   errorMessage "error: empty password argument"
+   exit 1
+else
+   PASSWORD="$1"
+   shift
+fi
+
+while [ $# -gt 0 ]; do
+   errorMessage "warning: extra argument \"$1\""
+   shift
+done
+
+# Authenticate
+
+if "${KCADM}" config credentials --server "http://${HOST}:${PORT}/auth" --realm master --user "${KEYCLOAK_USER}" --password "${KEYCLOAK_PASSWORD}"; then
+   message "authenticated"
+else
+   errorMessage "error: authentication failed"
+   exit 2
+fi
+
+"${KCADM}" create users -r MC -s "username=${PLAYER}" -s enabled=true &&
+"${KCADM}" set-password -r MC --username "${PLAYER}" --new-password "${PASSWORD}" &&
+"${KCADM}" add-roles -r MC --uusername "${PLAYER}" --rolename player

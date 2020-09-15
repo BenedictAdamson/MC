@@ -1,0 +1,185 @@
+#!/bin/sh
+# mc-auth-init
+# Initialise authentication data for the Mission Command game
+# SYNOPSIS:
+# KEYCLOAK_PASSWORD=<password> mc-auth-init <host> <port>
+
+BINDIR=/opt/jboss/keycloak/bin
+ADDUSER=${BINDIR}/add-user.sh
+KCADM=${BINDIR}/kcadm.sh
+KEYCLOAK_USER=admin
+
+ME="$0"
+
+message() {
+   echo "${ME}: $1"
+}
+
+errorMessage() {
+   echo "${ME}: $1" 1>&2
+}
+
+# Check required environment variables
+
+if [ -z "$KEYCLOAK_PASSWORD" ]; then
+   errorMessage "KEYCLOAK_PASSWORD environment variable not set"
+   exit 1
+fi
+
+# Parse command-line
+
+if [ $# -lt 1 ]; then
+   errorMessage "error: missing host argument"
+   exit 1
+elif [ -z "$1" ]; then
+   errorMessage "error: empty host argument"
+   exit 1
+fi
+HOST="$1"
+shift
+
+if [ $# -lt 1 ]; then
+   errorMessage "error: missing port argument"
+   exit 1
+elif [ -z "$1" ]; then
+   errorMessage "error: empty port argument"
+   exit 1
+elif [ ! "$1" -gt 0 ]; then
+   errorMessage "error: port argument is not a positive integer"
+   exit 1
+fi
+PORT="$1"
+shift
+
+while [ $# -gt 0 ]; do
+   errorMessage "warning: extra argument \"$1\""
+   shift
+done
+
+# Authenticate
+
+if "${KCADM}" config credentials --server "http://${HOST}:${PORT}/auth" --realm master --user "${KEYCLOAK_USER}" --password "${KEYCLOAK_PASSWORD}"; then
+   message "authenticated"
+else
+   errorMessage "error: authentication failed"
+   exit 2
+fi
+
+# Initialise realm MC
+if "${KCADM}" get realms --fields realm | grep -q "MC"; then
+   message "realm MC already exists"
+else
+   message "creating realm MC"
+   if "${KCADM}" create realms -s realm=MC -s enabled=true; then
+      : #OK
+   else
+      errorMessage "failed to create realm MC"
+      exit 2
+   fi
+fi
+
+# Initialise client MC/mc-ui
+if "${KCADM}" get clients -r MC --fields clientId | grep -q "mc-ui"; then
+   message "client MC/mc-ui already exists"
+else
+   message "creating client MC/mc-ui"
+   if "${KCADM}" create clients -r MC -s clientId=mc-ui -s enabled=true -s directAccessGrantsEnabled=true -s publicClient=true; then
+      : #OK
+   else
+      errorMessage "failed to create client MC/mc-ui"
+      exit 2
+   fi
+fi
+
+# Initialise role MC:player
+if "${KCADM}" get-roles -r MC | grep -q "player"; then
+   message "role MC:player already exists"
+else
+   message "creating role MC:player"
+   if "${KCADM}" create roles -r MC -s name=player -s description="May play games"; then
+      : #OK
+   else
+      errorMessage "failed to create role MC:player"
+      exit 2
+   fi
+fi
+
+# Add the MC/realm-management:view-users role to role MC:player
+addPlayerManagementRole () {
+   role="$1"
+   if "${KCADM}" get-roles -r MC --rname player --cclientid realm-management | grep -q "${role}"; then
+      message "role MC:player already includes the MC/realm-management:${role} role"
+   else
+      message "adding role MC/realm-management:${role} to role MC:player"
+      if "${KCADM}" add-roles -r MC --rname player --cclientid realm-management --rolename "${role}"; then
+         : #OK
+      else
+         errorMessage "failed add role MC/realm-management:${role} to role MC:player"
+         exit 2
+      fi
+   fi
+}
+
+addPlayerManagementRole query-users
+addPlayerManagementRole view-users
+
+# Initialise user admin@MC
+if "${KCADM}" get users -r MC -q "username=${KEYCLOAK_USER}" | grep -q "${KEYCLOAK_USER}"; then
+   message "user ${KEYCLOAK_USER}@MC already exists"
+else
+   message "creating user ${KEYCLOAK_USER}@MC"
+   if "${KCADM}" create users -r MC -s "username=${KEYCLOAK_USER}" -s enabled=true; then
+      message "setting password of user ${KEYCLOAK_USER}@MC"
+      if "${KCADM}" set-password -r MC --username "${KEYCLOAK_USER}" --new-password "${KEYCLOAK_PASSWORD}"; then
+         message "set password of user ${KEYCLOAK_USER}@MC"
+      else
+         errorMessage "error: failed to set password of user ${KEYCLOAK_USER}@MC"
+         exit 2
+      fi
+   else
+      errorMessage "failed to create user ${KEYCLOAK_USER}@MC"
+      exit 2
+   fi
+fi
+
+# Initialise roles of user admin@MC
+
+addAdminRoleToAdmin() {
+   role="$1"
+   if "${KCADM}" get-roles -r MC --cclientid realm-management --uusername "${KEYCLOAK_USER}" | grep -q "${role}"; then
+      message "user ${KEYCLOAK_USER}@MC already has role ${role}"
+   else
+      message "adding role ${role} to user ${KEYCLOAK_USER}@MC"
+      if "${KCADM}" add-roles -r MC --cclientid realm-management --uusername "${KEYCLOAK_USER}" --rolename "${role}"; then
+         : #OK
+      else
+         errorMessage "failed add role ${role} to user ${KEYCLOAK_USER}@MC"
+         exit 2
+      fi
+   fi
+}
+
+addRoleToAdmin() {
+   role="$1"
+   if "${KCADM}" get-roles -r MC --uusername "${KEYCLOAK_USER}" | grep -q "${role}"; then
+      message "user ${KEYCLOAK_USER}@MC already has role ${role}"
+   else
+      message "adding role ${role} to user ${KEYCLOAK_USER}@MC"
+      if "${KCADM}" add-roles -r MC --uusername "${KEYCLOAK_USER}" --rolename "${role}"; then
+         : #OK
+      else
+         errorMessage "failed add role ${role} to user ${KEYCLOAK_USER}@MC"
+         exit 2
+      fi
+   fi
+}
+
+addAdminRoleToAdmin view-realm
+addAdminRoleToAdmin view-users
+addAdminRoleToAdmin view-clients
+addAdminRoleToAdmin view-events
+addAdminRoleToAdmin view-identity-providers
+addAdminRoleToAdmin manage-users
+addRoleToAdmin player
+
+
