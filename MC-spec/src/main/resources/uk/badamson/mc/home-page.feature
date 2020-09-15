@@ -22,6 +22,6 @@ Feature: Home-page
 
   Scenario: Potential user accesses an MC server using a simple URL with the root path
     Given the DNS name, example.com, of an MC server
-    When the potential user gives the obvious URL http://example.com/ to a web browser
     # Implicitly: And not logged in
-    Then MC serves the resource
+    When the potential user gives the obvious URL http://example.com/ to a web browser
+    Then MC serves the home page
