@@ -16,6 +16,7 @@
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
 @front-end
+@integration
 Feature: Home-page
   It should be easy for users to access the home-page of an MC server.
 
@@ -23,4 +24,4 @@ Feature: Home-page
     Given the DNS name, example.com, of an MC server
     When the potential user gives the obvious URL http://example.com/ to a web browser
     # Implicitly: And not logged in
-    Then MC serves the home page
+    Then MC serves the resource

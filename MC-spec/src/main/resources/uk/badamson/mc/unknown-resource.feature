@@ -15,13 +15,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-Feature: Unknown
+@integration
+Feature: Unknown Resource
   Attempts to access unknown or incorrectly named things should give useful error responses.
 
   Scenario Outline: Get unknown resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
-    # Implicitly not presenting a CSRF token
     When getting the unknown resource at "<path>"
     Then MC replies with Not Found
 
@@ -30,13 +30,13 @@ Feature: Unknown
       |/xxxxx|
       |/players|
 
-  @front-end
   Scenario Outline: Modify unknown resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
-    # Implicitly not presenting a CSRF token
     When modifying the unknown resource with a "<verb>" at "<path>"
-    Then MC replies with Forbidden
+    Then MC replies with Not Found or Forbidden or Method Not Allowed
+    # The precise HTTP status code is determined by the ingress, rather than MC proper,
+    # and does not matter in practice to a user using a browser.
 
     Examples: 
       |verb|path|

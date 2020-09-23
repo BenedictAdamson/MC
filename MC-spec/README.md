@@ -34,4 +34,11 @@ to package the Gherkin files (into a JAR), for use by other modules.
 
 ## Cucumber Tags
 
-* `@front-end`: only meaningful for the front-end of the system; not relevant or not testable for the back-end.
+The BDD scenarios use Cucumber tags to indicate which components can be practically tested against which scenarios.
+* `@back-end`: the back-end of the system can be practically tested against this scenario.
+* `@front-end`: the front-end of the system can be practically tested against this scenario.
+* `@integration`: the system as a whole can be practically tested against this scenario.
+
+Here, *practically* does not mean only *is possible*, but also that the testing is *cost effective*.
+In theory, the system as a whole could be tested against all the  requirements,
+but that would be too expensive.
