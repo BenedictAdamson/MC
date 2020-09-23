@@ -24,7 +24,7 @@ Feature: User
     Given user has the "player" role
     And logged in
     When getting the users
-    Then MC serves the resource
+    Then MC serves the users page
     And the response is a list of users
     And the list of users has at least one user
     

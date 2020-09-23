@@ -18,10 +18,12 @@
 @front-end
 @integration
 Feature: Home-page
-  It should be easy for users to access the home-page of an MC server.
+  It should be easy for users to access the home-page of an MC server, and know they have got the right page.
 
   Scenario: Potential user accesses an MC server using a simple URL with the root path
     Given the DNS name, example.com, of an MC server
-    When the potential user gives the obvious URL http://example.com/ to a web browser
     # Implicitly: And not logged in
-    Then MC serves the resource
+    When the potential user gives the obvious URL http://example.com/ to a web browser
+    Then MC serves the home page
+    And the home page title includes the name of the game
+    And the home page header includes the name of the game
