@@ -31,9 +31,9 @@ import org.springframework.lang.NonNull;
 
 /**
  * <p>
- * Unit tests and auxiliary test code for the {@link Player} class
+ * Unit tests and auxiliary test code for the {@link User} class
  */
-public class PlayerTest {
+public class UserTest {
 
    @Nested
    public class Constructor {
@@ -59,14 +59,14 @@ public class PlayerTest {
 
          private void test(@NonNull final String username,
                   final String password, final Set<Authority> authorities) {
-            final var player1 = new Player(username, password, authorities);
-            final var player2 = new Player(new String(username),
+            final var user1 = new User(username, password, authorities);
+            final var user2 = new User(new String(username),
                      password == null ? password : new String(password),
                      authorities.isEmpty() ? authorities
                               : EnumSet.copyOf(authorities));
 
-            assertInvariants(player1, player2);
-            assertEquals(player1, player2);
+            assertInvariants(user1, user2);
+            assertEquals(user1, user2);
          }
 
       }// class
@@ -97,31 +97,31 @@ public class PlayerTest {
 
    private static final String PASSWORD_B = "password123";
 
-   public static void assertInvariants(final Player player) {
-      UserDetailsTest.assertInvariants(player);
-      assertEquals(player, player, "An object is always equivalent to itself.");
+   public static void assertInvariants(final User user) {
+      UserDetailsTest.assertInvariants(user);
+      assertEquals(user, user, "An object is always equivalent to itself.");
    }
 
-   public static void assertInvariants(final Player player1,
-            final Player player2) {
-      UserDetailsTest.assertInvariants(player1, player2);
-      final boolean equals = player1.equals(player2);
-      assertTrue(!(equals && !player2.equals(player1)),
+   public static void assertInvariants(final User user1,
+            final User user2) {
+      UserDetailsTest.assertInvariants(user1, user2);
+      final boolean equals = user1.equals(user2);
+      assertTrue(!(equals && !user2.equals(user1)),
                "Equality is symmetric");
    }
 
-   private static Player constructor(final String username,
+   private static User constructor(final String username,
             final String password, final Set<Authority> authorities) {
-      final var player = new Player(username, password, authorities);
+      final var user = new User(username, password, authorities);
 
-      assertInvariants(player);
-      assertSame(username, player.getUsername(),
-               "The username of this player is the given username.");
-      assertSame(password, player.getPassword(),
-               "The password of this player is the given password.");
-      assertEquals(authorities, player.getAuthorities(),
-               "The authorities granted to this player are equal to the given authorities..");
+      assertInvariants(user);
+      assertSame(username, user.getUsername(),
+               "The username of this user is the given userSname.");
+      assertSame(password, user.getPassword(),
+               "The password of this user is the given password.");
+      assertEquals(authorities, user.getAuthorities(),
+               "The authorities granted to this user are equal to the given authorities..");
 
-      return player;
+      return user;
    }
 }

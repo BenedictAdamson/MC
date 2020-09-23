@@ -30,6 +30,7 @@ Feature: Unknown
       |/xxxxx|
       |/players|
 
+  @front-end
   Scenario Outline: Modify unknown resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in

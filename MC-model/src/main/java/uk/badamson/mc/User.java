@@ -32,16 +32,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * <p>
- * A player of the Mission Command game.
+ * A user of the Mission Command game.
  * </p>
  */
-public final class Player implements UserDetails {
+public final class User implements UserDetails {
 
    private static final long serialVersionUID = 1L;
 
    /**
     * <p>
-    * The {@linkplain #getUsername() username} of the administrator player.
+    * The {@linkplain #getUsername() username} of the administrator user.
     * </p>
     */
    public static final String ADMINISTRATOR_USERNAME = "Administrator";
@@ -52,25 +52,25 @@ public final class Player implements UserDetails {
 
    /**
     * <p>
-    * Construct a player of the Mission Command game, with a given user-name.
+    * Construct a user of the Mission Command game, with a given user-name.
     * </p>
     * <ul>
-    * <li>The {@linkplain #getUsername() username} of this player is the given
+    * <li>The {@linkplain #getUsername() username} of this user is the given
     * username.</li>
-    * <li>The {@linkplain #getPassword() password} of this player is the given
+    * <li>The {@linkplain #getPassword() password} of this user is the given
     * password.</li>
-    * <li>The {@linkplain #getAuthorities() authorities} granted to this player
+    * <li>The {@linkplain #getAuthorities() authorities} granted to this user
     * are {@linkplain Set#equals(Object) equal to} the given authorities.</li>
     * </ul>
     *
     * @param username
-    *           the username used to authenticate the player
+    *           the username used to authenticate the user
     * @param password
     *           the password used to authenticate the user, or null if the
     *           password is being hidden or is unknown. This might be the
     *           password in an encrypted form.
     * @param authorities
-    *           The authorities granted to the player.
+    *           The authorities granted to the user.
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code username} is null</li>
@@ -79,7 +79,7 @@ public final class Player implements UserDetails {
     *            </ul>
     */
    @JsonCreator
-   public Player(@NonNull @JsonProperty("username") final String username,
+   public User(@NonNull @JsonProperty("username") final String username,
             @Nullable @JsonProperty("password") final String password,
             @NonNull @JsonProperty("authorities") final Set<Authority> authorities) {
       this.username = Objects.requireNonNull(username, "username");
@@ -93,10 +93,10 @@ public final class Player implements UserDetails {
     * With this object is <dfn>equivalent</dfn> to another object.
     * </p>
     * <ul>
-    * <li>The {@link Player} class has <i>entity semantics</i>, with the
+    * <li>The {@link User} class has <i>entity semantics</i>, with the
     * {@linkplain #getUsername() username} serving as a unique ID: this object
     * is equivalent to another object if, and only of, the other object is also
-    * a {@link Player} and the two have {@linkplain String#equals(Object)
+    * a {@link User} and the two have {@linkplain String#equals(Object)
     * equivalent} {@linkplain #getUsername() usernames}.</li>
     * </ul>
     *
@@ -112,10 +112,10 @@ public final class Player implements UserDetails {
       if (that == null) {
          return false;
       }
-      if (!(that instanceof Player)) {
+      if (!(that instanceof User)) {
          return false;
       }
-      final Player other = (Player) that;
+      final User other = (User) that;
       return username.equals(other.username);
    }
 
@@ -145,25 +145,25 @@ public final class Player implements UserDetails {
 
    @Override
    public boolean isAccountNonExpired() {
-      // TODO player accounts can expire
+      // TODO user accounts can expire
       return true;
    }
 
    @Override
    public boolean isAccountNonLocked() {
-      // TODO player acccounts can be locked
+      // TODO user acccounts can be locked
       return true;
    }
 
    @Override
    public boolean isCredentialsNonExpired() {
-      // TODO player credentials can expire
+      // TODO user credentials can expire
       return true;
    }
 
    @Override
    public boolean isEnabled() {
-      // TODO players can be disabled
+      // TODO users can be disabled
       return true;
    }
 
