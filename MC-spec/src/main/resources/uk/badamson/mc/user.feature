@@ -28,7 +28,7 @@ Feature: User
     And the response is a list of users
     And the list of users has at least one user
     
-  Scenario Outline: Login
+  Scenario: Login
     # Implicitly not logged in
     Given user has the "player" role
     When log in using correct password
@@ -47,7 +47,7 @@ Feature: User
       |Andrew|John|letmein|
       |Zoes|Jeff|password123|
     
-  Scenario Outline: Only administrator may add user
+  Scenario: Only administrator may add user
     Given user does not have the "manage-users" role
     And logged in
     Then MC does not present adding a user as an option
