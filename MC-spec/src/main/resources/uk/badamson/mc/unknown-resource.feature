@@ -15,10 +15,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-@integration
 Feature: Unknown Resource
   Attempts to access unknown or incorrectly named things should give useful error responses.
 
+  @back-end
   Scenario Outline: Get unknown resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
@@ -30,6 +30,7 @@ Feature: Unknown Resource
       |/xxxxx|
       |/players|
 
+  @integration
   Scenario Outline: Modify unknown resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
