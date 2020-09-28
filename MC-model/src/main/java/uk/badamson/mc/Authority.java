@@ -33,10 +33,16 @@ import org.springframework.security.core.GrantedAuthority;
 public enum Authority implements GrantedAuthority {
    /**
     * <p>
+    * May play games.
+    * </p>
+    */
+   PLAYER,
+   /**
+    * <p>
     * May add a player.
     * </p>
     */
-   ROLE_ADMIN;
+   MANAGE_PLAYERS;
 
    /**
     * <p>

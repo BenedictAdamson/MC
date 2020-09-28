@@ -22,7 +22,7 @@ Feature: User
   @integration
   @back-end
   Scenario: List users
-    Given user has the "player" role
+    Given user has the "PLAYER" role
     And logged in
     When getting the users
     Then MC serves the users page
@@ -32,14 +32,14 @@ Feature: User
   @integration
   Scenario: Login
     # Implicitly not logged in
-    Given user has the "player" role
+    Given user has the "PLAYER" role
     When log in using correct password
     Then MC accepts the login
     
   @integration
   @back-end
   Scenario Outline: Add user
-    Given user has the "manage-users" role
+    Given user has the "MANAGE_USERS" role
     And logged in
     When adding a user named "<new-name>" with  password "<password>"
     Then MC accepts the addition
@@ -54,6 +54,6 @@ Feature: User
   @integration
   @back-end
   Scenario: Only administrator may add user
-    Given user does not have the "manage-users" role
+    Given user does not have the "MANAGE_USERS-users" role
     And logged in
     Then MC does not present adding a user as an option
