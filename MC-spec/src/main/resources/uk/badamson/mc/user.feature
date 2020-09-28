@@ -54,6 +54,6 @@ Feature: User
   @integration
   @back-end
   Scenario: Only administrator may add user
-    Given user does not have the "MANAGE_USERS-users" role
+    Given user does not have the "MANAGE_USERS" role
     And logged in
     Then MC does not present adding a user as an option
