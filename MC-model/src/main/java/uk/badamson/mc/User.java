@@ -169,10 +169,7 @@ public final class User implements UserDetails {
 
    @Override
    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + username.hashCode();
-      return result;
+      return username.hashCode();
    }
 
    @Override
