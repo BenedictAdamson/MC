@@ -42,7 +42,7 @@ public enum Authority implements GrantedAuthority {
     * May add a player.
     * </p>
     */
-   MANAGE_PLAYERS;
+   MANAGE_USERS;
 
    /**
     * <p>
