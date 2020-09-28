@@ -49,6 +49,10 @@ public final class User implements UserDetails {
    private final String username;
    private final String password;
    private final Set<Authority> authorities;
+   private final boolean accountNonExpired;
+   private final boolean accountNonLocked;
+   private final boolean credentialsNonExpired;
+   private final boolean enabled;
 
    /**
     * <p>
@@ -61,6 +65,14 @@ public final class User implements UserDetails {
     * password.</li>
     * <li>The {@linkplain #getAuthorities() authorities} granted to this user
     * are {@linkplain Set#equals(Object) equal to} the given authorities.</li>
+    * <li>Whether this user's {@linkplain #isAccountNonExpired() account has not
+    * expired} is equal to the given value.</li>
+    * <li>Whether this user's {@linkplain #isAccountNonLocked() account is not
+    * locked} is equal to the given value.</li>
+    * <li>Whether this user's {@linkplain #isCredentialsNonExpired() credentials
+    * have not expired} is equal to the given value.</li>
+    * <li>Whether this user's {@linkplain #isEnabled() account is enabled} is
+    * equal to the given value.</li>
     * </ul>
     *
     * @param username
@@ -71,6 +83,18 @@ public final class User implements UserDetails {
     *           password in an encrypted form.
     * @param authorities
     *           The authorities granted to the user.
+    * @param accountNonExpired
+    *           whether the user's account has expired, and so cannot be
+    *           authenticated.
+    * @param accountNonLocked
+    *           whether the user's account is locked, and so cannot be
+    *           authenticated.
+    * @param credentialsNonExpired
+    *           whether the user's credentials (password) has expired, and so
+    *           can not be authenticated.
+    * @param enabled
+    *           whether the user is enabled; a disabled user cannot be
+    *           authenticated.
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code username} is null</li>
@@ -81,11 +105,19 @@ public final class User implements UserDetails {
    @JsonCreator
    public User(@NonNull @JsonProperty("username") final String username,
             @Nullable @JsonProperty("password") final String password,
-            @NonNull @JsonProperty("authorities") final Set<Authority> authorities) {
+            @NonNull @JsonProperty("authorities") final Set<Authority> authorities,
+            @JsonProperty("accountNonExpired") final boolean accountNonExpired,
+            @JsonProperty("accountNonLocked") final boolean accountNonLocked,
+            @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
+            @JsonProperty("enabled") final boolean enabled) {
       this.username = Objects.requireNonNull(username, "username");
       this.password = password;
       this.authorities = authorities.isEmpty() ? Collections.emptySet()
                : Collections.unmodifiableSet(EnumSet.copyOf(authorities));
+      this.accountNonExpired = accountNonExpired;
+      this.accountNonLocked = accountNonLocked;
+      this.credentialsNonExpired = credentialsNonExpired;
+      this.enabled = enabled;
    }
 
    /**
@@ -145,31 +177,27 @@ public final class User implements UserDetails {
 
    @Override
    public boolean isAccountNonExpired() {
-      // TODO user accounts can expire
-      return true;
+      return accountNonExpired;
    }
 
    @Override
    public boolean isAccountNonLocked() {
-      // TODO user acccounts can be locked
-      return true;
+      return accountNonLocked;
    }
 
    @Override
    public boolean isCredentialsNonExpired() {
-      // TODO user credentials can expire
-      return true;
+      return credentialsNonExpired;
    }
 
    @Override
    public boolean isEnabled() {
-      // TODO users can be disabled
-      return true;
+      return enabled;
    }
 
    @Override
    public String toString() {
-      return "Player [username=" + username + "]";
+      return "User [username=" + username + "]";
    }
 
 }
