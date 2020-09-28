@@ -36,13 +36,13 @@ public enum Authority implements GrantedAuthority {
     * May play games.
     * </p>
     */
-   PLAYER,
+   ROLE_PLAYER,
    /**
     * <p>
     * May add a player.
     * </p>
     */
-   MANAGE_USERS;
+   ROLE_MANAGE_USERS;
 
    /**
     * <p>

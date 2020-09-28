@@ -90,7 +90,7 @@ public class UserTest {
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
                      enabled);
             final var userB = new User(username, password,
-                     Set.of(Authority.PLAYER), accountNonExpired,
+                     Set.of(Authority.ROLE_PLAYER), accountNonExpired,
                      accountNonLocked, credentialsNonExpired, enabled);
 
             test(userA, userB);
