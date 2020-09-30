@@ -35,6 +35,7 @@ Feature: User
     Given user has the "ROLE_PLAYER" role
     When log in using correct password
     Then MC accepts the login
+    And redirected to home-page
     
   @integration
   @back-end
