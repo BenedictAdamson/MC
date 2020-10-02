@@ -26,8 +26,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 /**
  * <p>
- * An authority that can be {@linkplain Player#getAuthorities() granted to} a
- * {@linkplain Player player}.
+ * An authority that can be {@linkplain User#getAuthorities() granted to} a
+ * {@linkplain User player}.
  * </p>
  */
 public enum Authority implements GrantedAuthority {
