@@ -41,7 +41,7 @@ Feature: User
   Scenario: Login denied
     # Implicitly not logged in
     Given unknown user
-    When log in using any password
+    When try to login
     Then MC rejects the login
     
   @integration
