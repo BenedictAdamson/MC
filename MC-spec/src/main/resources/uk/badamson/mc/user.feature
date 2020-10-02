@@ -15,27 +15,32 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-@integration
 Feature: User
   Mission Command is a multi-player game.
   To conserve resources, play on a server is restricted to only known (and presumably trusted) users.
 
+  @integration
+  @back-end
   Scenario: List users
-    Given user has the "player" role
+    Given user has the "ROLE_PLAYER" role
     And logged in
     When getting the users
     Then MC serves the users page
     And the response is a list of users
     And the list of users has at least one user
     
-  Scenario Outline: Login
+  @integration
+  Scenario: Login
     # Implicitly not logged in
-    Given user has the "player" role
+    Given user has the "ROLE_PLAYER" role
     When log in using correct password
     Then MC accepts the login
+    And redirected to home-page
     
+  @integration
+  @back-end
   Scenario Outline: Add user
-    Given user has the "manage-users" role
+    Given user has the "ROLE_MANAGE_USERS" role
     And logged in
     When adding a user named "<new-name>" with  password "<password>"
     Then MC accepts the addition
@@ -47,7 +52,9 @@ Feature: User
       |Andrew|John|letmein|
       |Zoes|Jeff|password123|
     
-  Scenario Outline: Only administrator may add user
-    Given user does not have the "manage-users" role
+  @integration
+  @back-end
+  Scenario: Only administrator may add user
+    Given user does not have the "ROLE_MANAGE_USERS" role
     And logged in
     Then MC does not present adding a user as an option
