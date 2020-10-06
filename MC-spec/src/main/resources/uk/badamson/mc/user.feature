@@ -38,6 +38,13 @@ Feature: User
     And redirected to home-page
     
   @integration
+  Scenario: Login denied
+    # Implicitly not logged in
+    Given unknown user
+    When try to login
+    Then MC rejects the login
+    
+  @integration
   @back-end
   Scenario Outline: Add user
     Given user has the "ROLE_MANAGE_USERS" role
