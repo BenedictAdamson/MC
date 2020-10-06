@@ -23,6 +23,9 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A user of the Mission Command game.
  * </p>
  */
+@Entity
 public final class User implements UserDetails {
 
    private static final long serialVersionUID = 1L;
@@ -163,6 +167,7 @@ public final class User implements UserDetails {
 
    @Override
    @NonNull
+   @Id
    public String getUsername() {
       return username;
    }
