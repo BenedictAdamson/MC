@@ -51,6 +51,7 @@ public final class User implements UserDetails {
    public static final String ADMINISTRATOR_USERNAME = "Administrator";
 
    @Id
+   @org.springframework.data.annotation.Id
    private final String username;
    private final String password;
    private final Set<Authority> authorities;
