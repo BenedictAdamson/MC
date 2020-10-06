@@ -50,6 +50,7 @@ public final class User implements UserDetails {
     */
    public static final String ADMINISTRATOR_USERNAME = "Administrator";
 
+   @Id
    private final String username;
    private final String password;
    private final Set<Authority> authorities;
@@ -167,7 +168,6 @@ public final class User implements UserDetails {
 
    @Override
    @NonNull
-   @Id
    public String getUsername() {
       return username;
    }
