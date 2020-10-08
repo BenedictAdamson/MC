@@ -23,6 +23,9 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A user of the Mission Command game.
  * </p>
  */
+@Entity
 public final class User implements UserDetails {
 
    private static final long serialVersionUID = 1L;
@@ -46,6 +50,8 @@ public final class User implements UserDetails {
     */
    public static final String ADMINISTRATOR_USERNAME = "Administrator";
 
+   @Id
+   @org.springframework.data.annotation.Id
    private final String username;
    private final String password;
    private final Set<Authority> authorities;
