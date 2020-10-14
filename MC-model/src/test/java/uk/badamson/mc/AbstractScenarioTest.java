@@ -18,7 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -38,36 +37,21 @@ public class AbstractScenarioTest {
    @Nested
    public class Construct2 {
       @Test
-      public void differentIds() {
-         final var scenarioA = new TestScenario(ID_A, TITLE_A, DESCRIPTION_A);
-         final var scenarioB = new TestScenario(ID_B, TITLE_A, DESCRIPTION_A);
+      public void differentIdentifiers() {
+         final var scenarioA = new TestScenario(IDENTIFIER_A);
+         final var scenarioB = new TestScenario(IDENTIFIER_B);
          assertInvariants(scenarioA, scenarioB);
          assertNotEquals(scenarioA, scenarioB);
       }
 
       @Test
-      public void equalDescriptions() {
-         final var scenarioA = new TestScenario(ID_A, TITLE_A, DESCRIPTION_A);
-         final var scenarioB = new TestScenario(ID_B, TITLE_B, DESCRIPTION_A);
-         assertInvariants(scenarioA, scenarioB);
-         assertNotEquals(scenarioA, scenarioB);
-      }
-
-      @Test
-      public void equalIds() {
-         final var scenarioA = new TestScenario(ID_A, TITLE_A, DESCRIPTION_A);
-         final var scenarioB = new TestScenario(ID_A, TITLE_B, DESCRIPTION_B);
+      public void equalIdentifierss() {
+         final var scenarioA = new TestScenario(IDENTIFIER_A);
+         final var scenarioB = new TestScenario(IDENTIFIER_A);
          assertInvariants(scenarioA, scenarioB);
          assertEquals(scenarioA, scenarioB);
       }
 
-      @Test
-      public void equalTitles() {
-         final var scenarioA = new TestScenario(ID_A, TITLE_A, DESCRIPTION_A);
-         final var scenarioB = new TestScenario(ID_B, TITLE_A, DESCRIPTION_B);
-         assertInvariants(scenarioA, scenarioB);
-         assertNotEquals(scenarioA, scenarioB);
-      }
    }// class
 
    @Nested
@@ -75,32 +59,26 @@ public class AbstractScenarioTest {
 
       @Test
       public void a() {
-         test(ID_A, TITLE_A, DESCRIPTION_A);
+         test(IDENTIFIER_A);
       }
 
       @Test
       public void b() {
-         test(ID_B, TITLE_B, DESCRIPTION_B);
+         test(IDENTIFIER_B);
       }
 
-      private void test(final UUID id, final String title,
-               final String description) {
-         final var scenario = new TestScenario(id, title, description);
+      private void test(final Scenario.Identifier identifier) {
+         final var scenario = new TestScenario(identifier);
 
          assertInvariants(scenario);
-         assertAll("Attributes have the given values",
-                  () -> assertSame(id, scenario.getId(), "id"),
-                  () -> assertSame(title, scenario.getTitle(), "title"),
-                  () -> assertSame(description, scenario.getDescription(),
-                           "description"));
+         assertSame(identifier, scenario.getIdentifier(), "identifier");
       }
    }// class
 
    private static final class TestScenario extends AbstractScenario {
 
-      TestScenario(final UUID id, final String title,
-               final String description) {
-         super(id, title, description);
+      TestScenario(final Scenario.Identifier identifier) {
+         super(identifier);
       }
 
    }// class
@@ -108,12 +86,13 @@ public class AbstractScenarioTest {
    private static final UUID ID_A = UUID.randomUUID();
    private static final UUID ID_B = UUID.randomUUID();
    private static final String TITLE_A = "Beach Assault";
-
    private static final String TITLE_B = "0123456789012345678901234567890123456789012345678901234567890123";// longest
-
    private static final String DESCRIPTION_A = "";// shortest
-
    private static final String DESCRIPTION_B = "Simple training scenario.";
+   private static final Scenario.Identifier IDENTIFIER_A = new Scenario.Identifier(
+            ID_A, TITLE_A, DESCRIPTION_A);
+   private static final Scenario.Identifier IDENTIFIER_B = new Scenario.Identifier(
+            ID_B, TITLE_B, DESCRIPTION_B);
 
    public static void assertInvariants(final AbstractScenario scenario) {
       ScenarioTest.assertInvariants(scenario);// inherited

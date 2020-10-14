@@ -19,7 +19,6 @@ package uk.badamson.mc;
  */
 
 import java.util.Objects;
-import java.util.UUID;
 
 import javax.annotation.concurrent.Immutable;
 import javax.persistence.Entity;
@@ -33,51 +32,26 @@ import javax.persistence.Entity;
 @Immutable
 public abstract class AbstractScenario implements Scenario {
 
-   private final UUID id;
-   private final String title;
-   private final String description;
+   private final Scenario.Identifier identifier;
 
    /**
     * <p>
-    * Construct a game scenario with given attribute values.
+    * Construct a game scenario with a given identifier.
     * </p>
     *
     * <h2>Post Conditions</h2>
     * <ul>
-    * <li>The {@linkplain #getId() ID} of this object is the given
-    * {@code id}.</li>
-    * <li>The {@linkplain #getTitle() title} of this object is the given
-    * {@code title}.</li>
-    * <li>The {@linkplain #getDescription() description} of this object is the
-    * given {@code description}.</li>
+    * <li>The {@linkplain #getIdentifier() identifer} of this object is the
+    * given {@code identifier}.</li>
     * </ul>
     *
-    * @param id
-    *           The unique identifier for this scenario.
-    * @param title
-    *           A short human readable identifier for this scenario.
-    * @param description
-    *           A human readable description for this scenario.
+    * @param identifier
+    *           The identifier for this scenario.
     * @throws NullPointerException
-    *            <ul>
-    *            <li>If {@code id} is null</li>
-    *            <li>If {@code title} is null</li>
-    *            <li>If {@code description} is null</li>
-    *            </ul>
-    * @throws IllegalArgumentException
-    *            <ul>
-    *            <li>If {@code title} {@linkplain String#isEmpty() is
-    *            empty}.</li>
-    *            </ul>
+    *            If {@code identifier} is null
     */
-   protected AbstractScenario(final UUID id, final String title,
-            final String description) {
-      this.id = Objects.requireNonNull(id, "id");
-      this.title = Objects.requireNonNull(title, "title");// guard
-      this.description = Objects.requireNonNull(description, "description");
-      if (title.isEmpty()) {
-         throw new IllegalArgumentException("title is empty");
-      }
+   protected AbstractScenario(final Scenario.Identifier identifier) {
+      this.identifier = Objects.requireNonNull(identifier, "identifier");
    }
 
    @Override
@@ -89,27 +63,17 @@ public abstract class AbstractScenario implements Scenario {
          return false;
       }
       final Scenario other = (Scenario) that;
-      return id.equals(other.getId());
+      return identifier.equals(other.getIdentifier());
    }
 
    @Override
-   public final String getDescription() {
-      return description;
-   }
-
-   @Override
-   public final UUID getId() {
-      return id;
-   }
-
-   @Override
-   public final String getTitle() {
-      return title;
+   public final Scenario.Identifier getIdentifier() {
+      return identifier;
    }
 
    @Override
    public final int hashCode() {
-      return id.hashCode();
+      return identifier.hashCode();
    }
 
 }
