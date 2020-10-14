@@ -34,11 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class ScenarioTest {
 
-   public static void assertInvariants(final Scenario user) {
-      assertEquals(user, user, "An object is always equivalent to itself.");
-      final var id = user.getId();
-      final var description = user.getDescription();
-      final var title = user.getTitle();
+   public static void assertInvariants(final Scenario scenario) {
+      assertEquals(scenario, scenario,
+               "An object is always equivalent to itself.");
+      final var id = scenario.getId();
+      final var description = scenario.getDescription();
+      final var title = scenario.getTitle();
       assertAll("Not null", () -> assertNotNull(id, "id"),
                () -> assertNotNull(description, "description"),
                () -> assertNotNull(title, "title"));// guard
