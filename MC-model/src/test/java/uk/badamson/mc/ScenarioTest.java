@@ -18,7 +18,13 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -30,6 +36,16 @@ public class ScenarioTest {
 
    public static void assertInvariants(final Scenario user) {
       assertEquals(user, user, "An object is always equivalent to itself.");
+      final var id = user.getId();
+      final var description = user.getDescription();
+      final var title = user.getTitle();
+      assertAll("Not null", () -> assertNotNull(id, "id"),
+               () -> assertNotNull(description, "description"),
+               () -> assertNotNull(title, "title"));// guard
+      assertAll("title",
+               () -> assertThat("Not empty", title, not(emptyString())),
+               () -> assertThat("Not longer that 64 code points",
+                        title.length(), not(greaterThan(64))));
    }
 
    public static void assertInvariants(final Scenario scenario1,

@@ -20,11 +20,18 @@ package uk.badamson.mc;
 
 import java.util.UUID;
 
+import javax.annotation.concurrent.Immutable;
+import javax.persistence.Entity;
+
+import org.springframework.lang.NonNull;
+
 /**
  * <p>
  * A game scenario of the Mission Command game.
  * </p>
  */
+@Entity
+@Immutable
 public interface Scenario {
 
    /**
@@ -57,11 +64,12 @@ public interface Scenario {
     * <ul>
     * <li>Not null</li>
     * </ul>
-    * 
+    *
     * @return the description.
-    * 
+    *
     * @see #getTitle()
     */
+   @NonNull
    String getDescription();
 
    /**
@@ -75,6 +83,7 @@ public interface Scenario {
     * @return the identifier.
     * @see #getTitle()
     */
+   @NonNull
    UUID getId();
 
    /**
@@ -90,12 +99,13 @@ public interface Scenario {
     * <li>Not {@linkplain String#isEmpty() empty}</li>
     * <li>Not {@linkplain String#length() longer} that 64 code points</li>
     * </ul>
-    * 
+    *
     * @return the title.
-    * 
+    *
     * @see #getId()
     * @see #getDescription()
     */
+   @NonNull
    String getTitle();
 
 }
