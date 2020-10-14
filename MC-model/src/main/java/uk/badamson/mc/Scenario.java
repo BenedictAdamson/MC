@@ -21,7 +21,12 @@ package uk.badamson.mc;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.persistence.Id;
+
 import org.springframework.lang.NonNull;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * <p>
@@ -32,12 +37,14 @@ public interface Scenario {
 
    /**
     * <p>
-    * Identification information for a game scenario of the Mission Command
-    * game.
+    * Identification information for a game {@linkplain Scenario scenario} of
+    * the Mission Command game.
     * </p>
     */
    public static final class Identifier {
 
+      @Id
+      @org.springframework.data.annotation.Id
       private final UUID id;
       private final String title;
       private final String description;
@@ -78,8 +85,10 @@ public interface Scenario {
        *            than 64 code points.</li>
        *            </ul>
        */
-      public Identifier(final UUID id, final String title,
-               final String description) {
+      @JsonCreator
+      public Identifier(@NonNull @JsonProperty("id") final UUID id,
+               @NonNull @JsonProperty("title") final String title,
+               @NonNull @JsonProperty("description") final String description) {
          this.id = Objects.requireNonNull(id, "id");
          this.title = Objects.requireNonNull(title, "title");// guard
          this.description = Objects.requireNonNull(description, "description");
