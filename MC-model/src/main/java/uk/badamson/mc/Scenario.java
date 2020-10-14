@@ -41,18 +41,61 @@ public interface Scenario {
     *
     * @param that
     *           The object to compare with this.
-    * @return Whether this is equivalent to that.
+    * @return Whether this object is equivalent to {@code that} object.
     */
    @Override
    boolean equals(final Object that);
 
    /**
     * <p>
+    * A human readable description for this scenario.
+    * </p>
+    * <p>
+    * Although different scenarios should have different descriptions,
+    * descriptions are not guaranteed to be unique.
+    * </p>
+    * <ul>
+    * <li>Not null</li>
+    * </ul>
+    * 
+    * @return the description.
+    * 
+    * @see #getTitle()
+    */
+   String getDescription();
+
+   /**
+    * <p>
     * The unique identifier for this scenario.
     * </p>
+    * <ul>
+    * <li>Not null</li>
+    * </ul>
     *
-    * @return the identifier; not null.
+    * @return the identifier.
+    * @see #getTitle()
     */
-   public UUID getId();
+   UUID getId();
+
+   /**
+    * <p>
+    * A short human readable identifier for this scenario.
+    * </p>
+    * <p>
+    * Although the title is an identifier, it is not guaranteed to be a unique
+    * identifier.
+    * </p>
+    * <ul>
+    * <li>Not null</li>
+    * <li>Not {@linkplain String#isEmpty() empty}</li>
+    * <li>Not {@linkplain String#length() longer} that 64 code points</li>
+    * </ul>
+    * 
+    * @return the title.
+    * 
+    * @see #getId()
+    * @see #getDescription()
+    */
+   String getTitle();
 
 }
