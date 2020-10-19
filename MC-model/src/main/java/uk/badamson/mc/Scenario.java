@@ -41,7 +41,7 @@ public interface Scenario {
     * the Mission Command game.
     * </p>
     */
-   public static final class Identifier {
+   static final class Identifier {
 
       @Id
       @org.springframework.data.annotation.Id
