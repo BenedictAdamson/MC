@@ -47,7 +47,6 @@ public class Scenario {
       @org.springframework.data.annotation.Id
       private final UUID id;
       private final String title;
-      private final String description;
 
       /**
        * <p>
@@ -61,21 +60,16 @@ public class Scenario {
        * {@code id}.</li>
        * <li>The {@linkplain #getTitle() title} of this object is the given
        * {@code title}.</li>
-       * <li>The {@linkplain #getDescription() description} of this object is
-       * the given {@code description}.</li>
        * </ul>
        *
        * @param id
        *           The unique identifier for the scenario.
        * @param title
        *           A short human readable identifier for the scenario.
-       * @param description
-       *           A human readable description for the scenario.
        * @throws NullPointerException
        *            <ul>
        *            <li>If {@code id} is null</li>
        *            <li>If {@code title} is null</li>
-       *            <li>If {@code description} is null</li>
        *            </ul>
        * @throws IllegalArgumentException
        *            <ul>
@@ -87,11 +81,9 @@ public class Scenario {
        */
       @JsonCreator
       public Identifier(@NonNull @JsonProperty("id") final UUID id,
-               @NonNull @JsonProperty("title") final String title,
-               @NonNull @JsonProperty("description") final String description) {
+               @NonNull @JsonProperty("title") final String title) {
          this.id = Objects.requireNonNull(id, "id");
          this.title = Objects.requireNonNull(title, "title");// guard
-         this.description = Objects.requireNonNull(description, "description");
          if (title.isEmpty()) {
             throw new IllegalArgumentException("title is empty");
          }
@@ -128,27 +120,6 @@ public class Scenario {
 
       /**
        * <p>
-       * A human readable description for this scenario.
-       * </p>
-       * <p>
-       * Although different scenarios should have different descriptions,
-       * descriptions are not guaranteed to be unique.
-       * </p>
-       * <ul>
-       * <li>Not null</li>
-       * </ul>
-       *
-       * @return the description.
-       *
-       * @see #getTitle()
-       */
-      @NonNull
-      public String getDescription() {
-         return description;
-      }
-
-      /**
-       * <p>
        * The unique identifier for this scenario.
        * </p>
        * <ul>
@@ -180,7 +151,7 @@ public class Scenario {
        * @return the title.
        *
        * @see #getId()
-       * @see #getDescription()
+       * @see Scenario#getDescription()
        */
       @NonNull
       public String getTitle() {
@@ -194,6 +165,7 @@ public class Scenario {
    }// class
 
    private final Identifier identifier;
+   private final String description;
 
    /**
     * <p>
@@ -204,15 +176,24 @@ public class Scenario {
     * <ul>
     * <li>The {@linkplain #getIdentifier() identifier} of this object is the
     * given {@code identifier}.</li>
+    * <li>The {@linkplain #getDescription() description} of this object is the
+    * given {@code description}.</li>
     * </ul>
     *
     * @param identifier
     *           The identifier for this scenario.
+    * @param description
+    *           A human readable description for the scenario.
     * @throws NullPointerException
-    *            If {@code identifier} is null
+    *            <ul>
+    *            <li>If {@code identifier} is null</li>
+    *            <li>If {@code description} is null</li>
+    *            </ul>
     */
-   public Scenario(@NonNull final Scenario.Identifier identifier) {
+   public Scenario(@NonNull final Scenario.Identifier identifier,
+            @NonNull @JsonProperty("description") final String description) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
+      this.description = Objects.requireNonNull(description, "description");
    }
 
    /**
@@ -246,6 +227,27 @@ public class Scenario {
 
    /**
     * <p>
+    * A human readable description for this scenario.
+    * </p>
+    * <p>
+    * Although different scenarios should have different descriptions,
+    * descriptions are not guaranteed to be unique.
+    * </p>
+    * <ul>
+    * <li>Not null</li>
+    * </ul>
+    *
+    * @return the description.
+    *
+    * @see Identifier#getTitle()
+    */
+   @NonNull
+   public String getDescription() {
+      return description;
+   }
+
+   /**
+    * <p>
     * The identification information for this scenario.
     * </p>
     * <ul>
@@ -263,5 +265,4 @@ public class Scenario {
    public final int hashCode() {
       return identifier.hashCode();
    }
-
 }

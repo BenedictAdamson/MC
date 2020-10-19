@@ -45,25 +45,24 @@ public class ScenarioTest {
    public class Construct2 {
       @Test
       public void differentIdentifiers() {
-         final var identifierA = new Scenario.Identifier(ID_A, TITLE_A,
-                  DESCRIPTION_A);
+         final var identifierA = new Scenario.Identifier(ID_A, TITLE_A);
          // Tough test: only the unique ID is different
-         final var identifierB = new Scenario.Identifier(ID_B, TITLE_A,
-                  DESCRIPTION_A);
+         final var identifierB = new Scenario.Identifier(ID_B, TITLE_A);
 
-         final var scenarioA = new Scenario(identifierA);
-         final var scenarioB = new Scenario(identifierB);
+         // Tough test: have equal descriptions
+         final var scenarioA = new Scenario(identifierA, DESCRIPTION_A);
+         final var scenarioB = new Scenario(identifierB, DESCRIPTION_A);
          assertInvariants(scenarioA, scenarioB);
          assertNotEquals(scenarioA, scenarioB);
       }
 
       @Test
       public void equalIdentifiers() {
-         final var identifier = new Scenario.Identifier(ID_A, TITLE_A,
-                  DESCRIPTION_A);
+         final var identifier = new Scenario.Identifier(ID_A, TITLE_A);
 
-         final var scenarioA = new Scenario(identifier);
-         final var scenarioB = new Scenario(identifier);
+         final var scenarioA = new Scenario(identifier, DESCRIPTION_A);
+         // Tough test: have different descriptions
+         final var scenarioB = new Scenario(identifier, DESCRIPTION_B);
          assertInvariants(scenarioA, scenarioB);
          assertEquals(scenarioA, scenarioB);
       }
@@ -85,11 +84,15 @@ public class ScenarioTest {
 
       private void test(final UUID id, final String title,
                final String description) {
-         final var identifier = new Scenario.Identifier(id, title, description);
-         final var scenario = new Scenario(identifier);
+         final var identifier = new Scenario.Identifier(id, title);
+         final var scenario = new Scenario(identifier, description);
 
          assertInvariants(scenario);
-         assertSame(identifier, scenario.getIdentifier(), "identifier");
+         assertAll(
+                  () -> assertSame(identifier, scenario.getIdentifier(),
+                           "identifier"),
+                  () -> assertSame(description, scenario.getDescription(),
+                           "description"));
       }
    }// class
 
@@ -105,40 +108,24 @@ public class ScenarioTest {
       public class Construct2 {
          @Test
          public void differentIds() {
-            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A,
-                     DESCRIPTION_A);
-            final var identifierB = new Scenario.Identifier(ID_B, TITLE_A,
-                     DESCRIPTION_A);
-            assertInvariants(identifierA, identifierB);
-            assertNotEquals(identifierA, identifierB);
-         }
-
-         @Test
-         public void equalDescriptions() {
-            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A,
-                     DESCRIPTION_A);
-            final var identifierB = new Scenario.Identifier(ID_B, TITLE_B,
-                     DESCRIPTION_A);
+            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A);
+            final var identifierB = new Scenario.Identifier(ID_B, TITLE_A);
             assertInvariants(identifierA, identifierB);
             assertNotEquals(identifierA, identifierB);
          }
 
          @Test
          public void equalIds() {
-            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A,
-                     DESCRIPTION_A);
-            final var identifierB = new Scenario.Identifier(ID_A, TITLE_B,
-                     DESCRIPTION_B);
+            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A);
+            final var identifierB = new Scenario.Identifier(ID_A, TITLE_B);
             assertInvariants(identifierA, identifierB);
             assertEquals(identifierA, identifierB);
          }
 
          @Test
          public void equalTitles() {
-            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A,
-                     DESCRIPTION_A);
-            final var identifierB = new Scenario.Identifier(ID_B, TITLE_A,
-                     DESCRIPTION_B);
+            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A);
+            final var identifierB = new Scenario.Identifier(ID_B, TITLE_A);
             assertInvariants(identifierA, identifierB);
             assertNotEquals(identifierA, identifierB);
          }
@@ -149,25 +136,21 @@ public class ScenarioTest {
 
          @Test
          public void a() {
-            test(ID_A, TITLE_A, DESCRIPTION_A);
+            test(ID_A, TITLE_A);
          }
 
          @Test
          public void b() {
-            test(ID_B, TITLE_B, DESCRIPTION_B);
+            test(ID_B, TITLE_B);
          }
 
-         private void test(final UUID id, final String title,
-                  final String description) {
-            final var identifier = new Scenario.Identifier(id, title,
-                     description);
+         private void test(final UUID id, final String title) {
+            final var identifier = new Scenario.Identifier(id, title);
 
             assertInvariants(identifier);
             assertAll("Attributes have the given values",
                      () -> assertSame(id, identifier.getId(), "id"),
-                     () -> assertSame(title, identifier.getTitle(), "title"),
-                     () -> assertSame(description, identifier.getDescription(),
-                              "description"));
+                     () -> assertSame(title, identifier.getTitle(), "title"));
          }
       }// class
    }// class
@@ -185,7 +168,10 @@ public class ScenarioTest {
       assertEquals(scenario, scenario,
                "An object is always equivalent to itself.");
       final var identifier = scenario.getIdentifier();
-      assertNotNull(identifier, "identifier not null");// guard
+      final var description = scenario.getDescription();
+      assertAll("Non null attributes",
+               () -> assertNotNull(identifier, "identifier"), // guard
+               () -> assertNotNull(description, "description"));
       assertInvariants(identifier);
    }
 
@@ -205,10 +191,8 @@ public class ScenarioTest {
       assertEquals(identifier, identifier,
                "An object is always equivalent to itself.");
       final var id = identifier.getId();
-      final var description = identifier.getDescription();
       final var title = identifier.getTitle();
       assertAll("Not null", () -> assertNotNull(id, "id"),
-               () -> assertNotNull(description, "description"),
                () -> assertNotNull(title, "title"));// guard
       assertAll("title",
                () -> assertThat("Not empty", title, not(emptyString())),
