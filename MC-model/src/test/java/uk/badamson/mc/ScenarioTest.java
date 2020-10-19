@@ -36,11 +36,62 @@ import org.junit.jupiter.api.Test;
 
 /**
  * <p>
- * Auxiliary test code for classes that implement the {@link Scenario}
- * interface.
+ * Unit tests for the class {@link Scenario}.
  * </p>
  */
 public class ScenarioTest {
+
+   @Nested
+   public class Construct2 {
+      @Test
+      public void differentIdentifiers() {
+         final var identifierA = new Scenario.Identifier(ID_A, TITLE_A,
+                  DESCRIPTION_A);
+         // Tough test: only the unique ID is different
+         final var identifierB = new Scenario.Identifier(ID_B, TITLE_A,
+                  DESCRIPTION_A);
+
+         final var scenarioA = new Scenario(identifierA);
+         final var scenarioB = new Scenario(identifierB);
+         assertInvariants(scenarioA, scenarioB);
+         assertNotEquals(scenarioA, scenarioB);
+      }
+
+      @Test
+      public void equalIdentifiers() {
+         final var identifier = new Scenario.Identifier(ID_A, TITLE_A,
+                  DESCRIPTION_A);
+
+         final var scenarioA = new Scenario(identifier);
+         final var scenarioB = new Scenario(identifier);
+         assertInvariants(scenarioA, scenarioB);
+         assertEquals(scenarioA, scenarioB);
+      }
+
+   }// class
+
+   @Nested
+   public class Constructor {
+
+      @Test
+      public void a() {
+         test(ID_A, TITLE_A, DESCRIPTION_A);
+      }
+
+      @Test
+      public void b() {
+         test(ID_B, TITLE_B, DESCRIPTION_B);
+      }
+
+      private void test(final UUID id, final String title,
+               final String description) {
+         final var identifier = new Scenario.Identifier(id, title, description);
+         final var scenario = new Scenario(identifier);
+
+         assertInvariants(scenario);
+         assertSame(identifier, scenario.getIdentifier(), "identifier");
+      }
+   }// class
 
    /**
     * <p>
@@ -125,6 +176,7 @@ public class ScenarioTest {
    private static final UUID ID_B = UUID.randomUUID();
    private static final String TITLE_A = "Beach Assault";
    private static final String TITLE_B = "0123456789012345678901234567890123456789012345678901234567890123";// longest
+
    private static final String DESCRIPTION_A = "";// shortest
 
    private static final String DESCRIPTION_B = "Simple training scenario.";
@@ -139,7 +191,7 @@ public class ScenarioTest {
 
    public static void assertInvariants(final Scenario scenarioA,
             final Scenario scenarioB) {
-      final boolean equals = scenarioA.equals(scenarioB);
+      final var equals = scenarioA.equals(scenarioB);
       assertTrue(!(equals && !scenarioB.equals(scenarioA)),
                "Equality is symmetric");
       assertTrue(!(equals && scenarioA.hashCode() != scenarioB.hashCode()),
@@ -166,7 +218,7 @@ public class ScenarioTest {
 
    public static void assertInvariants(final Scenario.Identifier identifierA,
             final Scenario.Identifier identifierB) {
-      final boolean equals = identifierA.equals(identifierB);
+      final var equals = identifierA.equals(identifierB);
       assertTrue(!(equals && !identifierB.equals(identifierA)),
                "Equality is symmetric");
       assertTrue(!(equals && identifierA.hashCode() != identifierB.hashCode()),

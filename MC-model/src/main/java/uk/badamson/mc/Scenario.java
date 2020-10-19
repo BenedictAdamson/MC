@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A game scenario of the Mission Command game.
  * </p>
  */
-public interface Scenario {
+public class Scenario {
 
    /**
     * <p>
@@ -41,7 +41,7 @@ public interface Scenario {
     * the Mission Command game.
     * </p>
     */
-   static final class Identifier {
+   public static final class Identifier {
 
       @Id
       @org.springframework.data.annotation.Id
@@ -115,14 +115,14 @@ public interface Scenario {
        * @return Whether this object is equivalent to {@code that} object.
        */
       @Override
-      public final boolean equals(final Object that) {
+      public boolean equals(final Object that) {
          if (this == that) {
             return true;
          }
          if (!(that instanceof Identifier)) {
             return false;
          }
-         final Identifier other = (Identifier) that;
+         final var other = (Identifier) that;
          return id.equals(other.getId());
       }
 
@@ -143,7 +143,7 @@ public interface Scenario {
        * @see #getTitle()
        */
       @NonNull
-      public final String getDescription() {
+      public String getDescription() {
          return description;
       }
 
@@ -159,7 +159,7 @@ public interface Scenario {
        * @see #getTitle()
        */
       @NonNull
-      public final UUID getId() {
+      public UUID getId() {
          return id;
       }
 
@@ -183,15 +183,37 @@ public interface Scenario {
        * @see #getDescription()
        */
       @NonNull
-      public final String getTitle() {
+      public String getTitle() {
          return title;
       }
 
       @Override
-      public final int hashCode() {
+      public int hashCode() {
          return id.hashCode();
       }
    }// class
+
+   private final Identifier identifier;
+
+   /**
+    * <p>
+    * Construct a game scenario with a given identifier.
+    * </p>
+    *
+    * <h2>Post Conditions</h2>
+    * <ul>
+    * <li>The {@linkplain #getIdentifier() identifier} of this object is the
+    * given {@code identifier}.</li>
+    * </ul>
+    *
+    * @param identifier
+    *           The identifier for this scenario.
+    * @throws NullPointerException
+    *            If {@code identifier} is null
+    */
+   public Scenario(@NonNull final Scenario.Identifier identifier) {
+      this.identifier = Objects.requireNonNull(identifier, "identifier");
+   }
 
    /**
     * <p>
@@ -211,7 +233,16 @@ public interface Scenario {
     * @return Whether this object is equivalent to {@code that} object.
     */
    @Override
-   boolean equals(final Object that);
+   public final boolean equals(final Object that) {
+      if (this == that) {
+         return true;
+      }
+      if (!(that instanceof Scenario)) {
+         return false;
+      }
+      final var other = (Scenario) that;
+      return identifier.equals(other.getIdentifier());
+   }
 
    /**
     * <p>
@@ -224,6 +255,13 @@ public interface Scenario {
     * @return the identifier.
     */
    @NonNull
-   Identifier getIdentifier();
+   public final Identifier getIdentifier() {
+      return identifier;
+   }
+
+   @Override
+   public final int hashCode() {
+      return identifier.hashCode();
+   }
 
 }
