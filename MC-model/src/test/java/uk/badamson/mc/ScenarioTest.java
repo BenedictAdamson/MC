@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 
@@ -165,8 +164,7 @@ public class ScenarioTest {
    private static final String DESCRIPTION_B = "Simple training scenario.";
 
    public static void assertInvariants(final Scenario scenario) {
-      assertEquals(scenario, scenario,
-               "An object is always equivalent to itself.");
+      ObjectTest.assertInvariants(scenario);// inherited
       final var identifier = scenario.getIdentifier();
       final var description = scenario.getDescription();
       assertAll("Non null attributes",
@@ -177,19 +175,14 @@ public class ScenarioTest {
 
    public static void assertInvariants(final Scenario scenarioA,
             final Scenario scenarioB) {
-      final var equals = scenarioA.equals(scenarioB);
-      assertTrue(!(equals && !scenarioB.equals(scenarioA)),
-               "Equality is symmetric");
-      assertTrue(!(equals && scenarioA.hashCode() != scenarioB.hashCode()),
-               "Equality implies equal hashCode");
-      assertEquals(equals,
+      ObjectTest.assertInvariants(scenarioA, scenarioB);// inherited
+      assertEquals(scenarioA.equals(scenarioB),
                scenarioA.getIdentifier().equals(scenarioB.getIdentifier()),
                "Entity semantics, with the identifier serving as a unique identifier");
    }
 
    public static void assertInvariants(final Scenario.Identifier identifier) {
-      assertEquals(identifier, identifier,
-               "An object is always equivalent to itself.");
+      ObjectTest.assertInvariants(identifier);// inherited
       final var id = identifier.getId();
       final var title = identifier.getTitle();
       assertAll("Not null", () -> assertNotNull(id, "id"),
@@ -202,12 +195,9 @@ public class ScenarioTest {
 
    public static void assertInvariants(final Scenario.Identifier identifierA,
             final Scenario.Identifier identifierB) {
-      final var equals = identifierA.equals(identifierB);
-      assertTrue(!(equals && !identifierB.equals(identifierA)),
-               "Equality is symmetric");
-      assertTrue(!(equals && identifierA.hashCode() != identifierB.hashCode()),
-               "Equality implies equal hashCode");
-      assertEquals(equals, identifierA.getId().equals(identifierB.getId()),
+      ObjectTest.assertInvariants(identifierA, identifierB);// inherited
+      assertEquals(identifierA.equals(identifierB),
+               identifierA.getId().equals(identifierB.getId()),
                "Entity semantics, with the ID serving as a unique identifier");
    }
 }

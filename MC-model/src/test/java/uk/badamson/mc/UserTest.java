@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -48,9 +47,9 @@ public class UserTest {
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
-            final boolean accountNonLocked = true;
-            final boolean credentialsNonExpired = true;
-            final boolean enabled = true;
+            final var accountNonLocked = true;
+            final var credentialsNonExpired = true;
+            final var enabled = true;
 
             final var userA = new User(username, password, authorities, true,
                      accountNonLocked, credentialsNonExpired, enabled);
@@ -65,9 +64,9 @@ public class UserTest {
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
-            final boolean accountNonExpired = true;
-            final boolean credentialsNonExpired = true;
-            final boolean enabled = true;
+            final var accountNonExpired = true;
+            final var credentialsNonExpired = true;
+            final var enabled = true;
 
             final var userA = new User(username, password, authorities,
                      accountNonExpired, true, credentialsNonExpired, enabled);
@@ -81,10 +80,10 @@ public class UserTest {
          public void authorities() {
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
-            final boolean accountNonExpired = true;
-            final boolean accountNonLocked = true;
-            final boolean credentialsNonExpired = true;
-            final boolean enabled = true;
+            final var accountNonExpired = true;
+            final var accountNonLocked = true;
+            final var credentialsNonExpired = true;
+            final var enabled = true;
 
             final var userA = new User(username, password, Authority.ALL,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
@@ -101,9 +100,9 @@ public class UserTest {
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
-            final boolean accountNonExpired = true;
-            final boolean accountNonLocked = true;
-            final boolean enabled = true;
+            final var accountNonExpired = true;
+            final var accountNonLocked = true;
+            final var enabled = true;
 
             final var userA = new User(username, password, authorities,
                      accountNonExpired, accountNonLocked, true, enabled);
@@ -118,9 +117,9 @@ public class UserTest {
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
-            final boolean accountNonExpired = true;
-            final boolean accountNonLocked = true;
-            final boolean credentialsNonExpired = true;
+            final var accountNonExpired = true;
+            final var accountNonLocked = true;
+            final var credentialsNonExpired = true;
 
             final var userA = new User(username, password, authorities,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
@@ -136,10 +135,10 @@ public class UserTest {
          public void password() {
             final var username = USERNAME_A;
             final var authorities = Authority.ALL;
-            final boolean accountNonExpired = true;
-            final boolean accountNonLocked = true;
-            final boolean credentialsNonExpired = true;
-            final boolean enabled = true;
+            final var accountNonExpired = true;
+            final var accountNonLocked = true;
+            final var credentialsNonExpired = true;
+            final var enabled = true;
 
             final var userA = new User(username, PASSWORD_A, authorities,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
@@ -275,10 +274,10 @@ public class UserTest {
       public void twoDifferentUsername() {
          final var password = PASSWORD_A;
          final var authorities = Authority.ALL;
-         final boolean accountNonExpired = true;
-         final boolean accountNonLocked = true;
-         final boolean credentialsNonExpired = true;
-         final boolean enabled = true;
+         final var accountNonExpired = true;
+         final var accountNonLocked = true;
+         final var credentialsNonExpired = true;
+         final var enabled = true;
 
          final var userA = new User(USERNAME_A, password, authorities,
                   accountNonExpired, accountNonLocked, credentialsNonExpired,
@@ -307,15 +306,12 @@ public class UserTest {
    private static final String PASSWORD_B = "password123";
 
    public static void assertInvariants(final User user) {
-      UserDetailsTest.assertInvariants(user);
-      assertEquals(user, user, "An object is always equivalent to itself.");
+      ObjectTest.assertInvariants(user);// inherited
+      UserDetailsTest.assertInvariants(user);// inherited
    }
 
    public static void assertInvariants(final User user1, final User user2) {
-      UserDetailsTest.assertInvariants(user1, user2);
-      final boolean equals = user1.equals(user2);
-      assertTrue(!(equals && !user2.equals(user1)), "Equality is symmetric");
-      assertTrue(!(equals && user1.hashCode() != user2.hashCode()),
-               "Equality implies equal hashCode");
+      ObjectTest.assertInvariants(user1, user2);// inherited
+      UserDetailsTest.assertInvariants(user1, user2);// inherited
    }
 }
