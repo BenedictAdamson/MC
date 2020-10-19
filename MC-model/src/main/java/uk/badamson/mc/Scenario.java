@@ -190,7 +190,9 @@ public class Scenario {
     *            <li>If {@code description} is null</li>
     *            </ul>
     */
-   public Scenario(@NonNull final Scenario.Identifier identifier,
+   @JsonCreator
+   public Scenario(
+            @JsonProperty("identifier") @NonNull final Scenario.Identifier identifier,
             @NonNull @JsonProperty("description") final String description) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.description = Objects.requireNonNull(description, "description");
