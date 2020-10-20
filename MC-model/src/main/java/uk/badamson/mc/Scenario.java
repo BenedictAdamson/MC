@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A game scenario of the Mission Command game.
  * </p>
  */
-public interface Scenario {
+public class Scenario {
 
    /**
     * <p>
@@ -47,7 +47,6 @@ public interface Scenario {
       @org.springframework.data.annotation.Id
       private final UUID id;
       private final String title;
-      private final String description;
 
       /**
        * <p>
@@ -61,21 +60,16 @@ public interface Scenario {
        * {@code id}.</li>
        * <li>The {@linkplain #getTitle() title} of this object is the given
        * {@code title}.</li>
-       * <li>The {@linkplain #getDescription() description} of this object is
-       * the given {@code description}.</li>
        * </ul>
        *
        * @param id
        *           The unique identifier for the scenario.
        * @param title
        *           A short human readable identifier for the scenario.
-       * @param description
-       *           A human readable description for the scenario.
        * @throws NullPointerException
        *            <ul>
        *            <li>If {@code id} is null</li>
        *            <li>If {@code title} is null</li>
-       *            <li>If {@code description} is null</li>
        *            </ul>
        * @throws IllegalArgumentException
        *            <ul>
@@ -87,11 +81,9 @@ public interface Scenario {
        */
       @JsonCreator
       public Identifier(@NonNull @JsonProperty("id") final UUID id,
-               @NonNull @JsonProperty("title") final String title,
-               @NonNull @JsonProperty("description") final String description) {
+               @NonNull @JsonProperty("title") final String title) {
          this.id = Objects.requireNonNull(id, "id");
          this.title = Objects.requireNonNull(title, "title");// guard
-         this.description = Objects.requireNonNull(description, "description");
          if (title.isEmpty()) {
             throw new IllegalArgumentException("title is empty");
          }
@@ -115,36 +107,15 @@ public interface Scenario {
        * @return Whether this object is equivalent to {@code that} object.
        */
       @Override
-      public final boolean equals(final Object that) {
+      public boolean equals(final Object that) {
          if (this == that) {
             return true;
          }
          if (!(that instanceof Identifier)) {
             return false;
          }
-         final Identifier other = (Identifier) that;
+         final var other = (Identifier) that;
          return id.equals(other.getId());
-      }
-
-      /**
-       * <p>
-       * A human readable description for this scenario.
-       * </p>
-       * <p>
-       * Although different scenarios should have different descriptions,
-       * descriptions are not guaranteed to be unique.
-       * </p>
-       * <ul>
-       * <li>Not null</li>
-       * </ul>
-       *
-       * @return the description.
-       *
-       * @see #getTitle()
-       */
-      @NonNull
-      public final String getDescription() {
-         return description;
       }
 
       /**
@@ -159,7 +130,7 @@ public interface Scenario {
        * @see #getTitle()
        */
       @NonNull
-      public final UUID getId() {
+      public UUID getId() {
          return id;
       }
 
@@ -180,18 +151,52 @@ public interface Scenario {
        * @return the title.
        *
        * @see #getId()
-       * @see #getDescription()
+       * @see Scenario#getDescription()
        */
       @NonNull
-      public final String getTitle() {
+      public String getTitle() {
          return title;
       }
 
       @Override
-      public final int hashCode() {
+      public int hashCode() {
          return id.hashCode();
       }
    }// class
+
+   private final Identifier identifier;
+   private final String description;
+
+   /**
+    * <p>
+    * Construct a game scenario with a given identifier.
+    * </p>
+    *
+    * <h2>Post Conditions</h2>
+    * <ul>
+    * <li>The {@linkplain #getIdentifier() identifier} of this object is the
+    * given {@code identifier}.</li>
+    * <li>The {@linkplain #getDescription() description} of this object is the
+    * given {@code description}.</li>
+    * </ul>
+    *
+    * @param identifier
+    *           The identifier for this scenario.
+    * @param description
+    *           A human readable description for the scenario.
+    * @throws NullPointerException
+    *            <ul>
+    *            <li>If {@code identifier} is null</li>
+    *            <li>If {@code description} is null</li>
+    *            </ul>
+    */
+   @JsonCreator
+   public Scenario(
+            @JsonProperty("identifier") @NonNull final Scenario.Identifier identifier,
+            @NonNull @JsonProperty("description") final String description) {
+      this.identifier = Objects.requireNonNull(identifier, "identifier");
+      this.description = Objects.requireNonNull(description, "description");
+   }
 
    /**
     * <p>
@@ -211,7 +216,37 @@ public interface Scenario {
     * @return Whether this object is equivalent to {@code that} object.
     */
    @Override
-   boolean equals(final Object that);
+   public final boolean equals(final Object that) {
+      if (this == that) {
+         return true;
+      }
+      if (!(that instanceof Scenario)) {
+         return false;
+      }
+      final var other = (Scenario) that;
+      return identifier.equals(other.getIdentifier());
+   }
+
+   /**
+    * <p>
+    * A human readable description for this scenario.
+    * </p>
+    * <p>
+    * Although different scenarios should have different descriptions,
+    * descriptions are not guaranteed to be unique.
+    * </p>
+    * <ul>
+    * <li>Not null</li>
+    * </ul>
+    *
+    * @return the description.
+    *
+    * @see Identifier#getTitle()
+    */
+   @NonNull
+   public String getDescription() {
+      return description;
+   }
 
    /**
     * <p>
@@ -224,6 +259,12 @@ public interface Scenario {
     * @return the identifier.
     */
    @NonNull
-   Identifier getIdentifier();
+   public final Identifier getIdentifier() {
+      return identifier;
+   }
 
+   @Override
+   public final int hashCode() {
+      return identifier.hashCode();
+   }
 }

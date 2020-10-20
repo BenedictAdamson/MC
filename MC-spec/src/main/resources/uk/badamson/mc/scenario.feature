@@ -16,7 +16,7 @@
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
 Feature: Scenario
-  The Mission Command game provides multiple scenarios that can be played..
+  The Mission Command game provides multiple scenarios that can be played.
 
   @integration
   @back-end
@@ -24,3 +24,12 @@ Feature: Scenario
     When getting the scenarios
     Then MC serves the scenarios page
     And the response is a list of scenarios
+
+  @integration
+  @back-end
+  Scenario: Examine scenario
+    When Viewing the scenarios
+    And Navigate to one scenario
+    Then MC serves the scenario page
+    And The scenario page includes the scenario description
+    
