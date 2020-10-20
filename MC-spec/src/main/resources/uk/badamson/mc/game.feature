@@ -26,5 +26,5 @@ Feature: Game
     Then MC serves the game page
     And The game page includes the scenario title
     And The game page includes the scenario description
-    And The game page includes the data and time that the game started
+    And The game page includes the date and time that the game was set up
     
