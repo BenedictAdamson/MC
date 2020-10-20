@@ -1,4 +1,4 @@
-# © Copyright Benedict Adamson 2019-20.
+# © Copyright Benedict Adamson 2020.
 #
 # This file is part of MC.
 #
@@ -15,22 +15,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with MC.  If not, see <https://www.gnu.org/licenses/>.
 #
-Feature: Scenario
-  The Mission Command game provides multiple scenarios that can be played.
+Feature: Game
+  The Mission Command game can have multiple games (plays) for each scenario
 
   @integration
   @back-end
-  Scenario: List scenarios
-    When getting the scenarios
-    Then MC serves the scenarios page
-    And the response is a list of scenarios
-
-  @integration
-  @back-end
-  Scenario: Examine scenario
-    When Viewing the scenarios
-    And Navigate to one scenario
-    Then MC serves the scenario page
-    And The scenario page includes the scenario description
-    And The scenario page includes the list of games of hat scenario
+  Scenario: Examine game
+    When Viewing the games of a scenario
+    And Navigate to one game of the scenario
+    Then MC serves the game page
+    And The game page includes the scenario title
+    And The game page includes the scenario description
+    And The game page includes the data and time that the game started
     
