@@ -31,4 +31,5 @@ Feature: Scenario
     When Viewing the scenarios
     And Navigate to one scenario
     Then MC serves the scenario page
+    And The scenario page includes the scenario description
     
