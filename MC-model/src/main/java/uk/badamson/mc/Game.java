@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import javax.persistence.Id;
 
 import org.springframework.lang.NonNull;
 
@@ -135,6 +136,8 @@ public class Game {
 
    }// class
 
+   @Id
+   @org.springframework.data.annotation.Id
    private final Identifier identifier;
    private final String scenarioTitle;
    private final String scenarioDescription;
