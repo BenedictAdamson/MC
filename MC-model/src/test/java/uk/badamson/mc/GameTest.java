@@ -44,29 +44,20 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, SCENARIO_TITLE_A, SCENARIO_DESCRIPTION_A);
+         test(identifier);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, SCENARIO_TITLE_B, SCENARIO_DESCRIPTION_B);
+         test(identifier);
       }
 
-      private void test(final Game.Identifier identifier,
-               final String scenarioTitle, final String scenarioDescription) {
-         final var game = new Game(identifier, scenarioTitle,
-                  scenarioDescription);
+      private void test(final Game.Identifier identifier) {
+         final var game = new Game(identifier);
 
          assertInvariants(game);
-         assertAll("Attributes have the given values",
-                  () -> assertSame(identifier, game.getIdentifier(),
-                           "identifier"),
-                  () -> assertSame(scenarioTitle, game.getScenarioTitle(),
-                           "scenarioTitle"),
-                  () -> assertSame(scenarioDescription,
-                           game.getScenarioDescription(),
-                           "scenarioDescription"));
+         assertSame(identifier, game.getIdentifier(), "identifier");
       }
    }// class
 
@@ -77,10 +68,8 @@ public class GameTest {
       public void differentIdentifiers() {
          final var identifierA = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
          final var identifierB = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         final var gameA = new Game(identifierA, SCENARIO_TITLE_A,
-                  SCENARIO_DESCRIPTION_A);
-         final var gameB = new Game(identifierB, SCENARIO_TITLE_A,
-                  SCENARIO_DESCRIPTION_A);
+         final var gameA = new Game(identifierA);
+         final var gameB = new Game(identifierB);
 
          assertInvariants(gameA, gameB);
          assertNotEquals(gameA, gameB);
@@ -89,10 +78,8 @@ public class GameTest {
       @Test
       public void differentScenarioDescriptions() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier, SCENARIO_TITLE_A,
-                  SCENARIO_DESCRIPTION_A);
-         final var gameB = new Game(identifier, SCENARIO_TITLE_A,
-                  SCENARIO_DESCRIPTION_B);
+         final var gameA = new Game(identifier);
+         final var gameB = new Game(identifier);
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
@@ -101,10 +88,8 @@ public class GameTest {
       @Test
       public void differentScenarioTitles() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier, SCENARIO_TITLE_A,
-                  SCENARIO_DESCRIPTION_A);
-         final var gameB = new Game(identifier, SCENARIO_TITLE_B,
-                  SCENARIO_DESCRIPTION_A);
+         final var gameA = new Game(identifier);
+         final var gameB = new Game(identifier);
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
@@ -113,10 +98,8 @@ public class GameTest {
       @Test
       public void equalAttributes() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier, SCENARIO_TITLE_A,
-                  SCENARIO_DESCRIPTION_A);
-         final var gameB = new Game(identifier, SCENARIO_TITLE_A,
-                  SCENARIO_DESCRIPTION_A);
+         final var gameA = new Game(identifier);
+         final var gameB = new Game(identifier);
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
@@ -192,22 +175,13 @@ public class GameTest {
 
    private static final UUID SCENARIO_ID_A = UUID.randomUUID();
    private static final UUID SCENARIO_ID_B = UUID.randomUUID();
-   private static final String SCENARIO_TITLE_A = "Beach Assault";
-   private static final String SCENARIO_TITLE_B = "0123456789012345678901234567890123456789012345678901234567890123";// longest
-   private static final String SCENARIO_DESCRIPTION_A = "";// shortest
-   private static final String SCENARIO_DESCRIPTION_B = "Simple training scenario.";
    private static final Instant CREATED_A = Instant.EPOCH;
    private static final Instant CREATED_B = Instant.now();
 
    public static void assertInvariants(final Game game) {
       ObjectTest.assertInvariants(game);// inherited
 
-      final var identifier = game.getIdentifier();
-      final var scenarioTitle = game.getScenarioTitle();
-      final var scenarioDescription = game.getScenarioDescription();
-      assertAll("Not null", () -> assertNotNull(identifier, "identifier"),
-               () -> assertNotNull(scenarioTitle, "scenarioTitle"),
-               () -> assertNotNull(scenarioDescription, "scenarioDescription"));
+      assertNotNull(game.getIdentifier(), "Not null, identifier");
    }
 
    public static void assertInvariants(final Game gameA, final Game gameB) {

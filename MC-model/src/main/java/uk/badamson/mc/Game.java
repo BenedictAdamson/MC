@@ -139,8 +139,6 @@ public class Game {
    @Id
    @org.springframework.data.annotation.Id
    private final Identifier identifier;
-   private final String scenarioTitle;
-   private final String scenarioDescription;
 
    /**
     * <p>
@@ -149,41 +147,19 @@ public class Game {
     *
     * <h2>Post Conditions</h2>
     * <ul>
-    * <li>The {@linkplain #getIdentifier() scenario identifier} of this object
-    * is the given {@code scenarioIdentifier}.</li>
-    * <li>The {@linkplain #getScenarioDescription() scenario description} of
-    * this object is the given {@code scenarioDescription}.</li>
+    * <li>The {@linkplain #getIdentifier() identifier} of this object is the
+    * given {@code identifier}.</li>
     * </ul>
     *
     * @param identifier
     *           The unique identifier for this game.
-    * @param scenarioDescription
-    *           A human readable description for the scenario of this game.
-    * @param scenarioTitle
-    *           A human readable description for the scenario of this game.
     * @throws NullPointerException
-    *            <ul>
-    *            <li>If {@code identifier} is null</li>
-    *            <li>If {@code scenarioTitle} is null</li>
-    *            <li>If {@code scenarioDescription} is null</li>
-    *            </ul>
-    * @throws IllegalArgumentException
-    *            <ul>
-    *            <li>If {@code scenarioTitle} {@linkplain String#isEmpty() is
-    *            empty}.</li>
-    *            <li>If {@code scenarioTitle} is {@linkplain String#length()
-    *            longer} than 64 code points.</li>
-    *            </ul>
+    *            If {@code identifier} is null
     */
    @JsonCreator
-   public Game(@NonNull @JsonProperty("identifier") final Identifier identifier,
-            @NonNull @JsonProperty("scenarioTitle") final String scenarioTitle,
-            @NonNull @JsonProperty("scenarioDescription") final String scenarioDescription) {
+   public Game(
+            @NonNull @JsonProperty("identifier") final Identifier identifier) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
-      this.scenarioTitle = Objects.requireNonNull(scenarioTitle,
-               "scenarioTitle");
-      this.scenarioDescription = Objects.requireNonNull(scenarioDescription,
-               "scenarioDescription");
    }
 
    /**
@@ -228,46 +204,6 @@ public class Game {
    @NonNull
    public final Identifier getIdentifier() {
       return identifier;
-   }
-
-   /**
-    * <p>
-    * A human readable description for the scenario of this game.
-    * </p>
-    * <p>
-    * Although different scenarios should have different descriptions,
-    * descriptions are not guaranteed to be unique.
-    * </p>
-    * <ul>
-    * <li>Not null</li>
-    * </ul>
-    *
-    * @return the description.
-    */
-   @NonNull
-   public final String getScenarioDescription() {
-      return scenarioDescription;
-   }
-
-   /**
-    * <p>
-    * A short human readable identifier for the scenario of this game.
-    * </p>
-    * <p>
-    * Although the title is an identifier, it is not guaranteed to be a unique
-    * identifier.
-    * </p>
-    * <ul>
-    * <li>Not null</li>
-    * <li>Not {@linkplain String#isEmpty() empty}</li>
-    * <li>Not {@linkplain String#length() longer} that 64 code points</li>
-    * </ul>
-    *
-    * @return the title.
-    */
-   @NonNull
-   public final String getScenarioTitle() {
-      return scenarioTitle;
    }
 
    @Override
