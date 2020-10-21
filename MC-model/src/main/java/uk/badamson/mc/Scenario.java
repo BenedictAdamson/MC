@@ -18,6 +18,11 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -166,10 +171,11 @@ public class Scenario {
 
    private final Identifier identifier;
    private final String description;
+   private final Map<Instant, Game> games = new HashMap<>();
 
    /**
     * <p>
-    * Construct a game scenario with a given identifier.
+    * Construct a game scenario with given attributes and aggregates.
     * </p>
     *
     * <h2>Post Conditions</h2>
@@ -178,24 +184,45 @@ public class Scenario {
     * given {@code identifier}.</li>
     * <li>The {@linkplain #getDescription() description} of this object is the
     * given {@code description}.</li>
+    * <li>The {@linkplain #getGames() collection of games} of this object
+    * {@linkplain Collection#containsAll(Collection) contains all} the given
+    * {@code games}.</li>
     * </ul>
     *
     * @param identifier
     *           The identifier for this scenario.
     * @param description
     *           A human readable description for the scenario.
+    * @param games
+    *           Games that have been created for this scenario.
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code identifier} is null</li>
     *            <li>If {@code description} is null</li>
+    *            <li>If {@code games} is null</li>
+    *            <li>If {@code games} contains a null</li>
     *            </ul>
+    * @throws IllegalArgumentException
+    *            If the scenario ID of any of the {@code games} does not equal
+    *            the {@linkplain Identifier#getId() unique ID} of the given
+    *            {@code identifier} of this scenario.</li>
     */
    @JsonCreator
    public Scenario(
             @JsonProperty("identifier") @NonNull final Scenario.Identifier identifier,
-            @NonNull @JsonProperty("description") final String description) {
+            @NonNull @JsonProperty("description") final String description,
+            @NonNull @JsonProperty("games") final Collection<Game> games) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.description = Objects.requireNonNull(description, "description");
+      for (final var game : games) {
+         Objects.requireNonNull(game, "game");
+         if (!game.getIdentifier().getScenario().equals(identifier.getId())) {
+            throw new IllegalArgumentException(
+                     "game is for a different scenario");
+         }
+         this.games.put(game.getIdentifier().getCreated(), game);
+      }
+      ;
    }
 
    /**
@@ -250,6 +277,26 @@ public class Scenario {
 
    /**
     * <p>
+    * Games that have been created for this scenario.
+    * </p>
+    * <ul>
+    * <li>Always have a (non null) collection of games.</li>
+    * <li>The collection of games does not have any null elements.</li>
+    * <li>The scenario IDs of the games equal the {@linkplain Identifier#getId()
+    * unique ID} of the {@linkplain #getIdentifier() identification information}
+    * of this scenario.</li>
+    * <li>The games have distinct creation times, so their
+    * {@linkplain Game#getIdentifier() identifiers} are unique.</li>
+    * </ul>
+    *
+    * @return the games
+    */
+   public final Collection<Game> getGames() {
+      return Collections.unmodifiableMap(games).values();
+   }
+
+   /**
+    * <p>
     * The identification information for this scenario.
     * </p>
     * <ul>
@@ -267,4 +314,5 @@ public class Scenario {
    public final int hashCode() {
       return identifier.hashCode();
    }
+
 }
