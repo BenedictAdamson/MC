@@ -24,6 +24,7 @@ import org.opentest4j.AssertionFailedError;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * <p>
@@ -34,7 +35,7 @@ public class JsonTest {
 
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
    static {
-      OBJECT_MAPPER.findAndRegisterModules();
+      OBJECT_MAPPER.registerModule(new JavaTimeModule());
    }
 
    public static void assertCanSerialize(final Object object) {

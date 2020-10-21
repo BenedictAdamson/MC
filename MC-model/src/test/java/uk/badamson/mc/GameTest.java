@@ -58,6 +58,7 @@ public class GameTest {
 
          assertInvariants(game);
          assertSame(identifier, game.getIdentifier(), "identifier");
+         JsonTest.assertCanSerializeAndDeserialize(game);
       }
    }// class
 

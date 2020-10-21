@@ -108,6 +108,7 @@ public class ScenarioTest {
                   () -> assertThat("games contains all the given games",
                            scenarioGames,
                            containsInAnyOrder(games.toArray(new Game[0]))));
+         JsonTest.assertCanSerializeAndDeserialize(scenario);
       }
    }// class
 
