@@ -112,65 +112,6 @@ public class ScenarioTest {
       }
    }// class
 
-   /**
-    * <p>
-    * Unit tests for the {@link NamedUUID} class.
-    * </p>
-    */
-   @Nested
-   public class IdentifierTest {
-
-      @Nested
-      public class Construct2 {
-         @Test
-         public void differentIds() {
-            final var identifierA = new NamedUUID(ID_A, TITLE_A);
-            final var identifierB = new NamedUUID(ID_B, TITLE_A);
-            assertInvariants(identifierA, identifierB);
-            assertNotEquals(identifierA, identifierB);
-         }
-
-         @Test
-         public void equalIds() {
-            final var identifierA = new NamedUUID(ID_A, TITLE_A);
-            final var identifierB = new NamedUUID(ID_A, TITLE_B);
-            assertInvariants(identifierA, identifierB);
-            assertEquals(identifierA, identifierB);
-         }
-
-         @Test
-         public void equalTitles() {
-            final var identifierA = new NamedUUID(ID_A, TITLE_A);
-            final var identifierB = new NamedUUID(ID_B, TITLE_A);
-            assertInvariants(identifierA, identifierB);
-            assertNotEquals(identifierA, identifierB);
-         }
-      }// class
-
-      @Nested
-      public class Constructor {
-
-         @Test
-         public void a() {
-            test(ID_A, TITLE_A);
-         }
-
-         @Test
-         public void b() {
-            test(ID_B, TITLE_B);
-         }
-
-         private void test(final UUID id, final String title) {
-            final var identifier = new NamedUUID(id, title);
-
-            assertInvariants(identifier);
-            assertAll("Attributes have the given values",
-                     () -> assertSame(id, identifier.getId(), "id"),
-                     () -> assertSame(title, identifier.getTitle(), "title"));
-         }
-      }// class
-   }// class
-
    private static final UUID ID_A = UUID.randomUUID();
    private static final UUID ID_B = UUID.randomUUID();
    private static final String TITLE_A = "Beach Assault";
