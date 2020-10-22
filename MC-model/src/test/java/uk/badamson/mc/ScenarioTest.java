@@ -48,28 +48,28 @@ public class ScenarioTest {
    public class Construct2 {
       @Test
       public void differentIdentifiers() {
-         final var identifierA = new NamedUUID(ID_A, TITLE_A);
-         // Tough test: only the unique ID is different
-         final var identifierB = new NamedUUID(ID_B, TITLE_A);
          final Collection<Game> games = List.of();
 
-         // Tough test: have equal descriptions
-         final var scenarioA = new Scenario(identifierA, DESCRIPTION_A, games);
-         final var scenarioB = new Scenario(identifierB, DESCRIPTION_A, games);
+         // Tough test: all else equal
+         final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A,
+                  games);
+         final var scenarioB = new Scenario(ID_B, TITLE_A, DESCRIPTION_A,
+                  games);
          assertInvariants(scenarioA, scenarioB);
          assertNotEquals(scenarioA, scenarioB);
       }
 
       @Test
       public void equalIdentifiers() {
-         final var identifier = new NamedUUID(ID_A, TITLE_A);
+         // Tough test: have different attributes and aggregates
          final Collection<Game> gamesA = List.of();
          final Collection<Game> gamesB = List
                   .of(new Game(new Game.Identifier(ID_A, CREATED_A)));
 
-         final var scenarioA = new Scenario(identifier, DESCRIPTION_A, gamesA);
-         // Tough test: have different attributes and aggregates
-         final var scenarioB = new Scenario(identifier, DESCRIPTION_B, gamesB);
+         final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A,
+                  gamesA);
+         final var scenarioB = new Scenario(ID_A, TITLE_B, DESCRIPTION_B,
+                  gamesB);
          assertInvariants(scenarioA, scenarioB);
          assertEquals(scenarioA, scenarioB);
       }
@@ -92,16 +92,17 @@ public class ScenarioTest {
          test(ID_B, TITLE_B, DESCRIPTION_B, games);
       }
 
-      private void test(final UUID id, final String title,
+      private void test(final UUID identifier, final String title,
                final String description, final Collection<Game> games) {
-         final var identifier = new NamedUUID(id, title);
-         final var scenario = new Scenario(identifier, description, games);
+         final var scenario = new Scenario(identifier, title, description,
+                  games);
          final var scenarioGames = scenario.getGames();
 
          assertInvariants(scenario);
          assertAll(
                   () -> assertSame(identifier, scenario.getIdentifier(),
                            "identifier"),
+                  () -> assertSame(title, scenario.getTitle(), "title"),
                   () -> assertSame(description, scenario.getDescription(),
                            "description"),
                   () -> assertThat("games contains all the given games",
@@ -151,13 +152,10 @@ public class ScenarioTest {
                () -> assertNotNull(namedUUID, "namedUUID") // guard
       );
 
-      NamedUUIDTest.assertInvariants(identifier);
-      NamedUUIDTest.assertInvariants(namedUUID);
-
-      final var id = identifier.getId();
-      assertAll(() -> assertGamesInvariants(games, id),
+      assertAll(() -> NamedUUIDTest.assertInvariants(namedUUID),
                () -> assertTrue(NamedUUID.isValidTitle(title),
-                        "title is valid"));
+                        "title is valid"),
+               () -> assertGamesInvariants(games, identifier));
    }
 
    public static void assertInvariants(final Scenario scenarioA,

@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
+
+import javax.persistence.Id;
 
 import org.springframework.lang.NonNull;
 
@@ -38,7 +41,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Scenario {
 
-   private final NamedUUID identifier;
+   @Id
+   @org.springframework.data.annotation.Id
+   private final UUID identifier;
+   private final String title;
    private final String description;
    private final Map<Instant, Game> games = new HashMap<>();
 
@@ -51,6 +57,8 @@ public class Scenario {
     * <ul>
     * <li>The {@linkplain #getIdentifier() identifier} of this object is the
     * given {@code identifier}.</li>
+    * <li>The {@linkplain #getTitle() title} of this object is the given
+    * {@code title}.</li>
     * <li>The {@linkplain #getDescription() description} of this object is the
     * given {@code description}.</li>
     * <li>The {@linkplain #getGames() collection of games} of this object
@@ -60,6 +68,8 @@ public class Scenario {
     *
     * @param identifier
     *           The identifier for this scenario.
+    * @param title
+    *           A short human readable identifier for this scenario.
     * @param description
     *           A human readable description for the scenario.
     * @param games
@@ -67,25 +77,35 @@ public class Scenario {
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code identifier} is null</li>
+    *            <li>If {@code title} is null</li>
     *            <li>If {@code description} is null</li>
     *            <li>If {@code games} is null</li>
     *            <li>If {@code games} contains a null</li>
     *            </ul>
     * @throws IllegalArgumentException
-    *            If the scenario ID of any of the {@code games} does not equal
-    *            the {@linkplain NamedUUID#getId() unique ID} of the given
-    *            {@code identifier} of this scenario.</li>
+    *            <ul>
+    *            <li>If the {@code title} is not
+    *            {@linkplain NamedUUID#isValidTitle(String) valid}.</li>
+    *            <li>If the scenario ID of any of the {@code games} does not
+    *            equal the given {@code identifier}.</li>
+    *            </ul>
     */
    @JsonCreator
-   public Scenario(
-            @JsonProperty("identifier") @NonNull final NamedUUID identifier,
+   public Scenario(@JsonProperty("identifier") @NonNull final UUID identifier,
+            @NonNull @JsonProperty("title") final String title,
             @NonNull @JsonProperty("description") final String description,
             @NonNull @JsonProperty("games") final Collection<Game> games) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
+      this.title = Objects.requireNonNull(title, "title");
       this.description = Objects.requireNonNull(description, "description");
+
+      if (!NamedUUID.isValidTitle(title)) {
+         throw new IllegalArgumentException("invalid title");
+      }
+
       for (final var game : games) {
          Objects.requireNonNull(game, "game");
-         if (!game.getIdentifier().getScenario().equals(identifier.getId())) {
+         if (!game.getIdentifier().getScenario().equals(identifier)) {
             throw new IllegalArgumentException(
                      "game is for a different scenario");
          }
@@ -167,7 +187,7 @@ public class Scenario {
 
    /**
     * <p>
-    * The identification information for this scenario.
+    * The unique identifier for this scenario.
     * </p>
     * <ul>
     * <li>Not null.</li>
@@ -177,7 +197,7 @@ public class Scenario {
     */
    @NonNull
    @JsonProperty("identifier")
-   public final NamedUUID getIdentifier() {
+   public final UUID getIdentifier() {
       return identifier;
    }
 
@@ -187,6 +207,12 @@ public class Scenario {
     * </p>
     * <ul>
     * <li>Not null.</li>
+    * <li>The {@linkplain NamedUUID#getId() ID} of the named ID
+    * {@linkplain UUID#equals(Object) equals} the {@linkplain #getIdentifier()
+    * identifier} of this scenario.</li>
+    * <li>The {@linkplain NamedUUID#getTitle() title} of the named ID
+    * {@linkplain String#equals(Object) equals} the {@linkplain #getTitle()
+    * title} of this scenario.</li>
     * </ul>
     *
     * @return the identifier.
@@ -194,7 +220,7 @@ public class Scenario {
    @NonNull
    @JsonIgnore
    public final NamedUUID getNamedUUID() {
-      return identifier;
+      return new NamedUUID(identifier, title);
    }
 
    /**
@@ -212,9 +238,9 @@ public class Scenario {
     * @return the title.
     */
    @NonNull
-   @JsonIgnore
+   @JsonProperty("title")
    public String getTitle() {
-      return identifier.getTitle();
+      return title;
    }
 
    @Override
