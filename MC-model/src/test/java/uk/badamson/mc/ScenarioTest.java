@@ -49,9 +49,9 @@ public class ScenarioTest {
    public class Construct2 {
       @Test
       public void differentIdentifiers() {
-         final var identifierA = new Scenario.Identifier(ID_A, TITLE_A);
+         final var identifierA = new NamedUUID(ID_A, TITLE_A);
          // Tough test: only the unique ID is different
-         final var identifierB = new Scenario.Identifier(ID_B, TITLE_A);
+         final var identifierB = new NamedUUID(ID_B, TITLE_A);
          final Collection<Game> games = List.of();
 
          // Tough test: have equal descriptions
@@ -63,7 +63,7 @@ public class ScenarioTest {
 
       @Test
       public void equalIdentifiers() {
-         final var identifier = new Scenario.Identifier(ID_A, TITLE_A);
+         final var identifier = new NamedUUID(ID_A, TITLE_A);
          final Collection<Game> gamesA = List.of();
          final Collection<Game> gamesB = List
                   .of(new Game(new Game.Identifier(ID_A, CREATED_A)));
@@ -95,7 +95,7 @@ public class ScenarioTest {
 
       private void test(final UUID id, final String title,
                final String description, final Collection<Game> games) {
-         final var identifier = new Scenario.Identifier(id, title);
+         final var identifier = new NamedUUID(id, title);
          final var scenario = new Scenario(identifier, description, games);
          final var scenarioGames = scenario.getGames();
 
@@ -114,7 +114,7 @@ public class ScenarioTest {
 
    /**
     * <p>
-    * Unit tests for the {@link Scenario.Identifier} class.
+    * Unit tests for the {@link NamedUUID} class.
     * </p>
     */
    @Nested
@@ -124,24 +124,24 @@ public class ScenarioTest {
       public class Construct2 {
          @Test
          public void differentIds() {
-            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A);
-            final var identifierB = new Scenario.Identifier(ID_B, TITLE_A);
+            final var identifierA = new NamedUUID(ID_A, TITLE_A);
+            final var identifierB = new NamedUUID(ID_B, TITLE_A);
             assertInvariants(identifierA, identifierB);
             assertNotEquals(identifierA, identifierB);
          }
 
          @Test
          public void equalIds() {
-            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A);
-            final var identifierB = new Scenario.Identifier(ID_A, TITLE_B);
+            final var identifierA = new NamedUUID(ID_A, TITLE_A);
+            final var identifierB = new NamedUUID(ID_A, TITLE_B);
             assertInvariants(identifierA, identifierB);
             assertEquals(identifierA, identifierB);
          }
 
          @Test
          public void equalTitles() {
-            final var identifierA = new Scenario.Identifier(ID_A, TITLE_A);
-            final var identifierB = new Scenario.Identifier(ID_B, TITLE_A);
+            final var identifierA = new NamedUUID(ID_A, TITLE_A);
+            final var identifierB = new NamedUUID(ID_B, TITLE_A);
             assertInvariants(identifierA, identifierB);
             assertNotEquals(identifierA, identifierB);
          }
@@ -161,7 +161,7 @@ public class ScenarioTest {
          }
 
          private void test(final UUID id, final String title) {
-            final var identifier = new Scenario.Identifier(id, title);
+            final var identifier = new NamedUUID(id, title);
 
             assertInvariants(identifier);
             assertAll("Attributes have the given values",
@@ -179,6 +179,26 @@ public class ScenarioTest {
    private static final String DESCRIPTION_B = "Simple training scenario.";
    private static final Instant CREATED_A = Instant.EPOCH;
    private static final Instant CREATED_B = Instant.now();
+
+   public static void assertInvariants(final NamedUUID identifier) {
+      ObjectTest.assertInvariants(identifier);// inherited
+      final var id = identifier.getId();
+      final var title = identifier.getTitle();
+      assertAll("Not null", () -> assertNotNull(id, "id"),
+               () -> assertNotNull(title, "title"));// guard
+      assertAll("title",
+               () -> assertThat("Not empty", title, not(emptyString())),
+               () -> assertThat("Not longer that 64 code points",
+                        title.length(), not(greaterThan(64))));
+   }
+
+   public static void assertInvariants(final NamedUUID identifierA,
+            final NamedUUID identifierB) {
+      ObjectTest.assertInvariants(identifierA, identifierB);// inherited
+      assertEquals(identifierA.equals(identifierB),
+               identifierA.getId().equals(identifierB.getId()),
+               "Entity semantics, with the ID serving as a unique identifier");
+   }
 
    public static void assertInvariants(final Scenario scenario) {
       ObjectTest.assertInvariants(scenario);// inherited
@@ -213,25 +233,5 @@ public class ScenarioTest {
       assertEquals(scenarioA.equals(scenarioB),
                scenarioA.getIdentifier().equals(scenarioB.getIdentifier()),
                "Entity semantics, with the identifier serving as a unique identifier");
-   }
-
-   public static void assertInvariants(final Scenario.Identifier identifier) {
-      ObjectTest.assertInvariants(identifier);// inherited
-      final var id = identifier.getId();
-      final var title = identifier.getTitle();
-      assertAll("Not null", () -> assertNotNull(id, "id"),
-               () -> assertNotNull(title, "title"));// guard
-      assertAll("title",
-               () -> assertThat("Not empty", title, not(emptyString())),
-               () -> assertThat("Not longer that 64 code points",
-                        title.length(), not(greaterThan(64))));
-   }
-
-   public static void assertInvariants(final Scenario.Identifier identifierA,
-            final Scenario.Identifier identifierB) {
-      ObjectTest.assertInvariants(identifierA, identifierB);// inherited
-      assertEquals(identifierA.equals(identifierB),
-               identifierA.getId().equals(identifierB.getId()),
-               "Entity semantics, with the ID serving as a unique identifier");
    }
 }
