@@ -18,15 +18,12 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 
@@ -110,10 +107,7 @@ public class NamedUUIDTest {
       final var title = identifier.getTitle();
       assertAll("Not null", () -> assertNotNull(id, "id"),
                () -> assertNotNull(title, "title"));// guard
-      assertAll("title",
-               () -> assertThat("Not empty", title, not(emptyString())),
-               () -> assertThat("Not longer that 64 code points",
-                        title.length(), not(greaterThan(64))));
+      assertTrue(NamedUUID.isValidTitle(title), "title is valid");
    }
 
    public static void assertInvariants(final NamedUUID identifierA,

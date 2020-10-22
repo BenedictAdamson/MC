@@ -41,6 +41,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Immutable
 public final class NamedUUID {
 
+   /**
+    * <p>
+    * Whether a given text is valid as a {@linkplain #getTitle() title}
+    * attribute for a {@link NamedUUID}.
+    * </p>
+    * <p>
+    * A invalid title conforms to all these constraints:
+    * </p>
+    * <ul>
+    * <li>Not null.</li>
+    * <li>Not {@linkplain String#isEmpty() empty}.</li>
+    * <li>At most 64 code points {@linkplain String#length() long}.</li>
+    * </ul>
+    *
+    * @param text
+    *           the text of interest
+    * @return whether valid
+    */
+   public static boolean isValidTitle(final String text) {
+      if (text == null) {
+         return false;
+      } else {
+         final var length = text.length();
+         return 0 < length && length <= 64;
+      }
+   }
+
    @Id
    @org.springframework.data.annotation.Id
    private final UUID id;
@@ -69,20 +96,16 @@ public final class NamedUUID {
     *            <li>If {@code title} is null</li>
     *            </ul>
     * @throws IllegalArgumentException
-    *            <ul>
-    *            <li>If {@code title} {@linkplain String#isEmpty() is
-    *            empty}.</li>
-    *            <li>If {@code title} is {@linkplain String#length() longer}
-    *            than 64 code points.</li>
-    *            </ul>
+    *            If the {@code title} is not {@linkplain #isValidTitle(String)
+    *            valid}.
     */
    @JsonCreator
    public NamedUUID(@NonNull @JsonProperty("id") final UUID id,
             @NonNull @JsonProperty("title") final String title) {
       this.id = Objects.requireNonNull(id, "id");
       this.title = Objects.requireNonNull(title, "title");// guard
-      if (title.isEmpty()) {
-         throw new IllegalArgumentException("title is empty");
+      if (!isValidTitle(title)) {
+         throw new IllegalArgumentException("invalid title");
       }
    }
 
@@ -139,9 +162,7 @@ public final class NamedUUID {
     * identifier.
     * </p>
     * <ul>
-    * <li>Not null</li>
-    * <li>Not {@linkplain String#isEmpty() empty}</li>
-    * <li>Not {@linkplain String#length() longer} that 64 code points</li>
+    * <li>{@linkplain #isValidTitle(String) is a valid title}</li>
     * </ul>
     *
     * @return the title.
