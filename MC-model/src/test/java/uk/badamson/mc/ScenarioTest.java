@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.opentest4j.MultipleFailuresError;
 
 /**
  * <p>
@@ -118,24 +120,8 @@ public class ScenarioTest {
    private static final Instant CREATED_A = Instant.EPOCH;
    private static final Instant CREATED_B = Instant.now();
 
-   public static void assertInvariants(final Scenario scenario) {
-      ObjectTest.assertInvariants(scenario);// inherited
-
-      final var identifier = scenario.getIdentifier();
-      final var description = scenario.getDescription();
-      final var games = scenario.getGames();
-      final var namedUUID = scenario.getNamedUUID();
-      assertAll("Non null attributes and aggregates",
-               () -> assertNotNull(identifier, "identifier"), // guard
-               () -> assertNotNull(description, "description"),
-               () -> assertNotNull(games, "games"), // guard
-               () -> assertNotNull(namedUUID, "namedUUID") // guard
-      );
-
-      NamedUUIDTest.assertInvariants(identifier);
-      NamedUUIDTest.assertInvariants(namedUUID);
-
-      final var id = identifier.getId();
+   private static void assertGamesInvariants(final Collection<Game> games,
+            final UUID id) throws MultipleFailuresError {
       assertAll("games", games.stream().map(game -> new Executable() {
 
          @Override
@@ -147,6 +133,31 @@ public class ScenarioTest {
                               "scenario IDs equal unique ID of the identification information of this scenario."));
          }
       }));
+   }
+
+   public static void assertInvariants(final Scenario scenario) {
+      ObjectTest.assertInvariants(scenario);// inherited
+
+      final var identifier = scenario.getIdentifier();
+      final var title = scenario.getTitle();
+      final var description = scenario.getDescription();
+      final var games = scenario.getGames();
+      final var namedUUID = scenario.getNamedUUID();
+      assertAll("Non null attributes and aggregates",
+               () -> assertNotNull(identifier, "identifier"), // guard
+               () -> assertNotNull(title, "title"), // guard
+               () -> assertNotNull(description, "description"),
+               () -> assertNotNull(games, "games"), // guard
+               () -> assertNotNull(namedUUID, "namedUUID") // guard
+      );
+
+      NamedUUIDTest.assertInvariants(identifier);
+      NamedUUIDTest.assertInvariants(namedUUID);
+
+      final var id = identifier.getId();
+      assertAll(() -> assertGamesInvariants(games, id),
+               () -> assertTrue(NamedUUID.isValidTitle(title),
+                        "title is valid"));
    }
 
    public static void assertInvariants(final Scenario scenarioA,

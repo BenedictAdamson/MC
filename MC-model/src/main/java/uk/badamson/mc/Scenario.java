@@ -197,6 +197,26 @@ public class Scenario {
       return identifier;
    }
 
+   /**
+    * <p>
+    * A short human readable identifier for this scenario.
+    * </p>
+    * <p>
+    * Although the title is an identifier, it is not guaranteed to be a unique
+    * identifier.
+    * </p>
+    * <ul>
+    * <li>{@linkplain NamedUUID#isValidTitle(String) is a valid title}</li>
+    * </ul>
+    *
+    * @return the title.
+    */
+   @NonNull
+   @JsonIgnore
+   public String getTitle() {
+      return identifier.getTitle();
+   }
+
    @Override
    public final int hashCode() {
       return identifier.hashCode();
