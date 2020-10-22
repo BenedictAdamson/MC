@@ -28,6 +28,7 @@ import java.util.Objects;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -138,6 +139,7 @@ public class Scenario {
     * @see NamedUUID#getTitle()
     */
    @NonNull
+   @JsonProperty("description")
    public String getDescription() {
       return description;
    }
@@ -158,6 +160,7 @@ public class Scenario {
     *
     * @return the games
     */
+   @JsonProperty("games")
    public final Collection<Game> getGames() {
       return Collections.unmodifiableMap(games).values();
    }
@@ -173,7 +176,24 @@ public class Scenario {
     * @return the identifier.
     */
    @NonNull
+   @JsonProperty("identifier")
    public final NamedUUID getIdentifier() {
+      return identifier;
+   }
+
+   /**
+    * <p>
+    * A unique ID with a human readable title, for this scenario.
+    * </p>
+    * <ul>
+    * <li>Not null.</li>
+    * </ul>
+    *
+    * @return the identifier.
+    */
+   @NonNull
+   @JsonIgnore
+   public final NamedUUID getNamedUUID() {
       return identifier;
    }
 

@@ -124,13 +124,17 @@ public class ScenarioTest {
       final var identifier = scenario.getIdentifier();
       final var description = scenario.getDescription();
       final var games = scenario.getGames();
+      final var namedUUID = scenario.getNamedUUID();
       assertAll("Non null attributes and aggregates",
                () -> assertNotNull(identifier, "identifier"), // guard
                () -> assertNotNull(description, "description"),
-               () -> assertNotNull(games, "games")// guard
+               () -> assertNotNull(games, "games"), // guard
+               () -> assertNotNull(namedUUID, "namedUUID") // guard
       );
 
       NamedUUIDTest.assertInvariants(identifier);
+      NamedUUIDTest.assertInvariants(namedUUID);
+
       final var id = identifier.getId();
       assertAll("games", games.stream().map(game -> new Executable() {
 
