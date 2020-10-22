@@ -20,9 +20,6 @@ package uk.badamson.mc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -121,26 +118,6 @@ public class ScenarioTest {
    private static final Instant CREATED_A = Instant.EPOCH;
    private static final Instant CREATED_B = Instant.now();
 
-   public static void assertInvariants(final NamedUUID identifier) {
-      ObjectTest.assertInvariants(identifier);// inherited
-      final var id = identifier.getId();
-      final var title = identifier.getTitle();
-      assertAll("Not null", () -> assertNotNull(id, "id"),
-               () -> assertNotNull(title, "title"));// guard
-      assertAll("title",
-               () -> assertThat("Not empty", title, not(emptyString())),
-               () -> assertThat("Not longer that 64 code points",
-                        title.length(), not(greaterThan(64))));
-   }
-
-   public static void assertInvariants(final NamedUUID identifierA,
-            final NamedUUID identifierB) {
-      ObjectTest.assertInvariants(identifierA, identifierB);// inherited
-      assertEquals(identifierA.equals(identifierB),
-               identifierA.getId().equals(identifierB.getId()),
-               "Entity semantics, with the ID serving as a unique identifier");
-   }
-
    public static void assertInvariants(final Scenario scenario) {
       ObjectTest.assertInvariants(scenario);// inherited
 
@@ -153,7 +130,7 @@ public class ScenarioTest {
                () -> assertNotNull(games, "games")// guard
       );
 
-      assertInvariants(identifier);
+      NamedUUIDTest.assertInvariants(identifier);
       final var id = identifier.getId();
       assertAll("games", games.stream().map(game -> new Executable() {
 
