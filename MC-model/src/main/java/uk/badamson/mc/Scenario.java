@@ -21,9 +21,9 @@ package uk.badamson.mc;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import javax.persistence.Id;
@@ -46,7 +46,7 @@ public class Scenario {
    private final UUID identifier;
    private final String title;
    private final String description;
-   private final Map<Instant, Game> games = new HashMap<>();
+   private final SortedSet<Instant> gameCreationTimes = new TreeSet<>();
 
    /**
     * <p>
@@ -61,9 +61,9 @@ public class Scenario {
     * {@code title}.</li>
     * <li>The {@linkplain #getDescription() description} of this object is the
     * given {@code description}.</li>
-    * <li>The {@linkplain #getGames() collection of games} of this object
-    * {@linkplain Collection#containsAll(Collection) contains all} the given
-    * {@code games}.</li>
+    * <li>The {@linkplain #getGameCreationTimes() set of game creation times} of
+    * this object {@linkplain SortedSet#containsAll(Collection) contains all}
+    * the given {@code gameCreationTimes}.</li>
     * </ul>
     *
     * @param identifier
@@ -72,44 +72,33 @@ public class Scenario {
     *           A short human readable identifier for this scenario.
     * @param description
     *           A human readable description for the scenario.
-    * @param games
-    *           Games that have been created for this scenario.
+    * @param gameCreationTimes
+    *           The creation times of the the games that have been created for
+    *           this scenario.
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code identifier} is null</li>
     *            <li>If {@code title} is null</li>
     *            <li>If {@code description} is null</li>
-    *            <li>If {@code games} is null</li>
-    *            <li>If {@code games} contains a null</li>
+    *            <li>If {@code gameCreationTimes} is null</li>
     *            </ul>
     * @throws IllegalArgumentException
-    *            <ul>
-    *            <li>If the {@code title} is not
-    *            {@linkplain NamedUUID#isValidTitle(String) valid}.</li>
-    *            <li>If the scenario ID of any of the {@code games} does not
-    *            equal the given {@code identifier}.</li>
-    *            </ul>
+    *            If the {@code title} is not
+    *            {@linkplain NamedUUID#isValidTitle(String) valid}.
     */
    @JsonCreator
    public Scenario(@JsonProperty("identifier") @NonNull final UUID identifier,
             @NonNull @JsonProperty("title") final String title,
             @NonNull @JsonProperty("description") final String description,
-            @NonNull @JsonProperty("games") final Collection<Game> games) {
+            @NonNull @JsonProperty("gameCreationTimes") final SortedSet<Instant> gameCreationTimes) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.title = Objects.requireNonNull(title, "title");
       this.description = Objects.requireNonNull(description, "description");
+      this.gameCreationTimes.addAll(
+               Objects.requireNonNull(gameCreationTimes, "gameCreationTimes"));
 
       if (!NamedUUID.isValidTitle(title)) {
          throw new IllegalArgumentException("invalid title");
-      }
-
-      for (final var game : games) {
-         Objects.requireNonNull(game, "game");
-         if (!game.getIdentifier().getScenario().equals(identifier)) {
-            throw new IllegalArgumentException(
-                     "game is for a different scenario");
-         }
-         this.games.put(game.getIdentifier().getCreated(), game);
       }
    }
 
@@ -166,23 +155,23 @@ public class Scenario {
 
    /**
     * <p>
-    * Games that have been created for this scenario.
+    * The creation times of the the games that have been created for this
+    * scenario.
+    * </p>
+    * <p>
+    * The values in this collection can be combined with the
+    * {@linkplain #getIdentifier() identifier} of this scenario to form the
+    * unique identifier of the {@link Game} object of each of those games.
     * </p>
     * <ul>
-    * <li>Always have a (non null) collection of games.</li>
-    * <li>The collection of games does not have any null elements.</li>
-    * <li>The scenario IDs of the games equal the {@linkplain NamedUUID#getId()
-    * unique ID} of the {@linkplain #getIdentifier() identification information}
-    * of this scenario.</li>
-    * <li>The games have distinct creation times, so their
-    * {@linkplain Game#getIdentifier() identifiers} are unique.</li>
+    * <li>Always have a (non null) set of game start times.</li>
     * </ul>
     *
-    * @return the games
+    * @return the creation times
     */
-   @JsonProperty("games")
-   public final Collection<Game> getGames() {
-      return Collections.unmodifiableMap(games).values();
+   @JsonProperty("gameCreationTimes")
+   public final SortedSet<Instant> getGameCreationTimes() {
+      return Collections.unmodifiableSortedSet(gameCreationTimes);
    }
 
    /**

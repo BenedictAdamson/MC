@@ -18,8 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -28,14 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.opentest4j.MultipleFailuresError;
 
 /**
  * <p>
@@ -48,13 +46,13 @@ public class ScenarioTest {
    public class Construct2 {
       @Test
       public void differentIdentifiers() {
-         final Collection<Game> games = List.of();
+         final var gameCreationTimes = Collections.<Instant>emptySortedSet();
 
          // Tough test: all else equal
          final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A,
-                  games);
+                  gameCreationTimes);
          final var scenarioB = new Scenario(ID_B, TITLE_A, DESCRIPTION_A,
-                  games);
+                  gameCreationTimes);
          assertInvariants(scenarioA, scenarioB);
          assertNotEquals(scenarioA, scenarioB);
       }
@@ -62,14 +60,14 @@ public class ScenarioTest {
       @Test
       public void equalIdentifiers() {
          // Tough test: have different attributes and aggregates
-         final Collection<Game> gamesA = List.of();
-         final Collection<Game> gamesB = List
-                  .of(new Game(new Game.Identifier(ID_A, CREATED_A)));
+         final var gameCreationTimesA = Collections.<Instant>emptySortedSet();
+         final SortedSet<Instant> gameCreationTimesB = new TreeSet<>(
+                  Arrays.asList(CREATED_A));
 
          final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A,
-                  gamesA);
+                  gameCreationTimesA);
          final var scenarioB = new Scenario(ID_A, TITLE_B, DESCRIPTION_B,
-                  gamesB);
+                  gameCreationTimesB);
          assertInvariants(scenarioA, scenarioB);
          assertEquals(scenarioA, scenarioB);
       }
@@ -81,22 +79,22 @@ public class ScenarioTest {
 
       @Test
       public void a() {
-         final Collection<Game> games = List.of();
-         test(ID_A, TITLE_A, DESCRIPTION_A, games);
+         final var gameCreationTimes = Collections.<Instant>emptySortedSet();
+         test(ID_A, TITLE_A, DESCRIPTION_A, gameCreationTimes);
       }
 
       @Test
       public void b() {
-         final Collection<Game> games = List
-                  .of(new Game(new Game.Identifier(ID_B, CREATED_B)));
-         test(ID_B, TITLE_B, DESCRIPTION_B, games);
+         final SortedSet<Instant> gameCreationTimes = new TreeSet<>(
+                  Arrays.asList(CREATED_B));
+         test(ID_B, TITLE_B, DESCRIPTION_B, gameCreationTimes);
       }
 
       private void test(final UUID identifier, final String title,
-               final String description, final Collection<Game> games) {
+               final String description,
+               final SortedSet<Instant> gameCreationTimes) {
          final var scenario = new Scenario(identifier, title, description,
-                  games);
-         final var scenarioGames = scenario.getGames();
+                  gameCreationTimes);
 
          assertInvariants(scenario);
          assertAll(
@@ -105,9 +103,9 @@ public class ScenarioTest {
                   () -> assertSame(title, scenario.getTitle(), "title"),
                   () -> assertSame(description, scenario.getDescription(),
                            "description"),
-                  () -> assertThat("games contains all the given games",
-                           scenarioGames,
-                           containsInAnyOrder(games.toArray(new Game[0]))));
+                  () -> assertEquals(gameCreationTimes,
+                           scenario.getGameCreationTimes(),
+                           "gameCreationTimes"));
          JsonTest.assertCanSerializeAndDeserialize(scenario);
       }
    }// class
@@ -121,41 +119,25 @@ public class ScenarioTest {
    private static final Instant CREATED_A = Instant.EPOCH;
    private static final Instant CREATED_B = Instant.now();
 
-   private static void assertGamesInvariants(final Collection<Game> games,
-            final UUID id) throws MultipleFailuresError {
-      assertAll("games", games.stream().map(game -> new Executable() {
-
-         @Override
-         public void execute() {
-            assertNotNull(game, "does not have any null elements.");// guard
-            final var gameId = game.getIdentifier();
-            assertAll("[" + gameId + "]", () -> GameTest.assertInvariants(game),
-                     () -> assertEquals(gameId.getScenario(), id,
-                              "scenario IDs equal unique ID of the identification information of this scenario."));
-         }
-      }));
-   }
-
    public static void assertInvariants(final Scenario scenario) {
       ObjectTest.assertInvariants(scenario);// inherited
 
       final var identifier = scenario.getIdentifier();
       final var title = scenario.getTitle();
       final var description = scenario.getDescription();
-      final var games = scenario.getGames();
+      final var gameCreationTimes = scenario.getGameCreationTimes();
       final var namedUUID = scenario.getNamedUUID();
       assertAll("Non null attributes and aggregates",
                () -> assertNotNull(identifier, "identifier"), // guard
                () -> assertNotNull(title, "title"), // guard
                () -> assertNotNull(description, "description"),
-               () -> assertNotNull(games, "games"), // guard
+               () -> assertNotNull(gameCreationTimes, "gameCreationTimes"), // guard
                () -> assertNotNull(namedUUID, "namedUUID") // guard
       );
 
       assertAll(() -> NamedUUIDTest.assertInvariants(namedUUID),
                () -> assertTrue(NamedUUID.isValidTitle(title),
-                        "title is valid"),
-               () -> assertGamesInvariants(games, identifier));
+                        "title is valid"));
    }
 
    public static void assertInvariants(final Scenario scenarioA,
