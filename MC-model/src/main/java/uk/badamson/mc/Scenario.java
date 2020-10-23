@@ -18,12 +18,7 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import javax.persistence.Id;
@@ -46,7 +41,6 @@ public class Scenario {
    private final UUID identifier;
    private final String title;
    private final String description;
-   private final SortedSet<Instant> gameCreationTimes = new TreeSet<>();
 
    /**
     * <p>
@@ -61,9 +55,6 @@ public class Scenario {
     * {@code title}.</li>
     * <li>The {@linkplain #getDescription() description} of this object is the
     * given {@code description}.</li>
-    * <li>The {@linkplain #getGameCreationTimes() set of game creation times} of
-    * this object {@linkplain SortedSet#containsAll(Collection) contains all}
-    * the given {@code gameCreationTimes}.</li>
     * </ul>
     *
     * @param identifier
@@ -72,15 +63,11 @@ public class Scenario {
     *           A short human readable identifier for this scenario.
     * @param description
     *           A human readable description for the scenario.
-    * @param gameCreationTimes
-    *           The creation times of the the games that have been created for
-    *           this scenario.
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code identifier} is null</li>
     *            <li>If {@code title} is null</li>
     *            <li>If {@code description} is null</li>
-    *            <li>If {@code gameCreationTimes} is null</li>
     *            </ul>
     * @throws IllegalArgumentException
     *            If the {@code title} is not
@@ -89,13 +76,10 @@ public class Scenario {
    @JsonCreator
    public Scenario(@JsonProperty("identifier") @NonNull final UUID identifier,
             @NonNull @JsonProperty("title") final String title,
-            @NonNull @JsonProperty("description") final String description,
-            @NonNull @JsonProperty("gameCreationTimes") final SortedSet<Instant> gameCreationTimes) {
+            @NonNull @JsonProperty("description") final String description) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.title = Objects.requireNonNull(title, "title");
       this.description = Objects.requireNonNull(description, "description");
-      this.gameCreationTimes.addAll(
-               Objects.requireNonNull(gameCreationTimes, "gameCreationTimes"));
 
       if (!NamedUUID.isValidTitle(title)) {
          throw new IllegalArgumentException("invalid title");
@@ -151,27 +135,6 @@ public class Scenario {
    @JsonProperty("description")
    public String getDescription() {
       return description;
-   }
-
-   /**
-    * <p>
-    * The creation times of the the games that have been created for this
-    * scenario.
-    * </p>
-    * <p>
-    * The values in this collection can be combined with the
-    * {@linkplain #getIdentifier() identifier} of this scenario to form the
-    * unique identifier of the {@link Game} object of each of those games.
-    * </p>
-    * <ul>
-    * <li>Always have a (non null) set of game start times.</li>
-    * </ul>
-    *
-    * @return the creation times
-    */
-   @JsonProperty("gameCreationTimes")
-   public final SortedSet<Instant> getGameCreationTimes() {
-      return Collections.unmodifiableSortedSet(gameCreationTimes);
    }
 
    /**
