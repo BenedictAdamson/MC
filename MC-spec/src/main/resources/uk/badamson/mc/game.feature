@@ -21,7 +21,8 @@ Feature: Game
   @integration
   @back-end
   Scenario: Examine game
-    When Viewing the games of a scenario
+    When A scenario has games
+    And Viewing the games of the scenario
     And Navigate to one game of the scenario
     Then MC serves the game page
     And The game page includes the scenario title
