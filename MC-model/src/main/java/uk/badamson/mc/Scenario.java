@@ -95,8 +95,8 @@ public class Scenario {
     * {@linkplain #getIdentifier() identifier} serving as a unique identifier:
     * this object is equivalent to another object if, and only of, the other
     * object is also a {@link Scenario} and the two have
-    * {@linkplain NamedUUID#equals(Object) equivalent}
-    * {@linkplain #getIdentifier() identifiers}.</li>
+    * {@linkplain UUID#equals(Object) equivalent} {@linkplain #getIdentifier()
+    * identifiers}.</li>
     * </ul>
     *
     * @param that
@@ -133,7 +133,7 @@ public class Scenario {
     */
    @NonNull
    @JsonProperty("description")
-   public String getDescription() {
+   public final String getDescription() {
       return description;
    }
 
@@ -191,7 +191,7 @@ public class Scenario {
     */
    @NonNull
    @JsonProperty("title")
-   public String getTitle() {
+   public final String getTitle() {
       return title;
    }
 

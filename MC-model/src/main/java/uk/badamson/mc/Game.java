@@ -40,8 +40,8 @@ public class Game {
 
    /**
     * <p>
-    * A unique identifier for a {@linkplain Game game} of the Mission Command
-    * game.
+    * A unique identifier for a {@linkplain Game game} (play) of the Mission
+    * Command game.
     * </p>
     */
    @Immutable
@@ -82,6 +82,10 @@ public class Game {
             return false;
          }
          final var other = (Identifier) obj;
+         /*
+          * Two Identifiers are unlikely to have the same created value, so
+          * check those values first.
+          */
          return created.equals(other.created)
                   && scenario.equals(other.scenario);
       }

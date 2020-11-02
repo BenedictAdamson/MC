@@ -34,8 +34,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A {@link UUID} associated with a human-readable title or name.
  * </p>
  * <p>
- * This type is for use in contexts where a precise and unique ID is needed, but
- * it is also necessary to present a human readable ID.
+ * This type is intended for contexts where a precise and unique ID is needed,
+ * but it is also necessary to present a human readable ID.
  * </p>
  */
 @Immutable
@@ -47,7 +47,7 @@ public final class NamedUUID {
     * attribute for a {@link NamedUUID}.
     * </p>
     * <p>
-    * A invalid title conforms to all these constraints:
+    * A valid title conforms to all these constraints:
     * </p>
     * <ul>
     * <li>Not null.</li>
@@ -103,7 +103,7 @@ public final class NamedUUID {
    public NamedUUID(@NonNull @JsonProperty("id") final UUID id,
             @NonNull @JsonProperty("title") final String title) {
       this.id = Objects.requireNonNull(id, "id");
-      this.title = Objects.requireNonNull(title, "title");// guard
+      this.title = Objects.requireNonNull(title, "title");
       if (!isValidTitle(title)) {
          throw new IllegalArgumentException("invalid title");
       }
