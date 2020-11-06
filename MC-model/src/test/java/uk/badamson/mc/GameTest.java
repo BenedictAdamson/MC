@@ -18,6 +18,8 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -30,6 +32,9 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * <p>
@@ -172,6 +177,36 @@ public class GameTest {
                               "created"));
             JsonTest.assertCanSerializeAndDeserialize(identifier);
          }
+      }// class
+
+      @Nested
+      public class Serialize {
+
+         @Test
+         public void a() {
+            test(SCENARIO_ID_A, CREATED_A);
+         }
+
+         @Test
+         public void b() {
+            test(SCENARIO_ID_B, CREATED_B);
+         }
+
+         private void test(final UUID scenario, final Instant created) {
+            final var expectedSerializedCreated = created.toString();
+            final var identifier = new Game.Identifier(scenario, created);
+
+            final String serialized;
+            try {
+               serialized = JsonTest.serialize(identifier);
+            } catch (final JsonProcessingException e) {
+               throw new AssertionFailedError("can serialize as JSON", e);
+            }
+
+            assertThat("contains serialized 'created' value", serialized,
+                     containsString(expectedSerializedCreated));
+         }
+
       }// class
    }// class
 

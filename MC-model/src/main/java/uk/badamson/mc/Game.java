@@ -29,6 +29,7 @@ import javax.persistence.Id;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -108,6 +109,7 @@ public class Game {
        * @return the creation time
        */
       @Nonnull
+      @JsonFormat(shape = JsonFormat.Shape.STRING)
       public Instant getCreated() {
          return created;
       }
