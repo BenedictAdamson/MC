@@ -170,6 +170,7 @@ public class GameTest {
                               "scenario"),
                      () -> assertSame(created, identifier.getCreated(),
                               "created"));
+            JsonTest.assertCanSerializeAndDeserialize(identifier);
          }
       }// class
    }// class
