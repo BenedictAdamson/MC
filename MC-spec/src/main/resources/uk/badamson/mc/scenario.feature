@@ -32,4 +32,5 @@ Feature: Scenario
     And Navigate to one scenario
     Then MC serves the scenario page
     And The scenario page includes the scenario description
+    And The scenario page includes the list of games of that scenario
     

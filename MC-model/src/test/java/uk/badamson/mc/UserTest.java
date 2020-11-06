@@ -266,6 +266,7 @@ public class UserTest {
                            user.isCredentialsNonExpired(),
                            "credentialsNonExpired"),
                   () -> assertEquals(enabled, user.isEnabled(), "enabled"));
+         JsonTest.assertCanSerializeAndDeserialize(user);
 
          return user;
       }
