@@ -41,7 +41,7 @@ public class JsonTest {
    public static void assertCanSerialize(final Object object) {
       Objects.requireNonNull(object, "object");
       try {
-         OBJECT_MAPPER.writeValueAsString(object);
+         serialize(object);
       } catch (final JsonProcessingException e) {
          throw new AssertionFailedError("can serialize as JSON", e);
       }
@@ -51,7 +51,7 @@ public class JsonTest {
       Objects.requireNonNull(object, "object");
       final String serialized;
       try {
-         serialized = OBJECT_MAPPER.writeValueAsString(object);
+         serialized = serialize(object);
       } catch (final JsonProcessingException e) {
          throw new AssertionFailedError("can serialize as JSON", e);
       }
@@ -60,5 +60,10 @@ public class JsonTest {
       } catch (final JsonProcessingException e) {
          throw new AssertionFailedError("can not deserialize from JSON", e);
       }
+   }
+
+   public static String serialize(final Object object)
+            throws JsonProcessingException {
+      return OBJECT_MAPPER.writeValueAsString(object);
    }
 }
