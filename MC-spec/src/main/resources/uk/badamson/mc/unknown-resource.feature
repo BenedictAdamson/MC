@@ -23,7 +23,8 @@ Feature: Unknown Resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
     When getting the unknown resource at "<path>"
-    Then MC replies with Not Found
+    Then MC replies with Client Error
+    # Implementing a more precisely constained HTTP status code is difficult.
 
     Examples: 
       |path|
@@ -35,9 +36,8 @@ Feature: Unknown Resource
     # Implicitly a fresh instance of MC
     # Implicitly not logged in
     When modifying the unknown resource with a "<verb>" at "<path>"
-    Then MC replies with Not Found or Forbidden or Method Not Allowed
-    # The precise HTTP status code is determined by the ingress, rather than MC proper,
-    # and does not matter in practice to a user using a browser.
+    Then MC replies with Client Error
+    # Implementing a more precisely constained HTTP status code is difficult.
 
     Examples: 
       |verb|path|
