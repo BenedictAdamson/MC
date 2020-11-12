@@ -29,3 +29,12 @@ Feature: Game
     And The game page includes the scenario description
     And The game page includes the date and time that the game was set up
     
+  @integration
+  @back-end
+  Scenario: Add game
+    Given user has the "MANAGE_GAMES" role
+    And logged in
+    When creating a game
+    Then MC accepts the creation
+    And can get the list of games
+    And the list of games includes the new game
