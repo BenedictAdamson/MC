@@ -35,6 +35,6 @@ Feature: Game
     Given user has the "MANAGE_GAMES" role
     And logged in
     When creating a game
-    Then MC accepts the creation
+    Then MC accepts the creation of the game
     And can get the list of games
     And the list of games includes the new game
