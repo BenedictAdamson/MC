@@ -38,3 +38,10 @@ Feature: Game
     Then MC accepts the creation of the game
     And can get the list of games
     And the list of games includes the new game
+    
+  @integration
+  @back-end
+  Scenario: Only a game manager may add game
+    Given user does not have the "MANAGE_GAMES" role
+    And logged in
+    Then MC does not present creating a game as an option
