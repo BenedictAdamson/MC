@@ -41,7 +41,7 @@ Feature: Game
     
   @integration
   @back-end
-  Scenario: Only a game manager may add game
+  Scenario: Only a game manager may add a game
     Given user does not have the "MANAGE_GAMES" role
     And logged in
     Then MC does not present creating a game as an option
