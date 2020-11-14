@@ -52,6 +52,7 @@ Feature: Game
   @back-end
   Scenario: End game recruitment
     Given user has the "MANAGE_GAMES" role
+    And logged in
     And viewing a game that is recruiting players
     When user ends recruitment for the game
     Then MC accepts ending recuitment for the game
