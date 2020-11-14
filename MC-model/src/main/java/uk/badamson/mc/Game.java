@@ -146,6 +146,8 @@ public class Game {
    @org.springframework.data.annotation.Id
    private final Identifier identifier;
 
+   private boolean recruiting;
+
    /**
     * <p>
     * Construct a game for a given scenario.
@@ -153,19 +155,42 @@ public class Game {
     *
     * <h2>Post Conditions</h2>
     * <ul>
-    * <li>The {@linkplain #getIdentifier() identifier} of this object is the
-    * given {@code identifier}.</li>
+    * <li>The {@linkplain #getIdentifier() identifier} of this game is the given
+    * {@code identifier}.</li>
+    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is the
+    * given {@code recruiting} flag.</li>
     * </ul>
     *
     * @param identifier
     *           The unique identifier for this game.
+    * @param recruiting
+    *           Whether this game is <i>recruiting</i> new players.
     * @throws NullPointerException
     *            If {@code identifier} is null
     */
    @JsonCreator
-   public Game(
-            @NonNull @JsonProperty("identifier") final Identifier identifier) {
+   public Game(@NonNull @JsonProperty("identifier") final Identifier identifier,
+            @JsonProperty("recruiting") final boolean recruiting) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
+      this.recruiting = recruiting;
+   }
+
+   /**
+    * <p>
+    * Indicate that this game is not {@linkplain #isRecruiting() recruiting}
+    * players (any longer).
+    * </p>
+    * <p>
+    * This mutator is idempotent: the mutator does not have the precondition
+    * that it is recruiting.
+    * </p>
+    * <h2>Post Conditions</h2>
+    * <ul>
+    * <li>This game is not {@linkplain #isRecruiting() recruiting}.</li>
+    * </ul>
+    */
+   public final void endRecruitment() {
+      recruiting = false;
    }
 
    /**
@@ -215,6 +240,20 @@ public class Game {
    @Override
    public final int hashCode() {
       return identifier.hashCode();
+   }
+
+   /**
+    * <p>
+    * Whether this game is <i>recruiting</i> new players.
+    * </p>
+    * <p>
+    * That is, whether players may join this game.
+    * </p>
+    *
+    * @return whether recruiting
+    */
+   public final boolean isRecruiting() {
+      return recruiting;
    }
 
 }

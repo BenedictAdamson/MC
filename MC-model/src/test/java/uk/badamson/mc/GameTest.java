@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -49,20 +50,25 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier);
+         test(identifier, false);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier);
+         test(identifier, true);
       }
 
-      private void test(final Game.Identifier identifier) {
-         final var game = new Game(identifier);
+      private void test(final Game.Identifier identifier,
+               final boolean recruiting) {
+         final var game = new Game(identifier, recruiting);
 
          assertInvariants(game);
-         assertSame(identifier, game.getIdentifier(), "identifier");
+         assertAll("Has the given attribute values",
+                  () -> assertSame(identifier, game.getIdentifier(),
+                           "identifier"),
+                  () -> assertEquals(recruiting, game.isRecruiting(),
+                           "recruiting"));
          JsonTest.assertCanSerializeAndDeserialize(game);
       }
    }// class
@@ -74,28 +80,18 @@ public class GameTest {
       public void differentIdentifiers() {
          final var identifierA = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
          final var identifierB = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         final var gameA = new Game(identifierA);
-         final var gameB = new Game(identifierB);
+         final var gameA = new Game(identifierA, true);
+         final var gameB = new Game(identifierB, true);
 
          assertInvariants(gameA, gameB);
          assertNotEquals(gameA, gameB);
       }
 
       @Test
-      public void differentScenarioDescriptions() {
+      public void differentRecuitment() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier);
-         final var gameB = new Game(identifier);
-
-         assertInvariants(gameA, gameB);
-         assertEquals(gameA, gameB);
-      }
-
-      @Test
-      public void differentScenarioTitles() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier);
-         final var gameB = new Game(identifier);
+         final var gameA = new Game(identifier, true);
+         final var gameB = new Game(identifier, false);
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
@@ -104,11 +100,35 @@ public class GameTest {
       @Test
       public void equalAttributes() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier);
-         final var gameB = new Game(identifier);
+         final var gameA = new Game(identifier, true);
+         final var gameB = new Game(identifier, true);
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
+      }
+   }// class
+
+   @Nested
+   public class EndRecruitment {
+
+      @Test
+      public void initiallyFalse() {
+         test(false);
+      }
+
+      @Test
+      public void initiallyTrue() {
+         test(true);
+      }
+
+      private void test(final boolean recruitment0) {
+         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var game = new Game(identifier, recruitment0);
+
+         game.endRecruitment();
+
+         assertInvariants(game);
+         assertFalse(game.isRecruiting(), "This game is not recruiting.");
       }
    }// class
 
