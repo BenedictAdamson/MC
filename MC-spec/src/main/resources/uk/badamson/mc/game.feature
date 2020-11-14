@@ -55,13 +55,13 @@ Feature: Game
     And logged in
     And viewing a game that is recruiting players
     When user ends recruitment for the game
-    Then MC accepts ending recuitment for the game
+    Then MC accepts ending recruitment for the game
     And the game page indicates that the game is not recruiting players
     
   @integration
   @back-end
-  Scenario: Only a game manager may end recuitment for a game
+  Scenario: Only a game manager may end recruitment for a game
     Given user does not have the "MANAGE_GAMES" role
     And logged in
     And viewing a game that is recruiting players
-    Then MC does not present ending recuitment for the game as an option
+    Then MC does not present ending recruitment for the game as an option
