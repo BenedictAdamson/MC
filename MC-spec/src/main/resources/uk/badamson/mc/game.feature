@@ -28,7 +28,7 @@ Feature: Game
     And The game page includes the scenario title
     And The game page includes the scenario description
     And The game page includes the date and time that the game was set up
-    And The game page indicates whether the game is recruting players
+    And The game page indicates whether the game is recruiting players
     
   @integration
   @back-end
@@ -37,7 +37,7 @@ Feature: Game
     And logged in
     When creating a game
     Then MC accepts the creation of the game
-    And the game page indicates that the game is recruting players
+    And the game page indicates that the game is recruiting players
     And can get the list of games
     And the list of games includes the new game
     
@@ -55,7 +55,7 @@ Feature: Game
     And viewing a game that is recuting players
     When user ends recruitment for the game
     Then MC accepts ending recuitment for the game
-    And the game page indicates that the game is not recruting players
+    And the game page indicates that the game is not recruiting players
     
   @integration
   @back-end
