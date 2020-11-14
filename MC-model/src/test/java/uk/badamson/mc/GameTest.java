@@ -45,35 +45,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class GameTest {
 
    @Nested
-   public class Construct {
-
-      @Test
-      public void a() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, false);
-      }
-
-      @Test
-      public void b() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, true);
-      }
-
-      private void test(final Game.Identifier identifier,
-               final boolean recruiting) {
-         final var game = new Game(identifier, recruiting);
-
-         assertInvariants(game);
-         assertAll("Has the given attribute values",
-                  () -> assertSame(identifier, game.getIdentifier(),
-                           "identifier"),
-                  () -> assertEquals(recruiting, game.isRecruiting(),
-                           "recruiting"));
-         JsonTest.assertCanSerializeAndDeserialize(game);
-      }
-   }// class
-
-   @Nested
    public class Construct2 {
 
       @Test
@@ -105,6 +76,66 @@ public class GameTest {
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
+      }
+   }// class
+
+   @Nested
+   public class ConstructCopy {
+
+      @Test
+      public void a() {
+         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         test(identifier, false);
+      }
+
+      @Test
+      public void b() {
+         final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+         test(identifier, true);
+      }
+
+      private void test(final Game.Identifier identifier,
+               final boolean recruiting) {
+         final var game0 = new Game(identifier, recruiting);
+
+         final var copy = new Game(game0);
+
+         assertInvariants(copy);
+         assertInvariants(game0, copy);
+         assertAll("Copied", () -> assertEquals(game0, copy),
+                  () -> assertSame(game0.getIdentifier(), copy.getIdentifier(),
+                           "identifier"),
+                  () -> assertEquals(game0.isRecruiting(), copy.isRecruiting(),
+                           "recruiting"));
+      }
+   }// class
+
+   @Nested
+   public class ConstructWithAttributes {
+
+      @Test
+      public void a() {
+         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         test(identifier, false);
+      }
+
+      @Test
+      public void b() {
+         final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+         test(identifier, true);
+      }
+
+      private void test(final Game.Identifier identifier,
+               final boolean recruiting) {
+         final var game = new Game(identifier, recruiting);
+
+         assertInvariants(game);
+         assertAll("Has the given attribute values",
+                  () -> assertSame(identifier, game.getIdentifier(),
+                           "identifier"),
+                  () -> assertEquals(recruiting, game.isRecruiting(),
+                           "recruiting"));
+         JsonTest.assertCanSerializeAndDeserialize(game);
       }
    }// class
 

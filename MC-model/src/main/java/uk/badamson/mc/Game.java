@@ -150,7 +150,33 @@ public class Game {
 
    /**
     * <p>
-    * Construct a game for a given scenario.
+    * Construct a copy of a game.
+    * </p>
+    *
+    * <h2>Post Conditions</h2>
+    * <ul>
+    * <li>This game is {@linkplain #equals(Object) equivalent to} the given
+    * game.</li>
+    * <li>The {@linkplain #getIdentifier() identifier} of this game is the same
+    * as the identifier of the given game.</li>
+    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is equal
+    * to whether the given game is recruiting flag.</li>
+    * </ul>
+    *
+    * @param that
+    *           The game to copy.
+    * @throws NullPointerException
+    *            If {@code that} is null
+    */
+   public Game(final Game that) {
+      Objects.requireNonNull(that, "that");
+      identifier = that.identifier;
+      recruiting = that.recruiting;
+   }
+
+   /**
+    * <p>
+    * Construct a game with given attribute values.
     * </p>
     *
     * <h2>Post Conditions</h2>
