@@ -52,7 +52,7 @@ Feature: Game
   @back-end
   Scenario: End game recruitment
     Given user has the "MANAGE_GAMES" role
-    And viewing a game that is recuting players
+    And viewing a game that is recruiting players
     When user ends recruitment for the game
     Then MC accepts ending recuitment for the game
     And the game page indicates that the game is not recruiting players
@@ -62,5 +62,5 @@ Feature: Game
   Scenario: Only a game manager may end recuitment for a game
     Given user does not have the "MANAGE_GAMES" role
     And logged in
-    And viewing a game that is recuting players
+    And viewing a game that is recruiting players
     Then MC does not present ending recuitment for the game as an option
