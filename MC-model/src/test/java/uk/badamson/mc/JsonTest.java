@@ -18,6 +18,7 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import java.io.UncheckedIOException;
 import java.util.Objects;
 
 import org.opentest4j.AssertionFailedError;
@@ -47,23 +48,19 @@ public class JsonTest {
       }
    }
 
-   public static void assertCanSerializeAndDeserialize(final Object object) {
-      Objects.requireNonNull(object, "object");
-      final String serialized;
-      try {
-         serialized = serialize(object);
-      } catch (final JsonProcessingException e) {
-         throw new AssertionFailedError("can serialize as JSON", e);
-      }
-      try {
-         OBJECT_MAPPER.readValue(serialized, object.getClass());
-      } catch (final JsonProcessingException e) {
-         throw new AssertionFailedError("can not deserialize from JSON", e);
-      }
-   }
-
    public static String serialize(final Object object)
             throws JsonProcessingException {
       return OBJECT_MAPPER.writeValueAsString(object);
+   }
+
+   @SuppressWarnings("unchecked")
+   public static <TYPE> TYPE serializeAndDeserialize(final TYPE object) {
+      Objects.requireNonNull(object, "object");
+      try {
+         final var serialized = serialize(object);
+         return (TYPE) OBJECT_MAPPER.readValue(serialized, object.getClass());
+      } catch (final JsonProcessingException e) {
+         throw new UncheckedIOException("can not deserialize from JSON", e);
+      }
    }
 }

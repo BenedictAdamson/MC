@@ -135,7 +135,6 @@ public class GameTest {
                            "identifier"),
                   () -> assertEquals(recruiting, game.isRecruiting(),
                            "recruiting"));
-         JsonTest.assertCanSerializeAndDeserialize(game);
       }
    }// class
 
@@ -226,7 +225,34 @@ public class GameTest {
                               "scenario"),
                      () -> assertSame(created, identifier.getCreated(),
                               "created"));
-            JsonTest.assertCanSerializeAndDeserialize(identifier);
+         }
+      }// class
+
+      @Nested
+      public class JSON {
+
+         @Test
+         public void a() {
+            test(SCENARIO_ID_A, CREATED_A);
+         }
+
+         @Test
+         public void b() {
+            test(SCENARIO_ID_B, CREATED_B);
+         }
+
+         private void test(final UUID scenario, final Instant created) {
+            final var identifier = new Game.Identifier(scenario, created);
+            final var deserialized = JsonTest
+                     .serializeAndDeserialize(identifier);
+
+            assertInvariants(deserialized);
+            assertInvariants(identifier, deserialized);
+            assertAll("Deserialised attributes",
+                     () -> assertEquals(scenario, identifier.getScenario(),
+                              "scenario"),
+                     () -> assertEquals(created, identifier.getCreated(),
+                              "created"));
          }
       }// class
 
@@ -259,6 +285,37 @@ public class GameTest {
          }
 
       }// class
+   }// class
+
+   @Nested
+   public class Json {
+
+      @Test
+      public void a() {
+         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         test(identifier, false);
+      }
+
+      @Test
+      public void b() {
+         final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+         test(identifier, true);
+      }
+
+      private void test(final Game.Identifier identifier,
+               final boolean recruiting) {
+         final var game = new Game(identifier, recruiting);
+         final var deserialized = JsonTest.serializeAndDeserialize(game);
+
+         assertInvariants(deserialized);
+         assertInvariants(game, deserialized);
+         assertEquals(game, deserialized);
+         assertAll("Deserialised attributes",
+                  () -> assertEquals(identifier, deserialized.getIdentifier(),
+                           "identifier"),
+                  () -> assertEquals(recruiting, deserialized.isRecruiting(),
+                           "recruiting"));
+      }
    }// class
 
    private static final UUID SCENARIO_ID_A = UUID.randomUUID();

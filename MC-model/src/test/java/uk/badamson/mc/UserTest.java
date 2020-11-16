@@ -266,7 +266,6 @@ public class UserTest {
                            user.isCredentialsNonExpired(),
                            "credentialsNonExpired"),
                   () -> assertEquals(enabled, user.isEnabled(), "enabled"));
-         JsonTest.assertCanSerializeAndDeserialize(user);
 
          return user;
       }
@@ -296,6 +295,79 @@ public class UserTest {
          test(USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true, true);
       }
 
+   }// class
+
+   @Nested
+   public class Json {
+
+      @Test
+      public void authorities() {
+         test(USERNAME_A, PASSWORD_A, Set.of(), true, true, true, true);
+      }
+
+      @Test
+      public void basic() {
+         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, true);
+      }
+
+      @Test
+      public void notAccountNonExpired() {
+         test(USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true, true);
+      }
+
+      @Test
+      public void notAccountNonLocked() {
+         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true, true);
+      }
+
+      @Test
+      public void notCredentialsNonExpired() {
+         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false, true);
+      }
+
+      @Test
+      public void notEnabled() {
+         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, false);
+      }
+
+      @Test
+      public void nullPassword() {
+         final String password = null;
+         test(USERNAME_A, password, Authority.ALL, true, true, true, true);
+      }
+
+      @Test
+      public void password() {
+         test(USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true, true);
+      }
+
+      private void test(final String username, final String password,
+               final Set<Authority> authorities,
+               final boolean accountNonExpired, final boolean accountNonLocked,
+               final boolean credentialsNonExpired, final boolean enabled) {
+         final var user = new User(username, password, authorities,
+                  accountNonExpired, accountNonLocked, credentialsNonExpired,
+                  enabled);
+
+         final var deserialized = JsonTest.serializeAndDeserialize(user);
+
+         assertInvariants(user);
+         assertInvariants(user, deserialized);
+         assertAll("Deserialised attributes",
+                  () -> assertEquals(username, user.getUsername(),
+                           "userSname."),
+                  () -> assertEquals(password, user.getPassword(), "password."),
+                  () -> assertEquals(authorities, user.getAuthorities(),
+                           "authorities"),
+                  () -> assertEquals(accountNonExpired,
+                           user.isAccountNonExpired(), "accountNonExpired"),
+                  () -> assertEquals(accountNonLocked,
+                           user.isAccountNonLocked(), "accountNonLocked"),
+                  () -> assertEquals(credentialsNonExpired,
+                           user.isCredentialsNonExpired(),
+                           "credentialsNonExpired"),
+                  () -> assertEquals(enabled, user.isEnabled(), "enabled"));
+      }
    }// class
 
    private static final String USERNAME_A = "John";
