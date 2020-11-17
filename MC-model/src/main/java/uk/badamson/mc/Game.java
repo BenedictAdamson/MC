@@ -67,6 +67,7 @@ public class Game {
        *            <li>If {@code created} is null.</li>
        *            </ul>
        */
+      @JsonCreator
       public Identifier(@Nonnull @JsonProperty("scenario") final UUID scenario,
                @Nonnull @JsonProperty("created") final Instant created) {
          this.scenario = Objects.requireNonNull(scenario, "scenario");
@@ -259,6 +260,7 @@ public class Game {
     * @return the identifier.
     */
    @NonNull
+   @JsonProperty("identifier")
    public final Identifier getIdentifier() {
       return identifier;
    }
@@ -278,6 +280,7 @@ public class Game {
     *
     * @return whether recruiting
     */
+   @JsonProperty("recruiting")
    public final boolean isRecruiting() {
       return recruiting;
    }
