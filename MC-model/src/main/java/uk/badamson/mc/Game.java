@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.persistence.Id;
 
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -196,6 +197,7 @@ public class Game {
     *            If {@code identifier} is null
     */
    @JsonCreator
+   @PersistenceConstructor
    public Game(@NonNull @JsonProperty("identifier") final Identifier identifier,
             @JsonProperty("recruiting") final boolean recruiting) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
