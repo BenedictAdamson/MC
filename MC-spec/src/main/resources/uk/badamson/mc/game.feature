@@ -28,6 +28,7 @@ Feature: Game
     And The game page includes the scenario title
     And The game page includes the scenario description
     And The game page includes the date and time that the game was set up
+    And The game page indicates whether the game is recruiting players
     
   @integration
   @back-end
@@ -36,6 +37,7 @@ Feature: Game
     And logged in
     When creating a game
     Then MC accepts the creation of the game
+    And the game page indicates that the game is recruiting players
     And can get the list of games
     And the list of games includes the new game
     
@@ -45,3 +47,21 @@ Feature: Game
     Given user does not have the "MANAGE_GAMES" role
     And logged in
     Then MC does not present creating a game as an option
+    
+  @integration
+  @back-end
+  Scenario: End game recruitment
+    Given user has the "MANAGE_GAMES" role
+    And logged in
+    And viewing a game that is recruiting players
+    When user ends recruitment for the game
+    Then MC accepts ending recruitment for the game
+    And the game page indicates that the game is not recruiting players
+    
+  @integration
+  @back-end
+  Scenario: Only a game manager may end recruitment for a game
+    Given user does not have the "MANAGE_GAMES" role
+    And logged in
+    And viewing a game that is recruiting players
+    Then MC does not present ending recruitment for the game as an option

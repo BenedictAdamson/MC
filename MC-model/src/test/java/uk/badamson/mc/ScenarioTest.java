@@ -85,7 +85,35 @@ public class ScenarioTest {
                   () -> assertSame(title, scenario.getTitle(), "title"),
                   () -> assertSame(description, scenario.getDescription(),
                            "description"));
-         JsonTest.assertCanSerializeAndDeserialize(scenario);
+      }
+   }// class
+
+   @Nested
+   public class Json {
+
+      @Test
+      public void a() {
+         test(ID_A, TITLE_A, DESCRIPTION_A);
+      }
+
+      @Test
+      public void b() {
+         test(ID_B, TITLE_B, DESCRIPTION_B);
+      }
+
+      private void test(final UUID identifier, final String title,
+               final String description) {
+         final var scenario = new Scenario(identifier, title, description);
+         final var deserialized = JsonTest.serializeAndDeserialize(scenario);
+
+         assertInvariants(deserialized);
+         assertInvariants(scenario, deserialized);
+         assertAll("Deserialised attributes",
+                  () -> assertEquals(identifier, scenario.getIdentifier(),
+                           "identifier"),
+                  () -> assertEquals(title, scenario.getTitle(), "title"),
+                  () -> assertEquals(description, scenario.getDescription(),
+                           "description"));
       }
    }// class
 

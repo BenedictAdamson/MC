@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.persistence.Id;
 
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -67,6 +68,7 @@ public class Game {
        *            <li>If {@code created} is null.</li>
        *            </ul>
        */
+      @JsonCreator
       public Identifier(@Nonnull @JsonProperty("scenario") final UUID scenario,
                @Nonnull @JsonProperty("created") final Instant created) {
          this.scenario = Objects.requireNonNull(scenario, "scenario");
@@ -146,26 +148,78 @@ public class Game {
    @org.springframework.data.annotation.Id
    private final Identifier identifier;
 
+   private boolean recruiting;
+
    /**
     * <p>
-    * Construct a game for a given scenario.
+    * Construct a copy of a game.
     * </p>
     *
     * <h2>Post Conditions</h2>
     * <ul>
-    * <li>The {@linkplain #getIdentifier() identifier} of this object is the
-    * given {@code identifier}.</li>
+    * <li>This game is {@linkplain #equals(Object) equivalent to} the given
+    * game.</li>
+    * <li>The {@linkplain #getIdentifier() identifier} of this game is the same
+    * as the identifier of the given game.</li>
+    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is equal
+    * to whether the given game is recruiting flag.</li>
+    * </ul>
+    *
+    * @param that
+    *           The game to copy.
+    * @throws NullPointerException
+    *            If {@code that} is null
+    */
+   public Game(final Game that) {
+      Objects.requireNonNull(that, "that");
+      identifier = that.identifier;
+      recruiting = that.recruiting;
+   }
+
+   /**
+    * <p>
+    * Construct a game with given attribute values.
+    * </p>
+    *
+    * <h2>Post Conditions</h2>
+    * <ul>
+    * <li>The {@linkplain #getIdentifier() identifier} of this game is the given
+    * {@code identifier}.</li>
+    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is the
+    * given {@code recruiting} flag.</li>
     * </ul>
     *
     * @param identifier
     *           The unique identifier for this game.
+    * @param recruiting
+    *           Whether this game is <i>recruiting</i> new players.
     * @throws NullPointerException
     *            If {@code identifier} is null
     */
    @JsonCreator
-   public Game(
-            @NonNull @JsonProperty("identifier") final Identifier identifier) {
+   @PersistenceConstructor
+   public Game(@NonNull @JsonProperty("identifier") final Identifier identifier,
+            @JsonProperty("recruiting") final boolean recruiting) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
+      this.recruiting = recruiting;
+   }
+
+   /**
+    * <p>
+    * Indicate that this game is not {@linkplain #isRecruiting() recruiting}
+    * players (any longer).
+    * </p>
+    * <p>
+    * This mutator is idempotent: the mutator does not have the precondition
+    * that it is recruiting.
+    * </p>
+    * <h2>Post Conditions</h2>
+    * <ul>
+    * <li>This game is not {@linkplain #isRecruiting() recruiting}.</li>
+    * </ul>
+    */
+   public final void endRecruitment() {
+      recruiting = false;
    }
 
    /**
@@ -208,6 +262,7 @@ public class Game {
     * @return the identifier.
     */
    @NonNull
+   @JsonProperty("identifier")
    public final Identifier getIdentifier() {
       return identifier;
    }
@@ -215,6 +270,21 @@ public class Game {
    @Override
    public final int hashCode() {
       return identifier.hashCode();
+   }
+
+   /**
+    * <p>
+    * Whether this game is <i>recruiting</i> new players.
+    * </p>
+    * <p>
+    * That is, whether players may join this game.
+    * </p>
+    *
+    * @return whether recruiting
+    */
+   @JsonProperty("recruiting")
+   public final boolean isRecruiting() {
+      return recruiting;
    }
 
 }
