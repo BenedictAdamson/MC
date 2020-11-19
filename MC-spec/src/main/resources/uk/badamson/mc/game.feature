@@ -33,7 +33,7 @@ Feature: Game
   @integration
   @back-end
   Scenario: Add game
-    Given user has the "MANAGE_GAMES" role
+    Given user has the "manage games" role
     And logged in
     When creating a game
     Then MC accepts the creation of the game
@@ -44,14 +44,14 @@ Feature: Game
   @integration
   @back-end
   Scenario: Only a game manager may add a game
-    Given user does not have the "MANAGE_GAMES" role
+    Given user does not have the "manage games" role
     And logged in
     Then MC does not present creating a game as an option
     
   @integration
   @back-end
   Scenario: End game recruitment
-    Given user has the "MANAGE_GAMES" role
+    Given user has the "manage games" role
     And logged in
     And viewing a game that is recruiting players
     When user ends recruitment for the game
@@ -61,7 +61,7 @@ Feature: Game
   @integration
   @back-end
   Scenario: Only a game manager may end recruitment for a game
-    Given user does not have the "MANAGE_GAMES" role
+    Given user does not have the "manage games" role
     And logged in
     And viewing a game that is recruiting players
     Then MC does not present ending recruitment for the game as an option
