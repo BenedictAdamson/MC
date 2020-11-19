@@ -28,6 +28,17 @@ Feature: User
     Then MC serves the users page
     And the response is a list of users
     And the list of users has at least one user
+
+  @integration
+  @back-end
+  Scenario: Examine user
+    Given user has the "player" role
+    And logged in
+    When Viewing the list of users
+    And Navigate to one user
+    Then MC serves the user page
+    And The user page includes the user name
+    And The user page lists the roles of the user
     
   @integration
   Scenario: Login as player
