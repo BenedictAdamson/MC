@@ -47,6 +47,15 @@ Feature: User
     When log in using correct password
     Then MC accepts the login
     And redirected to home-page
+    And MC presents logout as an option
+    
+  @integration
+  @back-end
+  Scenario: Logout
+    Given user has any role
+    And logged in
+    When request logout
+    Then MC accepts the logout
     
   @integration
   Scenario: Login as administrator
