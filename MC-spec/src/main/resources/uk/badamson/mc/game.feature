@@ -46,7 +46,7 @@ Feature: Game
   Scenario: Only a game manager may add a game
     Given user does not have the "manage games" role
     And logged in
-    Then MC does not present creating a game as an option
+    Then MC does not allow creating a game as an option
     
   @integration
   @back-end
@@ -64,4 +64,4 @@ Feature: Game
     Given user does not have the "manage games" role
     And logged in
     And viewing a game that is recruiting players
-    Then MC does not present ending recruitment for the game as an option
+    Then MC does not allow ending recruitment for the game as an option

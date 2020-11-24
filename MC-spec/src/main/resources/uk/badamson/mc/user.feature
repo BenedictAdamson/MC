@@ -47,8 +47,8 @@ Feature: User
     When log in using correct password
     Then MC accepts the login
     And redirected to home-page
-    And MC presents logout as an option
-    And MC presents examining the current user as an option
+    And MC allows logout as an option
+    And MC allows examining the current user as an option
     
   @integration
   @back-end
@@ -93,4 +93,5 @@ Feature: User
   Scenario: Only administrator may add user
     Given user does not have the "manage users" role
     And logged in
-    Then MC does not present adding a user as an option
+    Then MC does not allows adding a user as an option
+    
