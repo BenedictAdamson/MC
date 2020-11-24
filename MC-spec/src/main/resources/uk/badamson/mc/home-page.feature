@@ -23,7 +23,10 @@ Feature: Home-page
   Scenario: Potential user accesses an MC server using a simple URL with the root path
     Given the DNS name, example.com, of an MC server
     # Implicitly: And not logged in
+    # Implicitly: And not resuming a session
     When the potential user gives the obvious URL http://example.com/ to a web browser
     Then MC serves the home page
     And the home page title includes the name of the game
     And the home page header includes the name of the game
+    And MC presents logging in as an option
+    And MC does not present logout as an option
