@@ -93,5 +93,5 @@ Feature: User
   Scenario: Only administrator may add user
     Given user does not have the "manage users" role
     And logged in
-    Then MC does not allows adding a user as an option
+    Then MC does not allow adding a user as an option
     
