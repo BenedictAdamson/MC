@@ -28,6 +28,6 @@ Feature: Home-page
     Then MC serves the home page
     And the home page title includes the name of the game
     And the home page header includes the name of the game
-    And MC allows logging in as an option
-    And MC does not allow logout as an option
-    And MC does not present examining the current user as an option
+    And MC allows logging in
+    And MC does not allow logout
+    And MC does not allow examining the current user
