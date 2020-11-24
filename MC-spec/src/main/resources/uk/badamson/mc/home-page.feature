@@ -30,3 +30,4 @@ Feature: Home-page
     And the home page header includes the name of the game
     And MC presents logging in as an option
     And MC does not present logout as an option
+    And MC does not present examining the current user as an option

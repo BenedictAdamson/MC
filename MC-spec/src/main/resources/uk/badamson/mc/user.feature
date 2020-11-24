@@ -48,6 +48,7 @@ Feature: User
     Then MC accepts the login
     And redirected to home-page
     And MC presents logout as an option
+    And MC presents examining the current user as an option
     
   @integration
   @back-end
