@@ -21,7 +21,9 @@ package uk.badamson.mc;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -254,7 +256,7 @@ public class UserTest {
 
          assertInvariants(user);
          assertAll("Has the given attribute values",
-                  () -> assertSame(username, user.getUsername(), "userSname."),
+                  () -> assertSame(username, user.getUsername(), "username."),
                   () -> assertSame(password, user.getPassword(), "password."),
                   () -> assertEquals(authorities, user.getAuthorities(),
                            "authorities"),
@@ -295,6 +297,46 @@ public class UserTest {
          test(USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true, true);
       }
 
+   }// class
+
+   @Nested
+   public class CreateAdministrator {
+
+      @Test
+      public void a() {
+         test(PASSWORD_A);
+      }
+
+      @Test
+      public void b() {
+         test(PASSWORD_B);
+      }
+
+      @Test
+      public void nullPassword() {
+         test(null);
+      }
+
+      private void test(final String password) {
+         final var administrator = User.createAdministrator(password);
+
+         assertNotNull(administrator, "Not null, returned");// guard
+         assertInvariants(administrator);
+         assertAll("Attributes",
+                  () -> assertSame(User.ADMINISTRATOR_USERNAME,
+                           administrator.getUsername(), "username."),
+                  () -> assertSame(password, administrator.getPassword(),
+                           "password."),
+                  () -> assertSame(Authority.ALL,
+                           administrator.getAuthorities(), "authorities"),
+                  () -> assertTrue(administrator.isAccountNonExpired(),
+                           "accountNonExpired"),
+                  () -> assertTrue(administrator.isAccountNonLocked(),
+                           "accountNonLocked"),
+                  () -> assertTrue(administrator.isCredentialsNonExpired(),
+                           "credentialsNonExpired"),
+                  () -> assertTrue(administrator.isEnabled(), "enabled"));
+      }
    }// class
 
    @Nested
@@ -354,8 +396,7 @@ public class UserTest {
          assertInvariants(user);
          assertInvariants(user, deserialized);
          assertAll("Deserialised attributes",
-                  () -> assertEquals(username, user.getUsername(),
-                           "userSname."),
+                  () -> assertEquals(username, user.getUsername(), "username."),
                   () -> assertEquals(password, user.getPassword(), "password."),
                   () -> assertEquals(authorities, user.getAuthorities(),
                            "authorities"),

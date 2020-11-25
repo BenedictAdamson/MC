@@ -23,6 +23,7 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -50,6 +51,40 @@ public final class User implements UserDetails {
     */
    public static final String ADMINISTRATOR_USERNAME = "Administrator";
 
+   /**
+    * <p>
+    * Create a {@link User} that is a valid administrator user.
+    * </p>
+    * <ul>
+    * <li>Returns a (non null) {@link User}.</li>
+    * <li>The {@linkplain #getUsername() username} of the administrator is the
+    * same as the special {@linkplain #ADMINISTRATOR_USERNAME administrator
+    * username}.</li>
+    * <li>The {@linkplain #getPassword() password} of the administrator is the
+    * given password.</li>
+    * <li>The {@linkplain #getAuthorities() authorities} granted to the
+    * administrator is the same as the {@linkplain Authority#ALL full set of
+    * authorities}.</li>
+    * <li>The administrator's {@linkplain #isAccountNonExpired() account has not
+    * expired}.</li>
+    * <li>The administrator's {@linkplain #isAccountNonLocked() account is not
+    * locked}.</li>
+    * <li>The administrator's {@linkplain #isCredentialsNonExpired() credentials
+    * have not expired}.</li>
+    * <li>The administrator's {@linkplain #isEnabled() account is enabled}.</li>
+    * </ul>
+    *
+    * @param password
+    *           the password used to authenticate the user, or null if the
+    *           password is being hidden or is unknown. This might be the
+    *           password in an encrypted form.
+    * @return the administrator user
+    */
+   @Nonnull
+   public static User createAdministrator(@Nullable final String password) {
+      return new User(password);
+   }
+
    @Id
    @org.springframework.data.annotation.Id
    private final String username;
@@ -59,6 +94,16 @@ public final class User implements UserDetails {
    private final boolean accountNonLocked;
    private final boolean credentialsNonExpired;
    private final boolean enabled;
+
+   private User(final String password) {
+      this.username = ADMINISTRATOR_USERNAME;
+      this.password = password;
+      this.authorities = Authority.ALL;
+      this.accountNonExpired = true;
+      this.accountNonLocked = true;
+      this.credentialsNonExpired = true;
+      this.enabled = true;
+   }
 
    /**
     * <p>
@@ -153,7 +198,7 @@ public final class User implements UserDetails {
       if (!(that instanceof User)) {
          return false;
       }
-      final User other = (User) that;
+      final var other = (User) that;
       return username.equals(other.username);
    }
 
