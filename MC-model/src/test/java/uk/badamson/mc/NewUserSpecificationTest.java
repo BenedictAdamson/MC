@@ -21,9 +21,7 @@ package uk.badamson.mc;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -34,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * <p>
- * Unit tests and auxiliary test code for the {@link User} class
+ * Unit tests and auxiliary test code for the {@link NewUserSpecification} class
  */
 public class NewUserSpecificationTest {
 
@@ -46,7 +44,6 @@ public class NewUserSpecificationTest {
 
          @Test
          public void accountNonExpired() {
-            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
@@ -54,17 +51,18 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(id, username, password, authorities,
-                     true, accountNonLocked, credentialsNonExpired, enabled);
-            final var userB = new User(id, username, password, authorities,
-                     false, accountNonLocked, credentialsNonExpired, enabled);
+            final var userA = new NewUserSpecification(username, password,
+                     authorities, true, accountNonLocked, credentialsNonExpired,
+                     enabled);
+            final var userB = new NewUserSpecification(username, password,
+                     authorities, false, accountNonLocked,
+                     credentialsNonExpired, enabled);
 
             test(userA, userB);
          }
 
          @Test
          public void accountNonLocked() {
-            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
@@ -72,17 +70,18 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(id, username, password, authorities,
-                     accountNonExpired, true, credentialsNonExpired, enabled);
-            final var userB = new User(id, username, password, authorities,
-                     accountNonExpired, false, credentialsNonExpired, enabled);
+            final var userA = new NewUserSpecification(username, password,
+                     authorities, accountNonExpired, true,
+                     credentialsNonExpired, enabled);
+            final var userB = new NewUserSpecification(username, password,
+                     authorities, accountNonExpired, false,
+                     credentialsNonExpired, enabled);
 
             test(userA, userB);
          }
 
          @Test
          public void authorities() {
-            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var accountNonExpired = true;
@@ -90,10 +89,10 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(id, username, password, Authority.ALL,
-                     accountNonExpired, accountNonLocked, credentialsNonExpired,
-                     enabled);
-            final var userB = new User(id, username, password,
+            final var userA = new NewUserSpecification(username, password,
+                     Authority.ALL, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, enabled);
+            final var userB = new NewUserSpecification(username, password,
                      Set.of(Authority.ROLE_PLAYER), accountNonExpired,
                      accountNonLocked, credentialsNonExpired, enabled);
 
@@ -102,7 +101,6 @@ public class NewUserSpecificationTest {
 
          @Test
          public void credentialsNonExpired() {
-            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
@@ -110,17 +108,18 @@ public class NewUserSpecificationTest {
             final var accountNonLocked = true;
             final var enabled = true;
 
-            final var userA = new User(id, username, password, authorities,
-                     accountNonExpired, accountNonLocked, true, enabled);
-            final var userB = new User(id, username, password, authorities,
-                     accountNonExpired, accountNonLocked, false, enabled);
+            final var userA = new NewUserSpecification(username, password,
+                     authorities, accountNonExpired, accountNonLocked, true,
+                     enabled);
+            final var userB = new NewUserSpecification(username, password,
+                     authorities, accountNonExpired, accountNonLocked, false,
+                     enabled);
 
             test(userA, userB);
          }
 
          @Test
          public void enabled() {
-            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
@@ -128,19 +127,18 @@ public class NewUserSpecificationTest {
             final var accountNonLocked = true;
             final var credentialsNonExpired = true;
 
-            final var userA = new User(id, username, password, authorities,
-                     accountNonExpired, accountNonLocked, credentialsNonExpired,
-                     true);
-            final var userB = new User(id, username, password, authorities,
-                     accountNonExpired, accountNonLocked, credentialsNonExpired,
-                     false);
+            final var userA = new NewUserSpecification(username, password,
+                     authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, true);
+            final var userB = new NewUserSpecification(username, password,
+                     authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, false);
 
             test(userA, userB);
          }
 
          @Test
          public void password() {
-            final var id = ID_A;
             final var username = USERNAME_A;
             final var authorities = Authority.ALL;
             final var accountNonExpired = true;
@@ -148,24 +146,24 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(id, username, PASSWORD_A, authorities,
-                     accountNonExpired, accountNonLocked, credentialsNonExpired,
-                     enabled);
-            final var userB = new User(id, username, PASSWORD_B, authorities,
-                     accountNonExpired, accountNonLocked, credentialsNonExpired,
-                     enabled);
+            final var userA = new NewUserSpecification(username, PASSWORD_A,
+                     authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, enabled);
+            final var userB = new NewUserSpecification(username, PASSWORD_B,
+                     authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, enabled);
 
             test(userA, userB);
          }
 
-         private void test(final User userA, final User userB) {
+         private void test(final NewUserSpecification userA,
+                  final NewUserSpecification userB) {
             assertInvariants(userA, userB);
             assertEquals(userA, userB);
          }
 
          @Test
          public void username() {
-            final var id = ID_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
             final var accountNonExpired = true;
@@ -173,12 +171,12 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(id, USERNAME_A, password, authorities,
-                     accountNonExpired, accountNonLocked, credentialsNonExpired,
-                     enabled);
-            final var userB = new User(id, USERNAME_B, password, authorities,
-                     accountNonExpired, accountNonLocked, credentialsNonExpired,
-                     enabled);
+            final var userA = new NewUserSpecification(USERNAME_A, password,
+                     authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, enabled);
+            final var userB = new NewUserSpecification(USERNAME_B, password,
+                     authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, enabled);
 
             test(userA, userB);
          }
@@ -223,13 +221,10 @@ public class NewUserSpecificationTest {
                   final boolean accountNonExpired,
                   final boolean accountNonLocked,
                   final boolean credentialsNonExpired, final boolean enabled) {
-            final var user1 = new User(id, username, password, authorities,
-                     accountNonExpired, accountNonLocked, credentialsNonExpired,
-                     enabled);
-            final var user2 = new User(
-                     new UUID(id.getMostSignificantBits(),
-                              id.getLeastSignificantBits()),
-                     new String(username),
+            final var user1 = new NewUserSpecification(username, password,
+                     authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, enabled);
+            final var user2 = new NewUserSpecification(new String(username),
                      password == null ? password : new String(password),
                      authorities.isEmpty() ? authorities
                               : EnumSet.copyOf(authorities),
@@ -296,17 +291,16 @@ public class NewUserSpecificationTest {
                   true);
       }
 
-      private User test(final UUID id, final String username,
+      private NewUserSpecification test(final UUID id, final String username,
                final String password, final Set<Authority> authorities,
                final boolean accountNonExpired, final boolean accountNonLocked,
                final boolean credentialsNonExpired, final boolean enabled) {
-         final var user = new User(id, username, password, authorities,
-                  accountNonExpired, accountNonLocked, credentialsNonExpired,
-                  enabled);
+         final var user = new NewUserSpecification(username, password,
+                  authorities, accountNonExpired, accountNonLocked,
+                  credentialsNonExpired, enabled);
 
          assertInvariants(user);
          assertAll("Has the given attribute values",
-                  () -> assertSame(id, user.getId(), "id"),
                   () -> assertSame(username, user.getUsername(), "username"),
                   () -> assertSame(password, user.getPassword(), "password"),
                   () -> assertEquals(authorities, user.getAuthorities(),
@@ -333,12 +327,12 @@ public class NewUserSpecificationTest {
          final var credentialsNonExpired = true;
          final var enabled = true;
 
-         final var userA = new User(ID_A, username, password, authorities,
-                  accountNonExpired, accountNonLocked, credentialsNonExpired,
-                  enabled);
-         final var userB = new User(ID_B, username, password, authorities,
-                  accountNonExpired, accountNonLocked, credentialsNonExpired,
-                  enabled);
+         final var userA = new NewUserSpecification(username, password,
+                  authorities, accountNonExpired, accountNonLocked,
+                  credentialsNonExpired, enabled);
+         final var userB = new NewUserSpecification(username, password,
+                  authorities, accountNonExpired, accountNonLocked,
+                  credentialsNonExpired, enabled);
 
          assertInvariants(userA, userB);
          assertNotEquals(userA, userB);
@@ -350,48 +344,6 @@ public class NewUserSpecificationTest {
                   true);
       }
 
-   }// class
-
-   @Nested
-   public class CreateAdministrator {
-
-      @Test
-      public void a() {
-         test(PASSWORD_A);
-      }
-
-      @Test
-      public void b() {
-         test(PASSWORD_B);
-      }
-
-      @Test
-      public void nullPassword() {
-         test(null);
-      }
-
-      private void test(final String password) {
-         final var administrator = User.createAdministrator(password);
-
-         assertNotNull(administrator, "Not null, returned");// guard
-         assertInvariants(administrator);
-         assertAll("Attributes",
-                  () -> assertSame(User.ADMINISTRATOR_ID, administrator.getId(),
-                           "ID"),
-                  () -> assertSame(User.ADMINISTRATOR_USERNAME,
-                           administrator.getUsername(), "username"),
-                  () -> assertSame(password, administrator.getPassword(),
-                           "password"),
-                  () -> assertSame(Authority.ALL,
-                           administrator.getAuthorities(), "authorities"),
-                  () -> assertTrue(administrator.isAccountNonExpired(),
-                           "accountNonExpired"),
-                  () -> assertTrue(administrator.isAccountNonLocked(),
-                           "accountNonLocked"),
-                  () -> assertTrue(administrator.isCredentialsNonExpired(),
-                           "credentialsNonExpired"),
-                  () -> assertTrue(administrator.isEnabled(), "enabled"));
-      }
    }// class
 
    @Nested
@@ -455,16 +407,15 @@ public class NewUserSpecificationTest {
                final String password, final Set<Authority> authorities,
                final boolean accountNonExpired, final boolean accountNonLocked,
                final boolean credentialsNonExpired, final boolean enabled) {
-         final var user = new User(id, username, password, authorities,
-                  accountNonExpired, accountNonLocked, credentialsNonExpired,
-                  enabled);
+         final var user = new NewUserSpecification(username, password,
+                  authorities, accountNonExpired, accountNonLocked,
+                  credentialsNonExpired, enabled);
 
          final var deserialized = JsonTest.serializeAndDeserialize(user);
 
          assertInvariants(user);
          assertInvariants(user, deserialized);
          assertAll("Deserialised attributes",
-                  () -> assertEquals(id, user.getId(), "id"),
                   () -> assertEquals(username, user.getUsername(), "username"),
                   () -> assertEquals(password, user.getPassword(), "password"),
                   () -> assertEquals(authorities, user.getAuthorities(),
@@ -498,13 +449,13 @@ public class NewUserSpecificationTest {
 
    private static final String PASSWORD_B = "password123";
 
-   public static void assertInvariants(final User user) {
+   public static void assertInvariants(final NewUserSpecification user) {
       ObjectTest.assertInvariants(user);// inherited
       UserDetailsTest.assertInvariants(user);// inherited
-      assertNotNull(user.getId(), "Not null, id");
    }
 
-   public static void assertInvariants(final User user1, final User user2) {
+   public static void assertInvariants(final NewUserSpecification user1,
+            final NewUserSpecification user2) {
       ObjectTest.assertInvariants(user1, user2);// inherited
       UserDetailsTest.assertInvariants(user1, user2);// inherited
    }
