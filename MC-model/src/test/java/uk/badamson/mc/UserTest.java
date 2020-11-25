@@ -601,5 +601,7 @@ public class UserTest {
 
    public static void assertInvariants(final User user1, final User user2) {
       BasicUserDetailsTest.assertInvariants(user1, user2);// inherited
+      assertEquals(user1.getId().equals(user2.getId()), user1.equals(user2),
+               "equality determned by id value");
    }
 }
