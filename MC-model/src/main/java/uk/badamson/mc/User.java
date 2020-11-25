@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -154,6 +155,7 @@ public final class User implements UserDetails {
     *            </ul>
     */
    @JsonCreator
+   @PersistenceConstructor
    public User(@NonNull @JsonProperty("username") final String username,
             @Nullable @JsonProperty("password") final String password,
             @NonNull @JsonProperty("authorities") final Set<Authority> authorities,
