@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.lang.NonNull;
 
 /**
  * <p>
@@ -46,6 +46,7 @@ public class UserTest {
 
          @Test
          public void accountNonExpired() {
+            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
@@ -53,16 +54,17 @@ public class UserTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(username, password, authorities, true,
-                     accountNonLocked, credentialsNonExpired, enabled);
-            final var userB = new User(username, password, authorities, false,
-                     accountNonLocked, credentialsNonExpired, enabled);
+            final var userA = new User(id, username, password, authorities,
+                     true, accountNonLocked, credentialsNonExpired, enabled);
+            final var userB = new User(id, username, password, authorities,
+                     false, accountNonLocked, credentialsNonExpired, enabled);
 
             test(userA, userB);
          }
 
          @Test
          public void accountNonLocked() {
+            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
@@ -70,9 +72,9 @@ public class UserTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(username, password, authorities,
+            final var userA = new User(id, username, password, authorities,
                      accountNonExpired, true, credentialsNonExpired, enabled);
-            final var userB = new User(username, password, authorities,
+            final var userB = new User(id, username, password, authorities,
                      accountNonExpired, false, credentialsNonExpired, enabled);
 
             test(userA, userB);
@@ -80,6 +82,7 @@ public class UserTest {
 
          @Test
          public void authorities() {
+            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var accountNonExpired = true;
@@ -87,10 +90,10 @@ public class UserTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(username, password, Authority.ALL,
+            final var userA = new User(id, username, password, Authority.ALL,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
                      enabled);
-            final var userB = new User(username, password,
+            final var userB = new User(id, username, password,
                      Set.of(Authority.ROLE_PLAYER), accountNonExpired,
                      accountNonLocked, credentialsNonExpired, enabled);
 
@@ -99,6 +102,7 @@ public class UserTest {
 
          @Test
          public void credentialsNonExpired() {
+            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
@@ -106,9 +110,9 @@ public class UserTest {
             final var accountNonLocked = true;
             final var enabled = true;
 
-            final var userA = new User(username, password, authorities,
+            final var userA = new User(id, username, password, authorities,
                      accountNonExpired, accountNonLocked, true, enabled);
-            final var userB = new User(username, password, authorities,
+            final var userB = new User(id, username, password, authorities,
                      accountNonExpired, accountNonLocked, false, enabled);
 
             test(userA, userB);
@@ -116,6 +120,7 @@ public class UserTest {
 
          @Test
          public void enabled() {
+            final var id = ID_A;
             final var username = USERNAME_A;
             final var password = PASSWORD_A;
             final var authorities = Authority.ALL;
@@ -123,10 +128,10 @@ public class UserTest {
             final var accountNonLocked = true;
             final var credentialsNonExpired = true;
 
-            final var userA = new User(username, password, authorities,
+            final var userA = new User(id, username, password, authorities,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
                      true);
-            final var userB = new User(username, password, authorities,
+            final var userB = new User(id, username, password, authorities,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
                      false);
 
@@ -135,6 +140,7 @@ public class UserTest {
 
          @Test
          public void password() {
+            final var id = ID_A;
             final var username = USERNAME_A;
             final var authorities = Authority.ALL;
             final var accountNonExpired = true;
@@ -142,10 +148,10 @@ public class UserTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new User(username, PASSWORD_A, authorities,
+            final var userA = new User(id, username, PASSWORD_A, authorities,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
                      enabled);
-            final var userB = new User(username, PASSWORD_B, authorities,
+            final var userB = new User(id, username, PASSWORD_B, authorities,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
                      enabled);
 
@@ -164,35 +170,46 @@ public class UserTest {
 
          @Test
          public void a() {
-            test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, true);
+            test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                     true);
          }
 
          @Test
          public void b() {
-            test(USERNAME_B, PASSWORD_B, Set.of(), true, true, false, true);
+            test(ID_A, USERNAME_B, PASSWORD_B, Set.of(), true, true, false,
+                     true);
          }
 
          @Test
          public void c() {
             final String password = null;
-            test(USERNAME_A, password, Set.of(), true, false, true, true);
+            test(ID_A, USERNAME_A, password, Set.of(), true, false, true, true);
          }
 
          @Test
          public void d() {
-            test(USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
+            test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
                      true);
          }
 
-         private void test(@NonNull final String username,
+         @Test
+         public void e() {
+            test(ID_B, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                     true);
+         }
+
+         private void test(final UUID id, final String username,
                   final String password, final Set<Authority> authorities,
                   final boolean accountNonExpired,
                   final boolean accountNonLocked,
                   final boolean credentialsNonExpired, final boolean enabled) {
-            final var user1 = new User(username, password, authorities,
+            final var user1 = new User(id, username, password, authorities,
                      accountNonExpired, accountNonLocked, credentialsNonExpired,
                      enabled);
-            final var user2 = new User(new String(username),
+            final var user2 = new User(
+                     new UUID(id.getMostSignificantBits(),
+                              id.getLeastSignificantBits()),
+                     new String(username),
                      password == null ? password : new String(password),
                      authorities.isEmpty() ? authorities
                               : EnumSet.copyOf(authorities),
@@ -207,57 +224,65 @@ public class UserTest {
 
       @Test
       public void authorities() {
-         test(USERNAME_A, PASSWORD_A, Set.of(), true, true, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Set.of(), true, true, true, true);
       }
 
       @Test
       public void basic() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                  true);
       }
 
       @Test
       public void notAccountNonExpired() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
+                  true);
       }
 
       @Test
       public void notAccountNonLocked() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true,
+                  true);
       }
 
       @Test
       public void notCredentialsNonExpired() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false,
+                  true);
       }
 
       @Test
       public void notEnabled() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, false);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                  false);
       }
 
       @Test
       public void nullPassword() {
          final String password = null;
-         test(USERNAME_A, password, Authority.ALL, true, true, true, true);
+         test(ID_A, USERNAME_A, password, Authority.ALL, true, true, true,
+                  true);
       }
 
       @Test
       public void password() {
-         test(USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true,
+                  true);
       }
 
-      private User test(final String username, final String password,
-               final Set<Authority> authorities,
+      private User test(final UUID id, final String username,
+               final String password, final Set<Authority> authorities,
                final boolean accountNonExpired, final boolean accountNonLocked,
                final boolean credentialsNonExpired, final boolean enabled) {
-         final var user = new User(username, password, authorities,
+         final var user = new User(id, username, password, authorities,
                   accountNonExpired, accountNonLocked, credentialsNonExpired,
                   enabled);
 
          assertInvariants(user);
          assertAll("Has the given attribute values",
-                  () -> assertSame(username, user.getUsername(), "username."),
-                  () -> assertSame(password, user.getPassword(), "password."),
+                  () -> assertSame(id, user.getId(), "id"),
+                  () -> assertSame(username, user.getUsername(), "username"),
+                  () -> assertSame(password, user.getPassword(), "password"),
                   () -> assertEquals(authorities, user.getAuthorities(),
                            "authorities"),
                   () -> assertEquals(accountNonExpired,
@@ -274,6 +299,7 @@ public class UserTest {
 
       @Test
       public void twoDifferentUsername() {
+         final var id = ID_A;
          final var password = PASSWORD_A;
          final var authorities = Authority.ALL;
          final var accountNonExpired = true;
@@ -281,10 +307,10 @@ public class UserTest {
          final var credentialsNonExpired = true;
          final var enabled = true;
 
-         final var userA = new User(USERNAME_A, password, authorities,
+         final var userA = new User(id, USERNAME_A, password, authorities,
                   accountNonExpired, accountNonLocked, credentialsNonExpired,
                   enabled);
-         final var userB = new User(USERNAME_B, password, authorities,
+         final var userB = new User(id, USERNAME_B, password, authorities,
                   accountNonExpired, accountNonLocked, credentialsNonExpired,
                   enabled);
 
@@ -294,7 +320,8 @@ public class UserTest {
 
       @Test
       public void username() {
-         test(USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true, true);
+         test(ID_A, USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true,
+                  true);
       }
 
    }// class
@@ -323,10 +350,12 @@ public class UserTest {
          assertNotNull(administrator, "Not null, returned");// guard
          assertInvariants(administrator);
          assertAll("Attributes",
+                  () -> assertSame(User.ADMINISTRATOR_ID, administrator.getId(),
+                           "ID"),
                   () -> assertSame(User.ADMINISTRATOR_USERNAME,
-                           administrator.getUsername(), "username."),
+                           administrator.getUsername(), "username"),
                   () -> assertSame(password, administrator.getPassword(),
-                           "password."),
+                           "password"),
                   () -> assertSame(Authority.ALL,
                            administrator.getAuthorities(), "authorities"),
                   () -> assertTrue(administrator.isAccountNonExpired(),
@@ -344,50 +373,57 @@ public class UserTest {
 
       @Test
       public void authorities() {
-         test(USERNAME_A, PASSWORD_A, Set.of(), true, true, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Set.of(), true, true, true, true);
       }
 
       @Test
       public void basic() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                  true);
       }
 
       @Test
       public void notAccountNonExpired() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
+                  true);
       }
 
       @Test
       public void notAccountNonLocked() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true,
+                  true);
       }
 
       @Test
       public void notCredentialsNonExpired() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false, true);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false,
+                  true);
       }
 
       @Test
       public void notEnabled() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, false);
+         test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                  false);
       }
 
       @Test
       public void nullPassword() {
          final String password = null;
-         test(USERNAME_A, password, Authority.ALL, true, true, true, true);
+         test(ID_A, USERNAME_A, password, Authority.ALL, true, true, true,
+                  true);
       }
 
       @Test
       public void password() {
-         test(USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true, true);
+         test(ID_A, USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true,
+                  true);
       }
 
-      private void test(final String username, final String password,
-               final Set<Authority> authorities,
+      private void test(final UUID id, final String username,
+               final String password, final Set<Authority> authorities,
                final boolean accountNonExpired, final boolean accountNonLocked,
                final boolean credentialsNonExpired, final boolean enabled) {
-         final var user = new User(username, password, authorities,
+         final var user = new User(id, username, password, authorities,
                   accountNonExpired, accountNonLocked, credentialsNonExpired,
                   enabled);
 
@@ -396,8 +432,9 @@ public class UserTest {
          assertInvariants(user);
          assertInvariants(user, deserialized);
          assertAll("Deserialised attributes",
-                  () -> assertEquals(username, user.getUsername(), "username."),
-                  () -> assertEquals(password, user.getPassword(), "password."),
+                  () -> assertEquals(id, user.getId(), "id"),
+                  () -> assertEquals(username, user.getUsername(), "username"),
+                  () -> assertEquals(password, user.getPassword(), "password"),
                   () -> assertEquals(authorities, user.getAuthorities(),
                            "authorities"),
                   () -> assertEquals(accountNonExpired,
@@ -411,6 +448,10 @@ public class UserTest {
       }
    }// class
 
+   private static final UUID ID_A = UUID.randomUUID();
+
+   private static final UUID ID_B = UUID.randomUUID();
+
    private static final String USERNAME_A = "John";
 
    private static final String USERNAME_B = "Alan";
@@ -422,6 +463,7 @@ public class UserTest {
    public static void assertInvariants(final User user) {
       ObjectTest.assertInvariants(user);// inherited
       UserDetailsTest.assertInvariants(user);// inherited
+      assertNotNull(user.getId(), "Not null, id");
    }
 
    public static void assertInvariants(final User user1, final User user2) {

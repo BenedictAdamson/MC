@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Entity;
@@ -47,7 +48,14 @@ public final class User implements UserDetails {
 
    /**
     * <p>
-    * The {@linkplain #getUsername() username} of the administrator user.
+    * The {@linkplain #getId() ID} of an administrator user.
+    * </p>
+    */
+   public static final UUID ADMINISTRATOR_ID = new UUID(0L, 0L);
+
+   /**
+    * <p>
+    * The {@linkplain #getUsername() username} of an administrator user.
     * </p>
     */
    public static final String ADMINISTRATOR_USERNAME = "Administrator";
@@ -58,6 +66,8 @@ public final class User implements UserDetails {
     * </p>
     * <ul>
     * <li>Returns a (non null) {@link User}.</li>
+    * <li>The {@linkplain #getId() ID} of the administrator is the same as the
+    * special {@linkplain #ADMINISTRATOR_ID administrator ID}.</li>
     * <li>The {@linkplain #getUsername() username} of the administrator is the
     * same as the special {@linkplain #ADMINISTRATOR_USERNAME administrator
     * username}.</li>
@@ -88,6 +98,7 @@ public final class User implements UserDetails {
 
    @Id
    @org.springframework.data.annotation.Id
+   private final UUID id;
    private final String username;
    private final String password;
    private final Set<Authority> authorities;
@@ -97,6 +108,7 @@ public final class User implements UserDetails {
    private final boolean enabled;
 
    private User(final String password) {
+      this.id = ADMINISTRATOR_ID;
       this.username = ADMINISTRATOR_USERNAME;
       this.password = password;
       this.authorities = Authority.ALL;
@@ -111,6 +123,7 @@ public final class User implements UserDetails {
     * Construct a user of the Mission Command game, with a given user-name.
     * </p>
     * <ul>
+    * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
     * <li>The {@linkplain #getUsername() username} of this user is the given
     * username.</li>
     * <li>The {@linkplain #getPassword() password} of this user is the given
@@ -127,6 +140,8 @@ public final class User implements UserDetails {
     * equal to the given value.</li>
     * </ul>
     *
+    * @param id
+    *           The unique ID of this user.
     * @param username
     *           the username used to authenticate the user
     * @param password
@@ -149,6 +164,7 @@ public final class User implements UserDetails {
     *           authenticated.
     * @throws NullPointerException
     *            <ul>
+    *            <li>If {@code id} is null</li>
     *            <li>If {@code username} is null</li>
     *            <li>If {@code authorities} is null</li>
     *            <li>If {@code authorities} contains null</li>
@@ -156,13 +172,15 @@ public final class User implements UserDetails {
     */
    @JsonCreator
    @PersistenceConstructor
-   public User(@NonNull @JsonProperty("username") final String username,
+   public User(@NonNull @JsonProperty("id") final UUID id,
+            @NonNull @JsonProperty("username") final String username,
             @Nullable @JsonProperty("password") final String password,
             @NonNull @JsonProperty("authorities") final Set<Authority> authorities,
             @JsonProperty("accountNonExpired") final boolean accountNonExpired,
             @JsonProperty("accountNonLocked") final boolean accountNonLocked,
             @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
             @JsonProperty("enabled") final boolean enabled) {
+      this.id = Objects.requireNonNull(id, "id");
       this.username = Objects.requireNonNull(username, "username");
       this.password = password;
       this.authorities = authorities.isEmpty() ? Collections.emptySet()
@@ -207,6 +225,26 @@ public final class User implements UserDetails {
    @Override
    public Set<Authority> getAuthorities() {
       return authorities;
+   }
+
+   /**
+    * <p>
+    * The unique ID of this user.
+    * </p>
+    * <ul>
+    * <li>Not null</li>
+    * </ul>
+    * <p>
+    * Note that the {@linkplain #getUsername() username} need not be unique.
+    * However, in practice it will be enforced to be unique, with the username
+    * used as the human readable ID.
+    * </p>
+    *
+    * @return the unique ID.
+    */
+   @NonNull
+   public UUID getId() {
+      return id;
    }
 
    @Override
