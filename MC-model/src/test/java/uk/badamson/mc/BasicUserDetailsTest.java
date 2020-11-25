@@ -21,7 +21,9 @@ package uk.badamson.mc;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
@@ -254,6 +256,47 @@ public class BasicUserDetailsTest {
          test(USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true, true);
       }
 
+   }// class
+
+   @Nested
+   public class CreateAdministrator {
+
+      @Test
+      public void a() {
+         test(PASSWORD_A);
+      }
+
+      @Test
+      public void b() {
+         test(PASSWORD_B);
+      }
+
+      @Test
+      public void nullPassword() {
+         test(null);
+      }
+
+      private void test(final String password) {
+         final var administrator = BasicUserDetails
+                  .createAdministrator(password);
+
+         assertNotNull(administrator, "Not null, returned");// guard
+         assertInvariants(administrator);
+         assertAll("Attributes",
+                  () -> assertSame(User.ADMINISTRATOR_USERNAME,
+                           administrator.getUsername(), "username"),
+                  () -> assertSame(password, administrator.getPassword(),
+                           "password"),
+                  () -> assertSame(Authority.ALL,
+                           administrator.getAuthorities(), "authorities"),
+                  () -> assertTrue(administrator.isAccountNonExpired(),
+                           "accountNonExpired"),
+                  () -> assertTrue(administrator.isAccountNonLocked(),
+                           "accountNonLocked"),
+                  () -> assertTrue(administrator.isCredentialsNonExpired(),
+                           "credentialsNonExpired"),
+                  () -> assertTrue(administrator.isEnabled(), "enabled"));
+      }
    }// class
 
    @Nested
