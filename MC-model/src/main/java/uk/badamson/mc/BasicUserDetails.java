@@ -27,6 +27,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * <p>
  * A specification for a new {@linkplain User user}.
@@ -94,11 +97,15 @@ public class BasicUserDetails implements UserDetails {
     *            <li>If {@code authorities} contains null</li>
     *            </ul>
     */
-   public BasicUserDetails(@NonNull final String username,
-            @Nullable final String password,
-            @NonNull final Set<Authority> authorities,
-            final boolean accountNonExpired, final boolean accountNonLocked,
-            final boolean credentialsNonExpired, final boolean enabled) {
+   @JsonCreator
+   public BasicUserDetails(
+            @NonNull @JsonProperty("username") final String username,
+            @Nullable @JsonProperty("password") final String password,
+            @NonNull @JsonProperty("authorities") final Set<Authority> authorities,
+            @JsonProperty("accountNonExpired") final boolean accountNonExpired,
+            @JsonProperty("accountNonLocked") final boolean accountNonLocked,
+            @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
+            @JsonProperty("enabled") final boolean enabled) {
       this.username = Objects.requireNonNull(username, "username");
       this.password = password;
       this.authorities = authorities.isEmpty() ? Collections.emptySet()
@@ -110,38 +117,38 @@ public class BasicUserDetails implements UserDetails {
    }
 
    @Override
-   public Set<Authority> getAuthorities() {
+   public final Set<Authority> getAuthorities() {
       return authorities;
    }
 
    @Override
-   public String getPassword() {
+   public final String getPassword() {
       return password;
    }
 
    @Override
    @NonNull
-   public String getUsername() {
+   public final String getUsername() {
       return username;
    }
 
    @Override
-   public boolean isAccountNonExpired() {
+   public final boolean isAccountNonExpired() {
       return accountNonExpired;
    }
 
    @Override
-   public boolean isAccountNonLocked() {
+   public final boolean isAccountNonLocked() {
       return accountNonLocked;
    }
 
    @Override
-   public boolean isCredentialsNonExpired() {
+   public final boolean isCredentialsNonExpired() {
       return credentialsNonExpired;
    }
 
    @Override
-   public boolean isEnabled() {
+   public final boolean isEnabled() {
       return enabled;
    }
 
