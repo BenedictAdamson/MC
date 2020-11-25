@@ -91,6 +91,46 @@ public class BasicUserDetails implements UserDetails {
    private final boolean credentialsNonExpired;
    private final boolean enabled;
 
+   /**
+    * <p>
+    * Copy a specification for a new {@linkplain User user}.
+    * </p>
+    * <ul>
+    * <li>The {@linkplain #getUsername() username} of this specification is the
+    * same as the username of the given specification.</li>
+    * <li>The {@linkplain #getPassword() password} of this specification is the
+    * same as the username of the given password.</li>
+    * <li>The {@linkplain #getAuthorities() authorities} of this specification
+    * are the same as the authorities of the given specification.</li>
+    * <li>Whether this specifies that the {@linkplain #isAccountNonExpired()
+    * account has not expired} is equal to the value for the given
+    * specification.</li>
+    * <li>Whether this specifies that the {@linkplain #isAccountNonLocked()
+    * account is not locked} is equal to the value for the given
+    * specification.</li>
+    * <li>Whether this specifies that the {@linkplain #isCredentialsNonExpired()
+    * credentials have not expired} is equal to the given value.</li>
+    * <li>Whether this specifies that the {@linkplain #isEnabled() account is
+    * enabled} is equal to the value for the given specification.</li>
+    * </ul>
+    *
+    * @param that
+    *           the specification to copy
+    *
+    * @throws NullPointerException
+    *            If {@code that} is null
+    */
+   public BasicUserDetails(@NonNull final BasicUserDetails that) {
+      Objects.requireNonNull(that, "that");
+      this.username = that.username;
+      this.password = that.password;
+      this.authorities = that.authorities;
+      this.accountNonExpired = that.accountNonExpired;
+      this.accountNonLocked = that.accountNonLocked;
+      this.credentialsNonExpired = that.credentialsNonExpired;
+      this.enabled = that.enabled;
+   }
+
    private BasicUserDetails(final String password) {
       this.username = ADMINISTRATOR_USERNAME;
       this.password = password;

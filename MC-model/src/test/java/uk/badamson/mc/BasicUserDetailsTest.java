@@ -41,6 +41,90 @@ public class BasicUserDetailsTest {
    public class Constructor {
 
       @Nested
+      public class Copy {
+
+         @Test
+         public void authorities() {
+            test(USERNAME_A, PASSWORD_A, Set.of(), true, true, true, true);
+         }
+
+         @Test
+         public void basic() {
+            test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, true);
+         }
+
+         @Test
+         public void notAccountNonExpired() {
+            test(USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
+                     true);
+         }
+
+         @Test
+         public void notAccountNonLocked() {
+            test(USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true,
+                     true);
+         }
+
+         @Test
+         public void notCredentialsNonExpired() {
+            test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false,
+                     true);
+         }
+
+         @Test
+         public void notEnabled() {
+            test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                     false);
+         }
+
+         @Test
+         public void nullPassword() {
+            final String password = null;
+            test(USERNAME_A, password, Authority.ALL, true, true, true, true);
+         }
+
+         @Test
+         public void password() {
+            test(USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true, true);
+         }
+
+         private void test(final String username, final String password,
+                  final Set<Authority> authorities,
+                  final boolean accountNonExpired,
+                  final boolean accountNonLocked,
+                  final boolean credentialsNonExpired, final boolean enabled) {
+            final var original = new BasicUserDetails(username, password,
+                     authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, enabled);
+            final var copy = new BasicUserDetails(original);
+
+            assertInvariants(copy);
+            assertInvariants(original, copy);
+            assertAll("Same attribute values",
+                     () -> assertSame(original.getUsername(),
+                              copy.getUsername(), "username"),
+                     () -> assertSame(original.getPassword(),
+                              copy.getPassword(), "password"),
+                     () -> assertSame(original.getAuthorities(),
+                              copy.getAuthorities(), "authorities"),
+                     () -> assertEquals(accountNonExpired,
+                              copy.isAccountNonExpired(), "accountNonExpired"),
+                     () -> assertEquals(accountNonLocked,
+                              copy.isAccountNonLocked(), "accountNonLocked"),
+                     () -> assertEquals(credentialsNonExpired,
+                              copy.isCredentialsNonExpired(),
+                              "credentialsNonExpired"),
+                     () -> assertEquals(enabled, copy.isEnabled(), "enabled"));
+         }
+
+         @Test
+         public void username() {
+            test(USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true, true);
+         }
+
+      }// class
+
+      @Nested
       public class TwoDifferentAttributes {
 
          @Test
