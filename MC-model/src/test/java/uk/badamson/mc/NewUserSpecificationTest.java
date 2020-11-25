@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * <p>
- * Unit tests and auxiliary test code for the {@link NewUserSpecification} class
+ * Unit tests and auxiliary test code for the {@link BasicUserDetails} class
  */
 public class NewUserSpecificationTest {
 
@@ -51,10 +51,10 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new NewUserSpecification(username, password,
+            final var userA = new BasicUserDetails(username, password,
                      authorities, true, accountNonLocked, credentialsNonExpired,
                      enabled);
-            final var userB = new NewUserSpecification(username, password,
+            final var userB = new BasicUserDetails(username, password,
                      authorities, false, accountNonLocked,
                      credentialsNonExpired, enabled);
 
@@ -70,10 +70,10 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new NewUserSpecification(username, password,
+            final var userA = new BasicUserDetails(username, password,
                      authorities, accountNonExpired, true,
                      credentialsNonExpired, enabled);
-            final var userB = new NewUserSpecification(username, password,
+            final var userB = new BasicUserDetails(username, password,
                      authorities, accountNonExpired, false,
                      credentialsNonExpired, enabled);
 
@@ -89,10 +89,10 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new NewUserSpecification(username, password,
+            final var userA = new BasicUserDetails(username, password,
                      Authority.ALL, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, enabled);
-            final var userB = new NewUserSpecification(username, password,
+            final var userB = new BasicUserDetails(username, password,
                      Set.of(Authority.ROLE_PLAYER), accountNonExpired,
                      accountNonLocked, credentialsNonExpired, enabled);
 
@@ -108,10 +108,10 @@ public class NewUserSpecificationTest {
             final var accountNonLocked = true;
             final var enabled = true;
 
-            final var userA = new NewUserSpecification(username, password,
+            final var userA = new BasicUserDetails(username, password,
                      authorities, accountNonExpired, accountNonLocked, true,
                      enabled);
-            final var userB = new NewUserSpecification(username, password,
+            final var userB = new BasicUserDetails(username, password,
                      authorities, accountNonExpired, accountNonLocked, false,
                      enabled);
 
@@ -127,10 +127,10 @@ public class NewUserSpecificationTest {
             final var accountNonLocked = true;
             final var credentialsNonExpired = true;
 
-            final var userA = new NewUserSpecification(username, password,
+            final var userA = new BasicUserDetails(username, password,
                      authorities, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, true);
-            final var userB = new NewUserSpecification(username, password,
+            final var userB = new BasicUserDetails(username, password,
                      authorities, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, false);
 
@@ -146,18 +146,18 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new NewUserSpecification(username, PASSWORD_A,
+            final var userA = new BasicUserDetails(username, PASSWORD_A,
                      authorities, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, enabled);
-            final var userB = new NewUserSpecification(username, PASSWORD_B,
+            final var userB = new BasicUserDetails(username, PASSWORD_B,
                      authorities, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, enabled);
 
             test(userA, userB);
          }
 
-         private void test(final NewUserSpecification userA,
-                  final NewUserSpecification userB) {
+         private void test(final BasicUserDetails userA,
+                  final BasicUserDetails userB) {
             assertInvariants(userA, userB);
             assertEquals(userA, userB);
          }
@@ -171,10 +171,10 @@ public class NewUserSpecificationTest {
             final var credentialsNonExpired = true;
             final var enabled = true;
 
-            final var userA = new NewUserSpecification(USERNAME_A, password,
+            final var userA = new BasicUserDetails(USERNAME_A, password,
                      authorities, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, enabled);
-            final var userB = new NewUserSpecification(USERNAME_B, password,
+            final var userB = new BasicUserDetails(USERNAME_B, password,
                      authorities, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, enabled);
 
@@ -221,10 +221,10 @@ public class NewUserSpecificationTest {
                   final boolean accountNonExpired,
                   final boolean accountNonLocked,
                   final boolean credentialsNonExpired, final boolean enabled) {
-            final var user1 = new NewUserSpecification(username, password,
+            final var user1 = new BasicUserDetails(username, password,
                      authorities, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, enabled);
-            final var user2 = new NewUserSpecification(new String(username),
+            final var user2 = new BasicUserDetails(new String(username),
                      password == null ? password : new String(password),
                      authorities.isEmpty() ? authorities
                               : EnumSet.copyOf(authorities),
@@ -291,11 +291,11 @@ public class NewUserSpecificationTest {
                   true);
       }
 
-      private NewUserSpecification test(final UUID id, final String username,
+      private BasicUserDetails test(final UUID id, final String username,
                final String password, final Set<Authority> authorities,
                final boolean accountNonExpired, final boolean accountNonLocked,
                final boolean credentialsNonExpired, final boolean enabled) {
-         final var user = new NewUserSpecification(username, password,
+         final var user = new BasicUserDetails(username, password,
                   authorities, accountNonExpired, accountNonLocked,
                   credentialsNonExpired, enabled);
 
@@ -327,10 +327,10 @@ public class NewUserSpecificationTest {
          final var credentialsNonExpired = true;
          final var enabled = true;
 
-         final var userA = new NewUserSpecification(username, password,
+         final var userA = new BasicUserDetails(username, password,
                   authorities, accountNonExpired, accountNonLocked,
                   credentialsNonExpired, enabled);
-         final var userB = new NewUserSpecification(username, password,
+         final var userB = new BasicUserDetails(username, password,
                   authorities, accountNonExpired, accountNonLocked,
                   credentialsNonExpired, enabled);
 
@@ -407,7 +407,7 @@ public class NewUserSpecificationTest {
                final String password, final Set<Authority> authorities,
                final boolean accountNonExpired, final boolean accountNonLocked,
                final boolean credentialsNonExpired, final boolean enabled) {
-         final var user = new NewUserSpecification(username, password,
+         final var user = new BasicUserDetails(username, password,
                   authorities, accountNonExpired, accountNonLocked,
                   credentialsNonExpired, enabled);
 
@@ -449,13 +449,13 @@ public class NewUserSpecificationTest {
 
    private static final String PASSWORD_B = "password123";
 
-   public static void assertInvariants(final NewUserSpecification user) {
+   public static void assertInvariants(final BasicUserDetails user) {
       ObjectTest.assertInvariants(user);// inherited
       UserDetailsTest.assertInvariants(user);// inherited
    }
 
-   public static void assertInvariants(final NewUserSpecification user1,
-            final NewUserSpecification user2) {
+   public static void assertInvariants(final BasicUserDetails user1,
+            final BasicUserDetails user2) {
       ObjectTest.assertInvariants(user1, user2);// inherited
       UserDetailsTest.assertInvariants(user1, user2);// inherited
    }

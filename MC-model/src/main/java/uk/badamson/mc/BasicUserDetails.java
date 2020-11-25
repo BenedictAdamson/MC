@@ -32,7 +32,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * A specification for a new {@linkplain User user}.
  * </p>
  */
-public class NewUserSpecification implements UserDetails {
+public class BasicUserDetails implements UserDetails {
 
    private static final long serialVersionUID = 1L;
 
@@ -94,7 +94,7 @@ public class NewUserSpecification implements UserDetails {
     *            <li>If {@code authorities} contains null</li>
     *            </ul>
     */
-   public NewUserSpecification(@NonNull final String username,
+   public BasicUserDetails(@NonNull final String username,
             @Nullable final String password,
             @NonNull final Set<Authority> authorities,
             final boolean accountNonExpired, final boolean accountNonLocked,
