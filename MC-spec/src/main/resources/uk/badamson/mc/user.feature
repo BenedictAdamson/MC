@@ -22,20 +22,41 @@ Feature: User
   @integration
   @back-end
   Scenario: List users
-    Given user has the "PLAYER" role
+    Given user has the "player" role
     And logged in
     When getting the users
     Then MC serves the users page
     And the response is a list of users
     And the list of users has at least one user
+
+  @integration
+  @back-end
+  Scenario: Examine user
+    Given user has the "player" role
+    And logged in
+    And Viewing the list of users
+    When Navigate to one user
+    Then MC serves the user page
+    And The user page includes the user name
+    And The user page lists the roles of the user
     
   @integration
   Scenario: Login as player
     # Implicitly not logged in
-    Given user has the "PLAYER" role
+    Given user has the "player" role
     When log in using correct password
     Then MC accepts the login
     And redirected to home-page
+    And MC allows logout
+    And MC allows examining the current user
+    
+  @integration
+  @back-end
+  Scenario: Logout
+    Given user has any role
+    And logged in
+    When request logout
+    Then MC accepts the logout
     
   @integration
   Scenario: Login as administrator
@@ -55,7 +76,7 @@ Feature: User
   @integration
   @back-end
   Scenario Outline: Add user
-    Given user has the "MANAGE_USERS" role
+    Given user has the "manage users" role
     And logged in
     When adding a user named "<new-name>" with  password "<password>"
     Then MC accepts the addition
@@ -70,6 +91,7 @@ Feature: User
   @integration
   @back-end
   Scenario: Only administrator may add user
-    Given user does not have the "MANAGE_USERS" role
+    Given user does not have the "manage users" role
     And logged in
-    Then MC does not present adding a user as an option
+    Then MC does not allow adding a user
+    
