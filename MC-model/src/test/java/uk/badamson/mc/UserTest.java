@@ -42,6 +42,102 @@ public class UserTest {
    public class Constructor {
 
       @Nested
+      public class FromBasicUserDetails {
+
+         @Test
+         public void authorities() {
+            test(ID_A, USERNAME_A, PASSWORD_A, Set.of(), true, true, true,
+                     true);
+         }
+
+         @Test
+         public void basic() {
+            test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                     true);
+         }
+
+         @Test
+         public void id() {
+            test(ID_B, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                     true);
+         }
+
+         @Test
+         public void notAccountNonExpired() {
+            test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
+                     true);
+         }
+
+         @Test
+         public void notAccountNonLocked() {
+            test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true,
+                     true);
+         }
+
+         @Test
+         public void notCredentialsNonExpired() {
+            test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false,
+                     true);
+         }
+
+         @Test
+         public void notEnabled() {
+            test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                     false);
+         }
+
+         @Test
+         public void nullPassword() {
+            final String password = null;
+            test(ID_A, USERNAME_A, password, Authority.ALL, true, true, true,
+                     true);
+         }
+
+         @Test
+         public void password() {
+            test(ID_A, USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true,
+                     true);
+         }
+
+         private User test(final UUID id, final String username,
+                  final String password, final Set<Authority> authorities,
+                  final boolean accountNonExpired,
+                  final boolean accountNonLocked,
+                  final boolean credentialsNonExpired, final boolean enabled) {
+            final var basicUserDetails = new BasicUserDetails(username,
+                     password, authorities, accountNonExpired, accountNonLocked,
+                     credentialsNonExpired, enabled);
+            final var user = new User(id, basicUserDetails);
+
+            assertInvariants(user);
+            assertAll("Attributes", () -> assertSame(id, user.getId(), "id"),
+                     () -> assertSame(basicUserDetails.getUsername(),
+                              user.getUsername(), "username"),
+                     () -> assertSame(basicUserDetails.getPassword(),
+                              user.getPassword(), "password"),
+                     () -> assertEquals(basicUserDetails.getAuthorities(),
+                              user.getAuthorities(), "authorities"),
+                     () -> assertEquals(accountNonExpired,
+                              user.isAccountNonExpired(), "accountNonExpired"),
+                     () -> assertEquals(accountNonLocked,
+                              user.isAccountNonLocked(), "accountNonLocked"),
+                     () -> assertEquals(credentialsNonExpired,
+                              user.isCredentialsNonExpired(),
+                              "credentialsNonExpired"),
+                     () -> assertEquals(enabled, user.isEnabled(), "enabled"));
+
+            return user;
+         }
+
+         @Test
+         public void username() {
+            test(ID_A, USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true,
+                     true);
+         }
+
+      }// class
+
+      @Nested
       public class TwoDifferentAttributes {
 
          @Test

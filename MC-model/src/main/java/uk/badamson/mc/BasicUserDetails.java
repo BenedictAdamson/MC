@@ -83,13 +83,13 @@ public class BasicUserDetails implements UserDetails {
       return new BasicUserDetails(password);
    }
 
-   private final String username;
-   private final String password;
-   private final Set<Authority> authorities;
-   private final boolean accountNonExpired;
-   private final boolean accountNonLocked;
-   private final boolean credentialsNonExpired;
-   private final boolean enabled;
+   final String username;
+   final String password;
+   final Set<Authority> authorities;
+   final boolean accountNonExpired;
+   final boolean accountNonLocked;
+   final boolean credentialsNonExpired;
+   final boolean enabled;
 
    /**
     * <p>

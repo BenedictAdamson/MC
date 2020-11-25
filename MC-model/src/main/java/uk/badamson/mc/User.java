@@ -120,7 +120,7 @@ public final class User implements UserDetails {
 
    /**
     * <p>
-    * Construct a user of the Mission Command game, with a given user-name.
+    * Construct a user of the Mission Command game, with given attribute values.
     * </p>
     * <ul>
     * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
@@ -189,6 +189,59 @@ public final class User implements UserDetails {
       this.accountNonLocked = accountNonLocked;
       this.credentialsNonExpired = credentialsNonExpired;
       this.enabled = enabled;
+   }
+
+   /**
+    * <p>
+    * Construct a user of the Mission Command game, with given user details.
+    * </p>
+    * <ul>
+    * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
+    * <li>The {@linkplain #getUsername() username} of this user is the same as
+    * the {@linkplain BasicUserDetails#getUsername() username} of the given user
+    * details.</li>
+    * <li>The {@linkplain #getPassword() password} of this user is the same as
+    * the {@linkplain BasicUserDetails#getPassword() password} of the given user
+    * details.</li>
+    * <li>The {@linkplain #getAuthorities() authorities} granted to this user
+    * are the same as the {@linkplain BasicUserDetails#getAuthorities()
+    * authorities} of the given user details.</li>
+    * <li>Whether this user's {@linkplain #isAccountNonExpired() account has not
+    * expired} is equal to the {@linkplain BasicUserDetails#isAccountNonExpired
+    * value} for the given user details.</li>
+    * <li>Whether this user's {@linkplain #isAccountNonLocked() account is equal
+    * to the {@linkplain BasicUserDetails#isAccountNonLocked() value} for the
+    * given user details.</li>
+    * <li>Whether this user's {@linkplain #isCredentialsNonExpired() credentials
+    * have not expired} is equal to the
+    * {@linkplain BasicUserDetails#isCredentialsNonExpired() value} for the
+    * given user details.</li>
+    * <li>Whether this user's {@linkplain #isEnabled() account is enabled} is
+    * equal to the {@linkplain BasicUserDetails#isEnabled() value} for the given
+    * user details.</li>
+    * </ul>
+    *
+    * @param id
+    *           The unique ID of this user.
+    * @param userDetails
+    *           the specification for this user.
+    * @throws NullPointerException
+    *            <ul>
+    *            <li>If {@code id} is null</li>
+    *            <li>If {@code userDetails} is null</li>
+    *            </ul>
+    */
+   public User(@NonNull final UUID id,
+            @NonNull final BasicUserDetails userDetails) {
+      Objects.requireNonNull(userDetails, "userDetails");
+      this.id = Objects.requireNonNull(id, "id");
+      this.username = userDetails.username;
+      this.password = userDetails.password;
+      this.authorities = userDetails.authorities;
+      this.accountNonExpired = userDetails.accountNonExpired;
+      this.accountNonLocked = userDetails.accountNonLocked;
+      this.credentialsNonExpired = userDetails.credentialsNonExpired;
+      this.enabled = userDetails.enabled;
    }
 
    /**
