@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * <p>
  * Unit tests and auxiliary test code for the {@link BasicUserDetails} class
  */
-public class NewUserSpecificationTest {
+public class BasicUserDetailsTest {
 
    @Nested
    public class Constructor {
