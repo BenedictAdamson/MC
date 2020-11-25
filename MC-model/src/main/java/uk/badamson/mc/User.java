@@ -18,8 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -31,7 +29,6 @@ import javax.persistence.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * </p>
  */
 @Entity
-public final class User implements UserDetails {
+public final class User extends BasicUserDetails {
 
    private static final long serialVersionUID = 1L;
 
@@ -99,23 +96,56 @@ public final class User implements UserDetails {
    @Id
    @org.springframework.data.annotation.Id
    private final UUID id;
-   private final String username;
-   private final String password;
-   private final Set<Authority> authorities;
-   private final boolean accountNonExpired;
-   private final boolean accountNonLocked;
-   private final boolean credentialsNonExpired;
-   private final boolean enabled;
 
    private User(final String password) {
+      super(password);
       this.id = ADMINISTRATOR_ID;
-      this.username = ADMINISTRATOR_USERNAME;
-      this.password = password;
-      this.authorities = Authority.ALL;
-      this.accountNonExpired = true;
-      this.accountNonLocked = true;
-      this.credentialsNonExpired = true;
-      this.enabled = true;
+   }
+
+   /**
+    * <p>
+    * Construct a user of the Mission Command game, with given user details.
+    * </p>
+    * <ul>
+    * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
+    * <li>The {@linkplain #getUsername() username} of this user is the same as
+    * the {@linkplain BasicUserDetails#getUsername() username} of the given user
+    * details.</li>
+    * <li>The {@linkplain #getPassword() password} of this user is the same as
+    * the {@linkplain BasicUserDetails#getPassword() password} of the given user
+    * details.</li>
+    * <li>The {@linkplain #getAuthorities() authorities} granted to this user
+    * are the same as the {@linkplain BasicUserDetails#getAuthorities()
+    * authorities} of the given user details.</li>
+    * <li>Whether this user's {@linkplain #isAccountNonExpired() account has not
+    * expired} is equal to the {@linkplain BasicUserDetails#isAccountNonExpired
+    * value} for the given user details.</li>
+    * <li>Whether this user's {@linkplain #isAccountNonLocked() account is not
+    * locked} is equal to the {@linkplain BasicUserDetails#isAccountNonLocked()
+    * value} for the given user details.</li>
+    * <li>Whether this user's {@linkplain #isCredentialsNonExpired() credentials
+    * have not expired} is equal to the
+    * {@linkplain BasicUserDetails#isCredentialsNonExpired() value} for the
+    * given user details.</li>
+    * <li>Whether this user's {@linkplain #isEnabled() account is enabled} is
+    * equal to the {@linkplain BasicUserDetails#isEnabled() value} for the given
+    * user details.</li>
+    * </ul>
+    *
+    * @param id
+    *           The unique ID of this user.
+    * @param userDetails
+    *           the specification for this user.
+    * @throws NullPointerException
+    *            <ul>
+    *            <li>If {@code id} is null</li>
+    *            <li>If {@code userDetails} is null</li>
+    *            </ul>
+    */
+   public User(@NonNull final UUID id,
+            @NonNull final BasicUserDetails userDetails) {
+      super(userDetails);
+      this.id = Objects.requireNonNull(id, "id");
    }
 
    /**
@@ -180,68 +210,9 @@ public final class User implements UserDetails {
             @JsonProperty("accountNonLocked") final boolean accountNonLocked,
             @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
             @JsonProperty("enabled") final boolean enabled) {
+      super(username, password, authorities, accountNonExpired,
+               accountNonLocked, credentialsNonExpired, enabled);
       this.id = Objects.requireNonNull(id, "id");
-      this.username = Objects.requireNonNull(username, "username");
-      this.password = password;
-      this.authorities = authorities.isEmpty() ? Collections.emptySet()
-               : Collections.unmodifiableSet(EnumSet.copyOf(authorities));
-      this.accountNonExpired = accountNonExpired;
-      this.accountNonLocked = accountNonLocked;
-      this.credentialsNonExpired = credentialsNonExpired;
-      this.enabled = enabled;
-   }
-
-   /**
-    * <p>
-    * Construct a user of the Mission Command game, with given user details.
-    * </p>
-    * <ul>
-    * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
-    * <li>The {@linkplain #getUsername() username} of this user is the same as
-    * the {@linkplain BasicUserDetails#getUsername() username} of the given user
-    * details.</li>
-    * <li>The {@linkplain #getPassword() password} of this user is the same as
-    * the {@linkplain BasicUserDetails#getPassword() password} of the given user
-    * details.</li>
-    * <li>The {@linkplain #getAuthorities() authorities} granted to this user
-    * are the same as the {@linkplain BasicUserDetails#getAuthorities()
-    * authorities} of the given user details.</li>
-    * <li>Whether this user's {@linkplain #isAccountNonExpired() account has not
-    * expired} is equal to the {@linkplain BasicUserDetails#isAccountNonExpired
-    * value} for the given user details.</li>
-    * <li>Whether this user's {@linkplain #isAccountNonLocked() account is equal
-    * to the {@linkplain BasicUserDetails#isAccountNonLocked() value} for the
-    * given user details.</li>
-    * <li>Whether this user's {@linkplain #isCredentialsNonExpired() credentials
-    * have not expired} is equal to the
-    * {@linkplain BasicUserDetails#isCredentialsNonExpired() value} for the
-    * given user details.</li>
-    * <li>Whether this user's {@linkplain #isEnabled() account is enabled} is
-    * equal to the {@linkplain BasicUserDetails#isEnabled() value} for the given
-    * user details.</li>
-    * </ul>
-    *
-    * @param id
-    *           The unique ID of this user.
-    * @param userDetails
-    *           the specification for this user.
-    * @throws NullPointerException
-    *            <ul>
-    *            <li>If {@code id} is null</li>
-    *            <li>If {@code userDetails} is null</li>
-    *            </ul>
-    */
-   public User(@NonNull final UUID id,
-            @NonNull final BasicUserDetails userDetails) {
-      Objects.requireNonNull(userDetails, "userDetails");
-      this.id = Objects.requireNonNull(id, "id");
-      this.username = userDetails.username;
-      this.password = userDetails.password;
-      this.authorities = userDetails.authorities;
-      this.accountNonExpired = userDetails.accountNonExpired;
-      this.accountNonLocked = userDetails.accountNonLocked;
-      this.credentialsNonExpired = userDetails.credentialsNonExpired;
-      this.enabled = userDetails.enabled;
    }
 
    /**
@@ -275,11 +246,6 @@ public final class User implements UserDetails {
       return id.equals(other.id);
    }
 
-   @Override
-   public Set<Authority> getAuthorities() {
-      return authorities;
-   }
-
    /**
     * <p>
     * The unique ID of this user.
@@ -301,39 +267,8 @@ public final class User implements UserDetails {
    }
 
    @Override
-   public String getPassword() {
-      return password;
-   }
-
-   @Override
-   @NonNull
-   public String getUsername() {
-      return username;
-   }
-
-   @Override
    public int hashCode() {
       return id.hashCode();
-   }
-
-   @Override
-   public boolean isAccountNonExpired() {
-      return accountNonExpired;
-   }
-
-   @Override
-   public boolean isAccountNonLocked() {
-      return accountNonLocked;
-   }
-
-   @Override
-   public boolean isCredentialsNonExpired() {
-      return credentialsNonExpired;
-   }
-
-   @Override
-   public boolean isEnabled() {
-      return enabled;
    }
 
    @Override
