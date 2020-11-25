@@ -52,13 +52,6 @@ public final class User extends BasicUserDetails {
 
    /**
     * <p>
-    * The {@linkplain #getUsername() username} of an administrator user.
-    * </p>
-    */
-   public static final String ADMINISTRATOR_USERNAME = "Administrator";
-
-   /**
-    * <p>
     * Create a {@link User} that is a valid administrator user.
     * </p>
     * <ul>

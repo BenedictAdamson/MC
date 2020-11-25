@@ -595,13 +595,11 @@ public class UserTest {
    private static final String PASSWORD_B = "password123";
 
    public static void assertInvariants(final User user) {
-      ObjectTest.assertInvariants(user);// inherited
-      UserDetailsTest.assertInvariants(user);// inherited
+      BasicUserDetailsTest.assertInvariants(user);// inherited
       assertNotNull(user.getId(), "Not null, id");
    }
 
    public static void assertInvariants(final User user1, final User user2) {
-      ObjectTest.assertInvariants(user1, user2);// inherited
-      UserDetailsTest.assertInvariants(user1, user2);// inherited
+      BasicUserDetailsTest.assertInvariants(user1, user2);// inherited
    }
 }
