@@ -163,6 +163,26 @@ public class UserTest {
             assertEquals(userA, userB);
          }
 
+         @Test
+         public void username() {
+            final var id = ID_A;
+            final var password = PASSWORD_A;
+            final var authorities = Authority.ALL;
+            final var accountNonExpired = true;
+            final var accountNonLocked = true;
+            final var credentialsNonExpired = true;
+            final var enabled = true;
+
+            final var userA = new User(id, USERNAME_A, password, authorities,
+                     accountNonExpired, accountNonLocked, credentialsNonExpired,
+                     enabled);
+            final var userB = new User(id, USERNAME_B, password, authorities,
+                     accountNonExpired, accountNonLocked, credentialsNonExpired,
+                     enabled);
+
+            test(userA, userB);
+         }
+
       }// class
 
       @Nested
@@ -234,6 +254,12 @@ public class UserTest {
       }
 
       @Test
+      public void id() {
+         test(ID_B, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                  true);
+      }
+
+      @Test
       public void notAccountNonExpired() {
          test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
                   true);
@@ -298,8 +324,8 @@ public class UserTest {
       }
 
       @Test
-      public void twoDifferentUsername() {
-         final var id = ID_A;
+      public void twoIds() {
+         final var username = USERNAME_A;
          final var password = PASSWORD_A;
          final var authorities = Authority.ALL;
          final var accountNonExpired = true;
@@ -307,10 +333,10 @@ public class UserTest {
          final var credentialsNonExpired = true;
          final var enabled = true;
 
-         final var userA = new User(id, USERNAME_A, password, authorities,
+         final var userA = new User(ID_A, username, password, authorities,
                   accountNonExpired, accountNonLocked, credentialsNonExpired,
                   enabled);
-         final var userB = new User(id, USERNAME_B, password, authorities,
+         final var userB = new User(ID_B, username, password, authorities,
                   accountNonExpired, accountNonLocked, credentialsNonExpired,
                   enabled);
 
@@ -383,6 +409,12 @@ public class UserTest {
       }
 
       @Test
+      public void id() {
+         test(ID_B, USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true,
+                  true);
+      }
+
+      @Test
       public void notAccountNonExpired() {
          test(ID_A, USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
                   true);
@@ -445,6 +477,12 @@ public class UserTest {
                            user.isCredentialsNonExpired(),
                            "credentialsNonExpired"),
                   () -> assertEquals(enabled, user.isEnabled(), "enabled"));
+      }
+
+      @Test
+      public void username() {
+         test(ID_A, USERNAME_B, PASSWORD_B, Authority.ALL, true, true, true,
+                  true);
       }
    }// class
 

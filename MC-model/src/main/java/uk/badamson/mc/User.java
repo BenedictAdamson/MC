@@ -197,10 +197,10 @@ public final class User implements UserDetails {
     * </p>
     * <ul>
     * <li>The {@link User} class has <i>entity semantics</i>, with the
-    * {@linkplain #getUsername() username} serving as a unique ID: this object
-    * is equivalent to another object if, and only of, the other object is also
-    * a {@link User} and the two have {@linkplain String#equals(Object)
-    * equivalent} {@linkplain #getUsername() usernames}.</li>
+    * {@linkplain #getId() ID} attribute serving as a unique ID: this object is
+    * equivalent to another object if, and only of, the other object is also a
+    * {@link User} and the two have {@linkplain String#equals(Object)
+    * equivalent} {@linkplain #getId() IDs}.</li>
     * </ul>
     *
     * @param that
@@ -219,7 +219,7 @@ public final class User implements UserDetails {
          return false;
       }
       final var other = (User) that;
-      return username.equals(other.username);
+      return id.equals(other.id);
    }
 
    @Override
@@ -260,7 +260,7 @@ public final class User implements UserDetails {
 
    @Override
    public int hashCode() {
-      return username.hashCode();
+      return id.hashCode();
    }
 
    @Override
@@ -285,7 +285,7 @@ public final class User implements UserDetails {
 
    @Override
    public String toString() {
-      return "User [username=" + username + "]";
+      return "User [id=" + id + "]";
    }
 
 }
