@@ -24,9 +24,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -84,7 +83,7 @@ public class BasicUserDetails implements UserDetails {
    }
 
    private final String username;
-   private final String password;
+   private String password;
    private final Set<Authority> authorities;
    private final boolean accountNonExpired;
    private final boolean accountNonLocked;
@@ -120,7 +119,7 @@ public class BasicUserDetails implements UserDetails {
     * @throws NullPointerException
     *            If {@code that} is null
     */
-   public BasicUserDetails(@NonNull final BasicUserDetails that) {
+   public BasicUserDetails(@Nonnull final BasicUserDetails that) {
       Objects.requireNonNull(that, "that");
       this.username = that.username;
       this.password = that.password;
@@ -193,9 +192,9 @@ public class BasicUserDetails implements UserDetails {
     */
    @JsonCreator
    public BasicUserDetails(
-            @NonNull @JsonProperty("username") final String username,
+            @Nonnull @JsonProperty("username") final String username,
             @Nullable @JsonProperty("password") final String password,
-            @NonNull @JsonProperty("authorities") final Set<Authority> authorities,
+            @Nonnull @JsonProperty("authorities") final Set<Authority> authorities,
             @JsonProperty("accountNonExpired") final boolean accountNonExpired,
             @JsonProperty("accountNonLocked") final boolean accountNonLocked,
             @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
@@ -221,7 +220,7 @@ public class BasicUserDetails implements UserDetails {
    }
 
    @Override
-   @NonNull
+   @Nonnull
    public final String getUsername() {
       return username;
    }
@@ -244,6 +243,23 @@ public class BasicUserDetails implements UserDetails {
    @Override
    public final boolean isEnabled() {
       return enabled;
+   }
+
+   /**
+    * <p>
+    * Change the {@link #getPassword() password} of these details.
+    * </p>
+    * <ul>
+    * <li>The password of these details becomes the same as the given
+    * password.</li>
+    * <li>Not other attributes of these details change.</li>
+    * </ul>
+    *
+    * @param password
+    *           the new password
+    */
+   public final void setPassword(@Nullable final String password) {
+      this.password = password;
    }
 
 }

@@ -367,7 +367,7 @@ public class BasicUserDetailsTest {
          assertNotNull(administrator, "Not null, returned");// guard
          assertInvariants(administrator);
          assertAll("Attributes",
-                  () -> assertSame(User.ADMINISTRATOR_USERNAME,
+                  () -> assertSame(BasicUserDetails.ADMINISTRATOR_USERNAME,
                            administrator.getUsername(), "username"),
                   () -> assertSame(password, administrator.getPassword(),
                            "password"),
@@ -465,6 +465,41 @@ public class BasicUserDetailsTest {
       }
    }// class
 
+   @Nested
+   public class SetPassword {
+
+      @Test
+      public void a() {
+         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, true,
+                  PASSWORD_B);
+      }
+
+      @Test
+      public void b() {
+         test(USERNAME_B, PASSWORD_B, Set.of(), false, false, false, false,
+                  PASSWORD_A);
+      }
+
+      @Test
+      public void c() {
+         final String password = null;
+         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, true,
+                  password);
+      }
+
+      private void test(final String username, final String password0,
+               final Set<Authority> authorities,
+               final boolean accountNonExpired, final boolean accountNonLocked,
+               final boolean credentialsNonExpired, final boolean enabled,
+               final String password) {
+         final var userDetails = new BasicUserDetails(username, password0,
+                  authorities, accountNonExpired, accountNonLocked,
+                  credentialsNonExpired, enabled);
+
+         setPassword(userDetails, password);
+      }
+   }// class
+
    private static final String USERNAME_A = "John";
 
    private static final String USERNAME_B = "Alan";
@@ -482,5 +517,34 @@ public class BasicUserDetailsTest {
             final BasicUserDetails user2) {
       ObjectTest.assertInvariants(user1, user2);// inherited
       UserDetailsTest.assertInvariants(user1, user2);// inherited
+   }
+
+   public static void setPassword(final BasicUserDetails userDetails,
+            final String password) {
+      final var username0 = userDetails.getUsername();
+      final var authorities0 = userDetails.getAuthorities();
+      final var accountNonExpired0 = userDetails.isAccountNonExpired();
+      final var accountNonLocked0 = userDetails.isAccountNonLocked();
+      final var credentialsNonExpired0 = userDetails.isCredentialsNonExpired();
+      final var enabled0 = userDetails.isEnabled();
+
+      userDetails.setPassword(password);
+
+      assertInvariants(userDetails);
+      assertAll("Not other attributes of these details change",
+               () -> assertSame(username0, userDetails.getUsername(),
+                        "username"),
+               () -> assertSame(authorities0, userDetails.getAuthorities(),
+                        "authorities"),
+               () -> assertEquals(accountNonExpired0,
+                        userDetails.isAccountNonExpired(), "accountNonExpired"),
+               () -> assertEquals(accountNonLocked0,
+                        userDetails.isAccountNonLocked(), "accountNonLocked"),
+               () -> assertEquals(credentialsNonExpired0,
+                        userDetails.isCredentialsNonExpired(),
+                        "credentialsNonExpired"),
+               () -> assertEquals(enabled0, userDetails.isEnabled(),
+                        "enabled"));
+      assertSame(password, userDetails.getPassword(), "Changed password");
    }
 }
