@@ -65,8 +65,8 @@ Feature: User
     
   @integration
   Scenario: Login as administrator
-    # Implicitly not logged in
-    Given user is the administrator
+    Given not logged in
+    And user is the administrator
     When log in using correct password
     Then MC accepts the login
     And redirected to home-page
