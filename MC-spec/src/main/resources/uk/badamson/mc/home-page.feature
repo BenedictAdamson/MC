@@ -31,3 +31,4 @@ Feature: Home-page
     And MC allows logging in
     And MC does not allow logout
     And MC does not allow examining the current user
+    And MC does not allow listing users

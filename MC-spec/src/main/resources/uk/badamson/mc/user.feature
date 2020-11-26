@@ -40,7 +40,7 @@ Feature: User
     Given user has the "manage users" role
     And logged in
     And Viewing the list of users
-    When Navigate to one user
+    When Navigate to one user page
     Then MC serves the user page
     And The user page includes the user name
     And The user page lists the roles of the user
@@ -99,4 +99,12 @@ Feature: User
     Given user does not have the "manage users" role
     And logged in
     Then MC does not allow adding a user
+ 
+  @integration
+  @back-end
+  Scenario: Only administrator my examine user
+    Given user does not have the "manage users" role
+    And logged in
+    When Viewing the list of users
+    Then MC does not allow navigating to a user page
     
