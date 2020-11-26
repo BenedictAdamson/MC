@@ -22,7 +22,7 @@ Feature: Home-page
 
   Scenario: Potential user accesses an MC server using a simple URL with the root path
     Given the DNS name, example.com, of an MC server
-    # Implicitly: And not logged in
+    And not logged in
     # Implicitly: And not resuming a session
     When the potential user gives the obvious URL http://example.com/ to a web browser
     Then MC serves the home page

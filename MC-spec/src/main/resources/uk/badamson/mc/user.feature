@@ -42,8 +42,8 @@ Feature: User
     
   @integration
   Scenario: Login as player
-    # Implicitly not logged in
-    Given user has the "player" role
+    Given not logged in
+    And user has the "player" role
     When log in using correct password
     Then MC accepts the login
     And redirected to home-page
@@ -68,8 +68,8 @@ Feature: User
     
   @integration
   Scenario: Login denied
-    # Implicitly not logged in
-    Given unknown user
+    Given not logged in
+    And unknown user
     When try to login
     Then MC rejects the login
     
