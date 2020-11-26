@@ -103,7 +103,7 @@ Feature: User
   @integration
   @back-end
   Scenario: Only administrator my examine user
-    Given user does not have the "manage users" role
+    Given user has the "player" role but not the "manage users" role
     And logged in
     When Viewing the list of users
     Then MC does not allow navigating to a user page
