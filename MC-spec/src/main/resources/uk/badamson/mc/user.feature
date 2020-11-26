@@ -21,18 +21,23 @@ Feature: User
 
   @integration
   @back-end
-  Scenario: List users
-    Given user has the "player" role
+  Scenario Outline: List users
+    Given user has the "<role>" role
     And logged in
     When getting the users
     Then MC serves the users page
     And the response is a list of users
     And the list of users has at least one user
+    
+    Examples:
+      |role|
+      |player|
+      |manage users|
 
   @integration
   @back-end
   Scenario: Examine user
-    Given user has the "player" role
+    Given user has the "manage users" role
     And logged in
     And Viewing the list of users
     When Navigate to one user
