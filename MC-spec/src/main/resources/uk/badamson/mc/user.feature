@@ -105,6 +105,7 @@ Feature: User
   Scenario: Only administrator my examine user
     Given user has the "player" role but not the "manage users" role
     And logged in
-    When Viewing the list of users
+    And Viewing the list of users
+    When Trying to navigate to a user page
     Then MC does not allow navigating to a user page
     
