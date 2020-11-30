@@ -19,10 +19,7 @@ package uk.badamson.mc;
  */
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -151,9 +148,6 @@ public class Game {
    @org.springframework.data.annotation.Id
    private final Identifier identifier;
 
-   private boolean recruiting;
-   private final Set<UUID> players = new HashSet<>();
-
    /**
     * <p>
     * Construct a copy of a game.
@@ -165,11 +159,6 @@ public class Game {
     * game.</li>
     * <li>The {@linkplain #getIdentifier() identifier} of this game is the same
     * as the identifier of the given game.</li>
-    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is equal
-    * to whether the given game is recruiting flag.</li>
-    * <li>The {@linkplain #getPlayers() set of players} of this game is
-    * {@linkplain Set#equals(Object) equal to} but not the same as the set of
-    * players of the given game.</li>
     * </ul>
     *
     * @param that
@@ -180,8 +169,6 @@ public class Game {
    public Game(final Game that) {
       Objects.requireNonNull(that, "that");
       identifier = that.identifier;
-      recruiting = that.recruiting;
-      players.addAll(that.players);
    }
 
    /**
@@ -193,81 +180,18 @@ public class Game {
     * <ul>
     * <li>The {@linkplain #getIdentifier() identifier} of this game is the given
     * {@code identifier}.</li>
-    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is the
-    * given {@code recruiting} flag.</li>
-    * <li>The {@linkplain #getPlayers() set of players} of this game is
-    * {@linkplain Set#equals(Object) equal to} but not the same as the given set
-    * of {@code players}.</li>
     * </ul>
     *
     * @param identifier
     *           The unique identifier for this game.
-    * @param recruiting
-    *           Whether this game is <i>recruiting</i> new players.
-    * @param players
-    *           The ({@linkplain User#getId() unique IDs} of the
-    *           {@linkplain User users} who played, or are playing, this game.
     * @throws NullPointerException
-    *            <ul>
-    *            <li>If {@code identifier} is null.</li>
-    *            <li>If {@code players} is null.</li>
-    *            </ul>
+    *            If {@code identifier} is null.
     */
    @JsonCreator
    @PersistenceConstructor
-   public Game(@Nonnull @JsonProperty("identifier") final Identifier identifier,
-            @JsonProperty("recruiting") final boolean recruiting,
-            @Nonnull @JsonProperty("players") final Set<UUID> players) {
+   public Game(
+            @Nonnull @JsonProperty("identifier") final Identifier identifier) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
-      this.recruiting = recruiting;
-      this.players.addAll(Objects.requireNonNull(players, "players"));
-   }
-
-   /**
-    * <p>
-    * Add a player ({@linkplain User#getId() unique ID} of a {@linkplain User
-    * users}) to the {@linkplain #getPlayers() set of users who played, or are
-    * playing}, this game.
-    * </p>
-    * <ul>
-    * <li>Does not remove any players from the {@linkplain #getPlayers() set of
-    * players} of this game.</li>
-    * <li>The {@linkplain #getPlayers() set of players}
-    * {@linkplain Set#contains(Object) contains} the given player.</li>
-    * </ul>
-    *
-    * @param player
-    *           The unique ID of the user to add as a player.
-    * @throws NullPointerException
-    *            If {@code player} is null.
-    * @throws IllegalStateException
-    *            If this game is not {@linkplain #isRecruiting() recruiting}
-    *            players.
-    */
-   public final void addPlayer(@Nonnull final UUID player) {
-      Objects.requireNonNull(player, "player");
-      if (!recruiting) {
-         throw new IllegalStateException("Game not recruiting players");
-      }
-      players.add(player);
-   }
-
-   /**
-    * <p>
-    * Indicate that this game is not {@linkplain #isRecruiting() recruiting}
-    * players (any longer).
-    * </p>
-    * <p>
-    * This mutator is idempotent: the mutator does not have the precondition
-    * that it is recruiting.
-    * </p>
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>This game is not {@linkplain #isRecruiting() recruiting}.</li>
-    * </ul>
-    */
-   public final void endRecruitment() {
-      recruiting = false;
    }
 
    /**
@@ -315,44 +239,9 @@ public class Game {
       return identifier;
    }
 
-   /**
-    * <p>
-    * The ({@linkplain User#getId() unique IDs} of the {@linkplain User users}
-    * who played, or are playing, this game.
-    * </p>
-    * <ul>
-    * <li>Always returns a (non null) set of players.</li>
-    * <li>The set of players does not include null.</li>
-    * <li>The returned set of players in not modifiable.</li>
-    * </ul>
-    *
-    * @return the players
-    */
-   @NonNull
-   @JsonProperty("players")
-   public final Set<UUID> getPlayers() {
-      return Collections.unmodifiableSet(players);
-   }
-
    @Override
    public final int hashCode() {
       return identifier.hashCode();
-   }
-
-   /**
-    * <p>
-    * Whether this game is <i>recruiting</i> new players.
-    * </p>
-    * <p>
-    * That is, whether players may be {@linkplain #addPlayer(UUID) added} to
-    * this game.
-    * </p>
-    *
-    * @return whether recruiting
-    */
-   @JsonProperty("recruiting")
-   public final boolean isRecruiting() {
-      return recruiting;
    }
 
 }
