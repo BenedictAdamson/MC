@@ -42,10 +42,10 @@ public class GamePlayers {
 
    @Id
    @org.springframework.data.annotation.Id
-   private final Game.Identifier identifier;
+   private final Game.Identifier game;
 
    private boolean recruiting;
-   private final Set<UUID> players = new HashSet<>();
+   private final Set<UUID> users = new HashSet<>();
 
    /**
     * <p>
@@ -54,37 +54,36 @@ public class GamePlayers {
     *
     * <h2>Post Conditions</h2>
     * <ul>
-    * <li>The {@linkplain #getIdentifier() identifier} of this game is the given
+    * <li>The {@linkplain #getGame() identifier} of this game is the given
     * {@code identifier}.</li>
     * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is the
     * given {@code recruiting} flag.</li>
-    * <li>The {@linkplain #getPlayers() set of players} of this game is
+    * <li>The {@linkplain #getUsers() set of players} of this game is
     * {@linkplain Set#equals(Object) equal to} but not the same as the given set
     * of {@code players}.</li>
     * </ul>
     *
-    * @param identifier
+    * @param game
     *           The unique identifier for this game.
     * @param recruiting
     *           Whether this game is <i>recruiting</i> new players.
-    * @param players
+    * @param users
     *           The ({@linkplain User#getId() unique IDs} of the
     *           {@linkplain User users} who played, or are playing, this game.
     * @throws NullPointerException
     *            <ul>
-    *            <li>If {@code identifier} is null.</li>
-    *            <li>If {@code players} is null.</li>
+    *            <li>If {@code game} is null.</li>
+    *            <li>If {@code users} is null.</li>
     *            </ul>
     */
    @JsonCreator
    @PersistenceConstructor
-   public GamePlayers(
-            @Nonnull @JsonProperty("identifier") final Game.Identifier identifier,
+   public GamePlayers(@Nonnull @JsonProperty("game") final Game.Identifier game,
             @JsonProperty("recruiting") final boolean recruiting,
-            @Nonnull @JsonProperty("players") final Set<UUID> players) {
-      this.identifier = Objects.requireNonNull(identifier, "identifier");
+            @Nonnull @JsonProperty("users") final Set<UUID> users) {
+      this.game = Objects.requireNonNull(game, "game");
       this.recruiting = recruiting;
-      this.players.addAll(Objects.requireNonNull(players, "players"));
+      this.users.addAll(Objects.requireNonNull(users, "users"));
    }
 
    /**
@@ -96,11 +95,11 @@ public class GamePlayers {
     * <ul>
     * <li>This game is {@linkplain #equals(Object) equivalent to} the given
     * game.</li>
-    * <li>The {@linkplain #getIdentifier() identifier} of this game is the same
-    * as the identifier of the given game.</li>
+    * <li>The {@linkplain #getGame() identifier} of this game is the same as the
+    * identifier of the given game.</li>
     * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is equal
     * to whether the given game is recruiting flag.</li>
-    * <li>The {@linkplain #getPlayers() set of players} of this game is
+    * <li>The {@linkplain #getUsers() set of players} of this game is
     * {@linkplain Set#equals(Object) equal to} but not the same as the set of
     * players of the given game.</li>
     * </ul>
@@ -112,38 +111,38 @@ public class GamePlayers {
     */
    public GamePlayers(final GamePlayers that) {
       Objects.requireNonNull(that, "that");
-      identifier = that.identifier;
+      game = that.game;
       recruiting = that.recruiting;
-      players.addAll(that.players);
+      users.addAll(that.users);
    }
 
    /**
     * <p>
     * Add a player ({@linkplain User#getId() unique ID} of a {@linkplain User
-    * users}) to the {@linkplain #getPlayers() set of users who played, or are
+    * users}) to the {@linkplain #getUsers() set of users who played, or are
     * playing}, this game.
     * </p>
     * <ul>
-    * <li>Does not remove any players from the {@linkplain #getPlayers() set of
+    * <li>Does not remove any players from the {@linkplain #getUsers() set of
     * players} of this game.</li>
-    * <li>The {@linkplain #getPlayers() set of players}
+    * <li>The {@linkplain #getUsers() set of players}
     * {@linkplain Set#contains(Object) contains} the given player.</li>
     * </ul>
     *
-    * @param player
+    * @param user
     *           The unique ID of the user to add as a player.
     * @throws NullPointerException
-    *            If {@code player} is null.
+    *            If {@code user} is null.
     * @throws IllegalStateException
     *            If this game is not {@linkplain #isRecruiting() recruiting}
     *            players.
     */
-   public final void addPlayer(@Nonnull final UUID player) {
-      Objects.requireNonNull(player, "player");
+   public final void addUser(@Nonnull final UUID user) {
+      Objects.requireNonNull(user, "users");
       if (!recruiting) {
          throw new IllegalStateException("Game not recruiting players");
       }
-      players.add(player);
+      users.add(user);
    }
 
    /**
@@ -170,11 +169,11 @@ public class GamePlayers {
     * </p>
     * <ul>
     * <li>The {@link GamePlayers} class has <i>entity semantics</i>, with the
-    * {@linkplain #getIdentifier() identifier} serving as a unique identifier:
-    * this object is equivalent to another object if, and only of, the other
-    * object is also a {@link GamePlayers} and the two have
+    * {@linkplain #getGame() identifier} serving as a unique identifier: this
+    * object is equivalent to another object if, and only of, the other object
+    * is also a {@link GamePlayers} and the two have
     * {@linkplain Game.Identifier#equals(Object) equivalent}
-    * {@linkplain #getIdentifier() identifiers}.</li>
+    * {@linkplain #getGame() identifiers}.</li>
     * </ul>
     *
     * @param that
@@ -190,7 +189,7 @@ public class GamePlayers {
          return false;
       }
       final var other = (GamePlayers) that;
-      return identifier.equals(other.identifier);
+      return game.equals(other.game);
    }
 
    /**
@@ -204,9 +203,9 @@ public class GamePlayers {
     * @return the identifier.
     */
    @NonNull
-   @JsonProperty("identifier")
-   public final Game.Identifier getIdentifier() {
-      return identifier;
+   @JsonProperty("game")
+   public final Game.Identifier getGame() {
+      return game;
    }
 
    /**
@@ -223,14 +222,14 @@ public class GamePlayers {
     * @return the players
     */
    @NonNull
-   @JsonProperty("players")
-   public final Set<UUID> getPlayers() {
-      return Collections.unmodifiableSet(players);
+   @JsonProperty("users")
+   public final Set<UUID> getUsers() {
+      return Collections.unmodifiableSet(users);
    }
 
    @Override
    public final int hashCode() {
-      return identifier.hashCode();
+      return game.hashCode();
    }
 
    /**
@@ -238,8 +237,8 @@ public class GamePlayers {
     * Whether this game is <i>recruiting</i> new players.
     * </p>
     * <p>
-    * That is, whether players may be {@linkplain #addPlayer(UUID) added} to
-    * this game.
+    * That is, whether players may be {@linkplain #addUser(UUID) added} to this
+    * game.
     * </p>
     *
     * @return whether recruiting

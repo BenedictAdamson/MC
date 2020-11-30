@@ -48,33 +48,33 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class GamePlayersTest {
 
    @Nested
-   public class AddPlayer {
+   public class AddUser {
 
       @Test
       public void a() {
-         test(Set.of(), PLAYER_ID_A);
+         test(Set.of(), USER_ID_A);
       }
 
       @Test
       public void alreadyPlayer() {
-         test(Set.of(PLAYER_ID_A), PLAYER_ID_A);
+         test(Set.of(USER_ID_A), USER_ID_A);
       }
 
       @Test
       public void b() {
-         test(Set.of(), PLAYER_ID_B);
+         test(Set.of(), USER_ID_B);
       }
 
       @Test
       public void notEmpty() {
-         test(Set.of(PLAYER_ID_A), PLAYER_ID_B);
+         test(Set.of(USER_ID_A), USER_ID_B);
       }
 
-      private void test(final Set<UUID> players0, final UUID player) {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var game = new GamePlayers(identifier, true, players0);
+      private void test(final Set<UUID> users0, final UUID user) {
+         final var game = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var players = new GamePlayers(game, true, users0);
 
-         addPlayer(game, player);
+         addUser(players, user);
       }
 
    }// class
@@ -84,43 +84,43 @@ public class GamePlayersTest {
 
       @Test
       public void differentIdentifiers() {
-         final var identifierA = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var identifierB = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         final var gameA = new GamePlayers(identifierA, true, PLAYERS_A);
-         final var gameB = new GamePlayers(identifierB, true, PLAYERS_A);
+         final var gameA = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var gameB = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+         final var playersA = new GamePlayers(gameA, true, USERS_A);
+         final var playersB = new GamePlayers(gameB, true, USERS_A);
 
-         assertInvariants(gameA, gameB);
-         assertNotEquals(gameA, gameB);
+         assertInvariants(playersA, playersB);
+         assertNotEquals(playersA, playersB);
       }
 
       @Test
       public void differentPlayers() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new GamePlayers(identifier, true, PLAYERS_A);
-         final var gameB = new GamePlayers(identifier, true, PLAYERS_B);
+         final var game = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var playersA = new GamePlayers(game, true, USERS_A);
+         final var playersB = new GamePlayers(game, true, USERS_B);
 
-         assertInvariants(gameA, gameB);
-         assertEquals(gameA, gameB);
+         assertInvariants(playersA, playersB);
+         assertEquals(playersA, playersB);
       }
 
       @Test
       public void differentRecuitment() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new GamePlayers(identifier, true, PLAYERS_A);
-         final var gameB = new GamePlayers(identifier, false, PLAYERS_A);
+         final var game = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var playersA = new GamePlayers(game, true, USERS_A);
+         final var playersB = new GamePlayers(game, false, USERS_A);
 
-         assertInvariants(gameA, gameB);
-         assertEquals(gameA, gameB);
+         assertInvariants(playersA, playersB);
+         assertEquals(playersA, playersB);
       }
 
       @Test
       public void equalAttributes() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new GamePlayers(identifier, true, PLAYERS_A);
-         final var gameB = new GamePlayers(identifier, true, PLAYERS_A);
+         final var game = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var playersA = new GamePlayers(game, true, USERS_A);
+         final var playersB = new GamePlayers(game, true, USERS_A);
 
-         assertInvariants(gameA, gameB);
-         assertEquals(gameA, gameB);
+         assertInvariants(playersA, playersB);
+         assertEquals(playersA, playersB);
       }
    }// class
 
@@ -129,33 +129,32 @@ public class GamePlayersTest {
 
       @Test
       public void a() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, false, PLAYERS_A);
+         final var game = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         test(game, false, USERS_A);
       }
 
       @Test
       public void b() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, true, PLAYERS_B);
+         final var game = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+         test(game, true, USERS_B);
       }
 
-      private void test(final Game.Identifier identifier,
-               final boolean recruiting, final Set<UUID> players) {
-         final var game0 = new GamePlayers(identifier, recruiting, players);
+      private void test(final Game.Identifier game, final boolean recruiting,
+               final Set<UUID> users) {
+         final var players0 = new GamePlayers(game, recruiting, users);
 
-         final var copy = new GamePlayers(game0);
+         final var copy = new GamePlayers(players0);
 
          assertInvariants(copy);
-         assertInvariants(game0, copy);
-         assertAll("Copied", () -> assertEquals(game0, copy),
-                  () -> assertSame(game0.getIdentifier(), copy.getIdentifier(),
-                           "identifier"),
-                  () -> assertEquals(game0.isRecruiting(), copy.isRecruiting(),
-                           "recruiting"),
-                  () -> assertEquals(game0.getPlayers(), copy.getPlayers(),
-                           "players"),
-                  () -> assertNotSame(game0.getPlayers(), copy.getPlayers(),
-                           "players (not game0)"));
+         assertInvariants(players0, copy);
+         assertAll("Copied", () -> assertEquals(players0, copy),
+                  () -> assertSame(players0.getGame(), copy.getGame(), "game"),
+                  () -> assertEquals(players0.isRecruiting(),
+                           copy.isRecruiting(), "recruiting"),
+                  () -> assertEquals(players0.getUsers(), copy.getUsers(),
+                           "users"),
+                  () -> assertNotSame(players0.getUsers(), copy.getUsers(),
+                           "users (not same)"));
       }
    }// class
 
@@ -164,28 +163,27 @@ public class GamePlayersTest {
 
       @Test
       public void a() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, false, PLAYERS_A);
+         final var game = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         test(game, false, USERS_A);
       }
 
       @Test
       public void b() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, true, PLAYERS_B);
+         final var game = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+         test(game, true, USERS_B);
       }
 
-      private void test(final Game.Identifier identifier,
-               final boolean recruiting, final Set<UUID> players) {
-         final var game = new GamePlayers(identifier, recruiting, players);
+      private void test(final Game.Identifier game, final boolean recruiting,
+               final Set<UUID> users) {
+         final var players = new GamePlayers(game, recruiting, users);
 
-         assertInvariants(game);
+         assertInvariants(players);
          assertAll("Has the given attribute values",
-                  () -> assertSame(identifier, game.getIdentifier(),
-                           "identifier"),
-                  () -> assertEquals(recruiting, game.isRecruiting(),
+                  () -> assertSame(game, players.getGame(), "game"),
+                  () -> assertEquals(recruiting, players.isRecruiting(),
                            "recruiting"),
-                  () -> assertEquals(players, game.getPlayers(), "players"));
-         assertNotSame(players, game.getPlayers(), "players not same");
+                  () -> assertEquals(users, players.getUsers(), "users"));
+         assertNotSame(users, players.getUsers(), "users not same");
       }
    }// class
 
@@ -203,10 +201,10 @@ public class GamePlayersTest {
       }
 
       private void test(final boolean recruitment0) {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var game = new GamePlayers(identifier, recruitment0, PLAYERS_A);
+         final var game = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var players = new GamePlayers(game, recruitment0, USERS_A);
 
-         endRecruitment(game);
+         endRecruitment(players);
       }
    }// class
 
@@ -340,53 +338,53 @@ public class GamePlayersTest {
 
       @Test
       public void a() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, false, PLAYERS_A);
+         final var game = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         test(game, false, USERS_A);
       }
 
       @Test
       public void b() {
-         final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, true, PLAYERS_B);
+         final var game = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+         test(game, true, USERS_B);
       }
 
-      private void test(final Game.Identifier identifier,
-               final boolean recruiting, final Set<UUID> players) {
-         final var game = new GamePlayers(identifier, recruiting, players);
-         final var deserialized = JsonTest.serializeAndDeserialize(game);
+      private void test(final Game.Identifier game, final boolean recruiting,
+               final Set<UUID> users) {
+         final var players = new GamePlayers(game, recruiting, users);
+         final var deserialized = JsonTest.serializeAndDeserialize(players);
 
          assertInvariants(deserialized);
-         assertInvariants(game, deserialized);
-         assertEquals(game, deserialized);
+         assertInvariants(players, deserialized);
+         assertEquals(players, deserialized);
          assertAll("Deserialised attributes",
-                  () -> assertEquals(identifier, deserialized.getIdentifier(),
-                           "identifier"),
+                  () -> assertEquals(game, deserialized.getGame(), "game"),
                   () -> assertEquals(recruiting, deserialized.isRecruiting(),
-                           "recruiting"));
+                           "recruiting"),
+                  () -> assertEquals(users, deserialized.getUsers(), "users"));
       }
    }// class
 
    private static final UUID SCENARIO_ID_A = UUID.randomUUID();
    private static final UUID SCENARIO_ID_B = UUID.randomUUID();
-   private static final UUID PLAYER_ID_A = UUID.randomUUID();
-   private static final UUID PLAYER_ID_B = UUID.randomUUID();
+   private static final UUID USER_ID_A = UUID.randomUUID();
+   private static final UUID USER_ID_B = UUID.randomUUID();
    private static final Instant CREATED_A = Instant.EPOCH;
    private static final Instant CREATED_B = Instant.now();
-   private static final Set<UUID> PLAYERS_A = Set.of();
-   private static final Set<UUID> PLAYERS_B = Set.of(PLAYER_ID_B);
+   private static final Set<UUID> USERS_A = Set.of();
+   private static final Set<UUID> USERS_B = Set.of(USER_ID_B);
 
-   public static void addPlayer(final GamePlayers game, final UUID player) {
-      final var players0 = Set.copyOf(game.getPlayers());
+   public static void addUser(final GamePlayers players, final UUID user) {
+      final var users0 = Set.copyOf(players.getUsers());
 
-      game.addPlayer(player);
+      players.addUser(user);
 
-      assertInvariants(game);
-      final var players = game.getPlayers();
+      assertInvariants(players);
+      final var users = players.getUsers();
       assertAll(() -> assertThat(
-               "Does not remove any players from the set of players of this game.",
-               players.containsAll(players0)),
-               () -> assertThat("The set of players contains the given player.",
-                        players, hasItem(player)));
+               "Does not remove any users from the set of users of the game.",
+               users.containsAll(users0)),
+               () -> assertThat("The set of users contains the given user.",
+                        users, hasItem(user)));
    }
 
    public static void assertInvariants(final Game.Identifier identifier) {
@@ -412,29 +410,28 @@ public class GamePlayersTest {
                         "creation time"));
    }
 
-   public static void assertInvariants(final GamePlayers game) {
-      ObjectTest.assertInvariants(game);// inherited
+   public static void assertInvariants(final GamePlayers players) {
+      ObjectTest.assertInvariants(players);// inherited
 
-      final var players = game.getPlayers();
-      assertAll("Not null",
-               () -> assertNotNull(game.getIdentifier(), "identifier"),
-               () -> assertNotNull(players, "players"));
-      assertTrue(players.stream().filter(p -> p == null).findAny().isEmpty(),
-               "The set of players does not include null.");
+      final var users = players.getUsers();
+      assertAll("Not null", () -> assertNotNull(players.getGame(), "game"),
+               () -> assertNotNull(users, "users"));
+      assertTrue(users.stream().filter(p -> p == null).findAny().isEmpty(),
+               "The set of users does not include null.");
    }
 
-   public static void assertInvariants(final GamePlayers gameA,
-            final GamePlayers gameB) {
-      ObjectTest.assertInvariants(gameA, gameB);// inherited
-      assertEquals(gameA.equals(gameB),
-               gameA.getIdentifier().equals(gameB.getIdentifier()),
-               "Entity semantics, with the identifier serving as a unique identifier");
+   public static void assertInvariants(final GamePlayers playersA,
+            final GamePlayers playersB) {
+      ObjectTest.assertInvariants(playersA, playersB);// inherited
+      assertEquals(playersA.equals(playersB),
+               playersA.getGame().equals(playersB.getGame()),
+               "Entity semantics, with the game serving as a unique identifier");
    }
 
-   public static void endRecruitment(final GamePlayers game) {
-      game.endRecruitment();
+   public static void endRecruitment(final GamePlayers players) {
+      players.endRecruitment();
 
-      assertInvariants(game);
-      assertFalse(game.isRecruiting(), "This game is not recruiting.");
+      assertInvariants(players);
+      assertFalse(players.isRecruiting(), "This game is not recruiting.");
    }
 }
