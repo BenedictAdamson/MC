@@ -25,10 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Nested;
@@ -51,18 +53,28 @@ public class GameTest {
       public void differentIdentifiers() {
          final var identifierA = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
          final var identifierB = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         final var gameA = new Game(identifierA, true);
-         final var gameB = new Game(identifierB, true);
+         final var gameA = new Game(identifierA, true, PLAYERS_A);
+         final var gameB = new Game(identifierB, true, PLAYERS_A);
 
          assertInvariants(gameA, gameB);
          assertNotEquals(gameA, gameB);
       }
 
       @Test
+      public void differentPlayers() {
+         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var gameA = new Game(identifier, true, PLAYERS_A);
+         final var gameB = new Game(identifier, true, PLAYERS_B);
+
+         assertInvariants(gameA, gameB);
+         assertEquals(gameA, gameB);
+      }
+
+      @Test
       public void differentRecuitment() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier, true);
-         final var gameB = new Game(identifier, false);
+         final var gameA = new Game(identifier, true, PLAYERS_A);
+         final var gameB = new Game(identifier, false, PLAYERS_A);
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
@@ -71,8 +83,8 @@ public class GameTest {
       @Test
       public void equalAttributes() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier, true);
-         final var gameB = new Game(identifier, true);
+         final var gameA = new Game(identifier, true, PLAYERS_A);
+         final var gameB = new Game(identifier, true, PLAYERS_A);
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
@@ -85,18 +97,18 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, false);
+         test(identifier, false, PLAYERS_A);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, true);
+         test(identifier, true, PLAYERS_B);
       }
 
       private void test(final Game.Identifier identifier,
-               final boolean recruiting) {
-         final var game0 = new Game(identifier, recruiting);
+               final boolean recruiting, final Set<UUID> players) {
+         final var game0 = new Game(identifier, recruiting, players);
 
          final var copy = new Game(game0);
 
@@ -106,7 +118,11 @@ public class GameTest {
                   () -> assertSame(game0.getIdentifier(), copy.getIdentifier(),
                            "identifier"),
                   () -> assertEquals(game0.isRecruiting(), copy.isRecruiting(),
-                           "recruiting"));
+                           "recruiting"),
+                  () -> assertEquals(game0.getPlayers(), copy.getPlayers(),
+                           "players"),
+                  () -> assertNotSame(game0.getPlayers(), copy.getPlayers(),
+                           "players (not game0)"));
       }
    }// class
 
@@ -116,25 +132,27 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, false);
+         test(identifier, false, PLAYERS_A);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, true);
+         test(identifier, true, PLAYERS_B);
       }
 
       private void test(final Game.Identifier identifier,
-               final boolean recruiting) {
-         final var game = new Game(identifier, recruiting);
+               final boolean recruiting, final Set<UUID> players) {
+         final var game = new Game(identifier, recruiting, players);
 
          assertInvariants(game);
          assertAll("Has the given attribute values",
                   () -> assertSame(identifier, game.getIdentifier(),
                            "identifier"),
                   () -> assertEquals(recruiting, game.isRecruiting(),
-                           "recruiting"));
+                           "recruiting"),
+                  () -> assertEquals(players, game.getPlayers(), "players"));
+         assertNotSame(players, game.getPlayers(), "players not same");
       }
    }// class
 
@@ -153,7 +171,7 @@ public class GameTest {
 
       private void test(final boolean recruitment0) {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var game = new Game(identifier, recruitment0);
+         final var game = new Game(identifier, recruitment0, PLAYERS_A);
 
          game.endRecruitment();
 
@@ -293,18 +311,18 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, false);
+         test(identifier, false, PLAYERS_A);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, true);
+         test(identifier, true, PLAYERS_B);
       }
 
       private void test(final Game.Identifier identifier,
-               final boolean recruiting) {
-         final var game = new Game(identifier, recruiting);
+               final boolean recruiting, final Set<UUID> players) {
+         final var game = new Game(identifier, recruiting, players);
          final var deserialized = JsonTest.serializeAndDeserialize(game);
 
          assertInvariants(deserialized);
@@ -322,6 +340,8 @@ public class GameTest {
    private static final UUID SCENARIO_ID_B = UUID.randomUUID();
    private static final Instant CREATED_A = Instant.EPOCH;
    private static final Instant CREATED_B = Instant.now();
+   private static final Set<UUID> PLAYERS_A = Set.of();
+   private static final Set<UUID> PLAYERS_B = Set.of(UUID.randomUUID());
 
    public static void assertInvariants(final Game game) {
       ObjectTest.assertInvariants(game);// inherited

@@ -167,6 +167,9 @@ public class Game {
     * as the identifier of the given game.</li>
     * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is equal
     * to whether the given game is recruiting flag.</li>
+    * <li>The {@linkplain #getPlayers() set of players} of this game is
+    * {@linkplain Set#equals(Object) equal to} but not the same as the set of
+    * players of the given game.</li>
     * </ul>
     *
     * @param that
@@ -178,6 +181,7 @@ public class Game {
       Objects.requireNonNull(that, "that");
       identifier = that.identifier;
       recruiting = that.recruiting;
+      players.addAll(that.players);
    }
 
    /**
@@ -191,21 +195,32 @@ public class Game {
     * {@code identifier}.</li>
     * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is the
     * given {@code recruiting} flag.</li>
+    * <li>The {@linkplain #getPlayers() set of players} of this game is
+    * {@linkplain Set#equals(Object) equal to} but not the same as the given set
+    * of {@code players}.</li>
     * </ul>
     *
     * @param identifier
     *           The unique identifier for this game.
     * @param recruiting
     *           Whether this game is <i>recruiting</i> new players.
+    * @param players
+    *           The ({@linkplain User#getId() unique IDs} of the
+    *           {@linkplain User users} who played, or are playing, this game.
     * @throws NullPointerException
-    *            If {@code identifier} is null
+    *            <ul>
+    *            <li>If {@code identifier} is null.</li>
+    *            <li>If {@code players} is null.</li>
+    *            </ul>
     */
    @JsonCreator
    @PersistenceConstructor
    public Game(@NonNull @JsonProperty("identifier") final Identifier identifier,
-            @JsonProperty("recruiting") final boolean recruiting) {
+            @JsonProperty("recruiting") final boolean recruiting,
+            @JsonProperty("players") final Set<UUID> players) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.recruiting = recruiting;
+      this.players.addAll(Objects.requireNonNull(players, "players"));
    }
 
    /**
