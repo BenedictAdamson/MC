@@ -35,7 +35,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * <p>
- * A game (play) of a scenario of the Mission Command game.
+ * The set of {@linkplain User users} who played, or are playing, a particular
+ * {@link Game game}.
  * </p>
  */
 public class GamePlayers {
@@ -49,27 +50,29 @@ public class GamePlayers {
 
    /**
     * <p>
-    * Construct a game with given attribute values.
+    * Construct a set of players with given values.
     * </p>
     *
     * <h2>Post Conditions</h2>
     * <ul>
-    * <li>The {@linkplain #getGame() identifier} of this game is the given
+    * <li>The {@linkplain #getGame() game} of this set of players is the given
     * {@code identifier}.</li>
-    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is the
-    * given {@code recruiting} flag.</li>
-    * <li>The {@linkplain #getUsers() set of players} of this game is
-    * {@linkplain Set#equals(Object) equal to} but not the same as the given set
-    * of {@code players}.</li>
+    * <li>Whether this set of players {@linkplain #isRecruiting() is recruiting}
+    * is the given {@code recruiting} flag.</li>
+    * <li>The {@linkplain #getUsers() set of users} of this set of players is
+    * {@linkplain Set#equals(Object) equal to}, but not the same, as the given
+    * set of {@code users}.</li>
     * </ul>
     *
     * @param game
-    *           The unique identifier for this game.
+    *           The unique identifier for the game for which this is the set of
+    *           players.
     * @param recruiting
-    *           Whether this game is <i>recruiting</i> new players.
+    *           Whether the game is <i>recruiting</i> new players.
     * @param users
     *           The ({@linkplain User#getId() unique IDs} of the
-    *           {@linkplain User users} who played, or are playing, this game.
+    *           {@linkplain User users} who played, or are playing, the
+    *           {@code game}.
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code game} is null.</li>
@@ -88,24 +91,24 @@ public class GamePlayers {
 
    /**
     * <p>
-    * Construct a copy of a game.
+    * Construct a copy of a set of players.
     * </p>
     *
     * <h2>Post Conditions</h2>
     * <ul>
-    * <li>This game is {@linkplain #equals(Object) equivalent to} the given
-    * game.</li>
-    * <li>The {@linkplain #getGame() identifier} of this game is the same as the
-    * identifier of the given game.</li>
-    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is equal
-    * to whether the given game is recruiting flag.</li>
-    * <li>The {@linkplain #getUsers() set of players} of this game is
-    * {@linkplain Set#equals(Object) equal to} but not the same as the set of
-    * players of the given game.</li>
+    * <li>This set of players is {@linkplain #equals(Object) equivalent to} the
+    * given set of players.</li>
+    * <li>The {@linkplain #getGame() game} of this set of players is the same as
+    * the identifier of the given set of players.</li>
+    * <li>Whether this set of players {@linkplain #isRecruiting() is recruiting}
+    * is equal to whether the given set of players is recruiting.</li>
+    * <li>The {@linkplain #getUsers() set of users} of this set of players is
+    * {@linkplain Set#equals(Object) equal to}, but not the same, as the set of
+    * users of the given set of players.</li>
     * </ul>
     *
     * @param that
-    *           The game to copy.
+    *           The set of players to copy.
     * @throws NullPointerException
     *            If {@code that} is null
     */
@@ -118,15 +121,14 @@ public class GamePlayers {
 
    /**
     * <p>
-    * Add a player ({@linkplain User#getId() unique ID} of a {@linkplain User
-    * users}) to the {@linkplain #getUsers() set of users who played, or are
-    * playing}, this game.
+    * Add a {@linkplain User#getId() user ID} to the {@linkplain #getUsers() set
+    * of users who played, or are playing}, the {@linkplain #getGame() game}.
     * </p>
     * <ul>
-    * <li>Does not remove any players from the {@linkplain #getUsers() set of
-    * players} of this game.</li>
-    * <li>The {@linkplain #getUsers() set of players}
-    * {@linkplain Set#contains(Object) contains} the given player.</li>
+    * <li>Does not remove any users from the {@linkplain #getUsers() set of
+    * users} of the game.</li>
+    * <li>The {@linkplain #getUsers() set of users}
+    * {@linkplain Set#contains(Object) contains} the given user ID.</li>
     * </ul>
     *
     * @param user
@@ -134,7 +136,7 @@ public class GamePlayers {
     * @throws NullPointerException
     *            If {@code user} is null.
     * @throws IllegalStateException
-    *            If this game is not {@linkplain #isRecruiting() recruiting}
+    *            If the game is not {@linkplain #isRecruiting() recruiting}
     *            players.
     */
    public final void addUser(@Nonnull final UUID user) {
@@ -194,7 +196,8 @@ public class GamePlayers {
 
    /**
     * <p>
-    * The unique identifier for this game.
+    * The {@linkplain Game#getIdentifier() unique identifier for the game} for
+    * which this provides the set of players.
     * </p>
     * <ul>
     * <li>Not null.</li>
@@ -211,15 +214,15 @@ public class GamePlayers {
    /**
     * <p>
     * The ({@linkplain User#getId() unique IDs} of the {@linkplain User users}
-    * who played, or are playing, this game.
+    * who played, or are playing, the {@linkplain #getGame() game}.
     * </p>
     * <ul>
-    * <li>Always returns a (non null) set of players.</li>
-    * <li>The set of players does not include null.</li>
-    * <li>The returned set of players in not modifiable.</li>
+    * <li>Always returns a (non null) set of users.</li>
+    * <li>The set of users does not include null.</li>
+    * <li>The returned set of users in not modifiable.</li>
     * </ul>
     *
-    * @return the players
+    * @return the users
     */
    @NonNull
    @JsonProperty("users")
@@ -234,11 +237,11 @@ public class GamePlayers {
 
    /**
     * <p>
-    * Whether this game is <i>recruiting</i> new players.
+    * Whether the {@linkplain #getGame() game} is <i>recruiting</i> new players.
     * </p>
     * <p>
-    * That is, whether players may be {@linkplain #addUser(UUID) added} to this
-    * game.
+    * That is, whether users may be {@linkplain #addUser(UUID) added} to this
+    * set of players.
     * </p>
     *
     * @return whether recruiting
