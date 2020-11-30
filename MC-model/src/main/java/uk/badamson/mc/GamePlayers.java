@@ -18,7 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -26,14 +25,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import javax.persistence.Id;
 
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -43,146 +40,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class GamePlayers {
 
-   /**
-    * <p>
-    * A unique identifier for a {@linkplain GamePlayers game} (play) of the Mission
-    * Command game.
-    * </p>
-    */
-   @Immutable
-   public static final class Identifier {
-
-      private final UUID scenario;
-      private final Instant created;
-
-      /**
-       * <p>
-       * Create an object with given attribute values.
-       * </p>
-       *
-       * @param scenario
-       *           The unique identifier for the {@linkplain Scenario scenario}
-       *           that the game is an instance of.
-       * @param created
-       *           The point in time when the game was created (set up).
-       * @throws NullPointerException
-       *            <ul>
-       *            <li>If {@code scenario} is null.</li>
-       *            <li>If {@code created} is null.</li>
-       *            </ul>
-       */
-      @JsonCreator
-      public Identifier(@Nonnull @JsonProperty("scenario") final UUID scenario,
-               @Nonnull @JsonProperty("created") final Instant created) {
-         this.scenario = Objects.requireNonNull(scenario, "scenario");
-         this.created = Objects.requireNonNull(created, "created");
-
-      }
-
-      @Override
-      public boolean equals(final Object obj) {
-         if (this == obj) {
-            return true;
-         }
-         if (!(obj instanceof Identifier)) {
-            return false;
-         }
-         final var other = (Identifier) obj;
-         /*
-          * Two Identifiers are unlikely to have the same created value, so
-          * check those values first.
-          */
-         return created.equals(other.created)
-                  && scenario.equals(other.scenario);
-      }
-
-      /**
-       * <p>
-       * The point in time when the game was created (set up).
-       * </p>
-       * <p>
-       * This will usually be not long before playing of the game started. This
-       * type uses the creation time as an identifier, rather than the game
-       * start time, so it can represent games that have not yet been started,
-       * but are in the process of being set up.
-       * </p>
-       *
-       * <ul>
-       * <li>Not null.</li>
-       * </ul>
-       *
-       * @return the creation time
-       */
-      @Nonnull
-      @JsonFormat(shape = JsonFormat.Shape.STRING)
-      public Instant getCreated() {
-         return created;
-      }
-
-      /**
-       * <p>
-       * The unique identifier for the {@linkplain Scenario scenario} that the
-       * game is an instance of.
-       * </p>
-       * <ul>
-       * <li>Not null.</li>
-       * </ul>
-       *
-       * @return the scenario identifier
-       */
-      @Nonnull
-      public UUID getScenario() {
-         return scenario;
-      }
-
-      @Override
-      public int hashCode() {
-         return Objects.hash(created, scenario);
-      }
-
-      @Override
-      public String toString() {
-         return scenario.toString() + "@" + created.toString();
-      }
-
-   }// class
-
    @Id
    @org.springframework.data.annotation.Id
-   private final Identifier identifier;
+   private final Game.Identifier identifier;
 
    private boolean recruiting;
    private final Set<UUID> players = new HashSet<>();
-
-   /**
-    * <p>
-    * Construct a copy of a game.
-    * </p>
-    *
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>This game is {@linkplain #equals(Object) equivalent to} the given
-    * game.</li>
-    * <li>The {@linkplain #getIdentifier() identifier} of this game is the same
-    * as the identifier of the given game.</li>
-    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is equal
-    * to whether the given game is recruiting flag.</li>
-    * <li>The {@linkplain #getPlayers() set of players} of this game is
-    * {@linkplain Set#equals(Object) equal to} but not the same as the set of
-    * players of the given game.</li>
-    * </ul>
-    *
-    * @param that
-    *           The game to copy.
-    * @throws NullPointerException
-    *            If {@code that} is null
-    */
-   public GamePlayers(final GamePlayers that) {
-      Objects.requireNonNull(that, "that");
-      identifier = that.identifier;
-      recruiting = that.recruiting;
-      players.addAll(that.players);
-   }
 
    /**
     * <p>
@@ -215,12 +78,43 @@ public class GamePlayers {
     */
    @JsonCreator
    @PersistenceConstructor
-   public GamePlayers(@Nonnull @JsonProperty("identifier") final Identifier identifier,
+   public GamePlayers(
+            @Nonnull @JsonProperty("identifier") final Game.Identifier identifier,
             @JsonProperty("recruiting") final boolean recruiting,
             @Nonnull @JsonProperty("players") final Set<UUID> players) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.recruiting = recruiting;
       this.players.addAll(Objects.requireNonNull(players, "players"));
+   }
+
+   /**
+    * <p>
+    * Construct a copy of a game.
+    * </p>
+    *
+    * <h2>Post Conditions</h2>
+    * <ul>
+    * <li>This game is {@linkplain #equals(Object) equivalent to} the given
+    * game.</li>
+    * <li>The {@linkplain #getIdentifier() identifier} of this game is the same
+    * as the identifier of the given game.</li>
+    * <li>Whether this game {@linkplain #isRecruiting() is recruiting} is equal
+    * to whether the given game is recruiting flag.</li>
+    * <li>The {@linkplain #getPlayers() set of players} of this game is
+    * {@linkplain Set#equals(Object) equal to} but not the same as the set of
+    * players of the given game.</li>
+    * </ul>
+    *
+    * @param that
+    *           The game to copy.
+    * @throws NullPointerException
+    *            If {@code that} is null
+    */
+   public GamePlayers(final GamePlayers that) {
+      Objects.requireNonNull(that, "that");
+      identifier = that.identifier;
+      recruiting = that.recruiting;
+      players.addAll(that.players);
    }
 
    /**
@@ -279,7 +173,7 @@ public class GamePlayers {
     * {@linkplain #getIdentifier() identifier} serving as a unique identifier:
     * this object is equivalent to another object if, and only of, the other
     * object is also a {@link GamePlayers} and the two have
-    * {@linkplain Identifier#equals(Object) equivalent}
+    * {@linkplain Game.Identifier#equals(Object) equivalent}
     * {@linkplain #getIdentifier() identifiers}.</li>
     * </ul>
     *
@@ -296,7 +190,7 @@ public class GamePlayers {
          return false;
       }
       final var other = (GamePlayers) that;
-      return identifier.equals(other.getIdentifier());
+      return identifier.equals(other.identifier);
    }
 
    /**
@@ -311,7 +205,7 @@ public class GamePlayers {
     */
    @NonNull
    @JsonProperty("identifier")
-   public final Identifier getIdentifier() {
+   public final Game.Identifier getIdentifier() {
       return identifier;
    }
 
