@@ -21,7 +21,7 @@ Feature: Unknown Resource
   @back-end
   Scenario Outline: Get unknown resource
     # Implicitly a fresh instance of MC
-    # Implicitly not logged in
+    Given not logged in
     When getting the unknown resource at "<path>"
     Then MC replies with Client Error
     # Implementing a more precisely constained HTTP status code is difficult.
@@ -34,7 +34,7 @@ Feature: Unknown Resource
   @integration
   Scenario Outline: Modify unknown resource
     # Implicitly a fresh instance of MC
-    # Implicitly not logged in
+    Given not logged in
     When modifying the unknown resource with a "<verb>" at "<path>"
     Then MC replies with Client Error
     # Implementing a more precisely constained HTTP status code is difficult.

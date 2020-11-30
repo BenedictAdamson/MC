@@ -18,17 +18,17 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -39,32 +39,114 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * </p>
  */
 @Entity
-public final class User implements UserDetails {
+public final class User extends BasicUserDetails {
 
    private static final long serialVersionUID = 1L;
 
    /**
     * <p>
-    * The {@linkplain #getUsername() username} of the administrator user.
+    * The {@linkplain #getId() ID} of an administrator user.
     * </p>
     */
-   public static final String ADMINISTRATOR_USERNAME = "Administrator";
-
-   @Id
-   @org.springframework.data.annotation.Id
-   private final String username;
-   private final String password;
-   private final Set<Authority> authorities;
-   private final boolean accountNonExpired;
-   private final boolean accountNonLocked;
-   private final boolean credentialsNonExpired;
-   private final boolean enabled;
+   public static final UUID ADMINISTRATOR_ID = new UUID(0L, 0L);
 
    /**
     * <p>
-    * Construct a user of the Mission Command game, with a given user-name.
+    * Create a {@link User} that is a valid administrator user.
     * </p>
     * <ul>
+    * <li>Returns a (non null) {@link User}.</li>
+    * <li>The {@linkplain #getId() ID} of the administrator is the same as the
+    * special {@linkplain #ADMINISTRATOR_ID administrator ID}.</li>
+    * <li>The {@linkplain #getUsername() username} of the administrator is the
+    * same as the special {@linkplain #ADMINISTRATOR_USERNAME administrator
+    * username}.</li>
+    * <li>The {@linkplain #getPassword() password} of the administrator is the
+    * given password.</li>
+    * <li>The {@linkplain #getAuthorities() authorities} granted to the
+    * administrator is the same as the {@linkplain Authority#ALL full set of
+    * authorities}.</li>
+    * <li>The administrator's {@linkplain #isAccountNonExpired() account has not
+    * expired}.</li>
+    * <li>The administrator's {@linkplain #isAccountNonLocked() account is not
+    * locked}.</li>
+    * <li>The administrator's {@linkplain #isCredentialsNonExpired() credentials
+    * have not expired}.</li>
+    * <li>The administrator's {@linkplain #isEnabled() account is enabled}.</li>
+    * </ul>
+    *
+    * @param password
+    *           the password used to authenticate the user, or null if the
+    *           password is being hidden or is unknown. This might be the
+    *           password in an encrypted form.
+    * @return the administrator user
+    */
+   @Nonnull
+   public static User createAdministrator(@Nullable final String password) {
+      return new User(password);
+   }
+
+   @Id
+   @org.springframework.data.annotation.Id
+   private final UUID id;
+
+   private User(final String password) {
+      super(password);
+      this.id = ADMINISTRATOR_ID;
+   }
+
+   /**
+    * <p>
+    * Construct a user of the Mission Command game, with given user details.
+    * </p>
+    * <ul>
+    * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
+    * <li>The {@linkplain #getUsername() username} of this user is the same as
+    * the {@linkplain BasicUserDetails#getUsername() username} of the given user
+    * details.</li>
+    * <li>The {@linkplain #getPassword() password} of this user is the same as
+    * the {@linkplain BasicUserDetails#getPassword() password} of the given user
+    * details.</li>
+    * <li>The {@linkplain #getAuthorities() authorities} granted to this user
+    * are the same as the {@linkplain BasicUserDetails#getAuthorities()
+    * authorities} of the given user details.</li>
+    * <li>Whether this user's {@linkplain #isAccountNonExpired() account has not
+    * expired} is equal to the {@linkplain BasicUserDetails#isAccountNonExpired
+    * value} for the given user details.</li>
+    * <li>Whether this user's {@linkplain #isAccountNonLocked() account is not
+    * locked} is equal to the {@linkplain BasicUserDetails#isAccountNonLocked()
+    * value} for the given user details.</li>
+    * <li>Whether this user's {@linkplain #isCredentialsNonExpired() credentials
+    * have not expired} is equal to the
+    * {@linkplain BasicUserDetails#isCredentialsNonExpired() value} for the
+    * given user details.</li>
+    * <li>Whether this user's {@linkplain #isEnabled() account is enabled} is
+    * equal to the {@linkplain BasicUserDetails#isEnabled() value} for the given
+    * user details.</li>
+    * </ul>
+    *
+    * @param id
+    *           The unique ID of this user.
+    * @param userDetails
+    *           the specification for this user.
+    * @throws NullPointerException
+    *            <ul>
+    *            <li>If {@code id} is null</li>
+    *            <li>If {@code userDetails} is null</li>
+    *            </ul>
+    */
+   public User(@NonNull final UUID id,
+            @NonNull final BasicUserDetails userDetails) {
+      super(userDetails);
+      this.id = Objects.requireNonNull(id, "id");
+   }
+
+   /**
+    * <p>
+    * Construct a user of the Mission Command game, with given attribute values.
+    * </p>
+    * <ul>
+    * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
     * <li>The {@linkplain #getUsername() username} of this user is the given
     * username.</li>
     * <li>The {@linkplain #getPassword() password} of this user is the given
@@ -81,6 +163,8 @@ public final class User implements UserDetails {
     * equal to the given value.</li>
     * </ul>
     *
+    * @param id
+    *           The unique ID of this user.
     * @param username
     *           the username used to authenticate the user
     * @param password
@@ -103,27 +187,25 @@ public final class User implements UserDetails {
     *           authenticated.
     * @throws NullPointerException
     *            <ul>
+    *            <li>If {@code id} is null</li>
     *            <li>If {@code username} is null</li>
     *            <li>If {@code authorities} is null</li>
     *            <li>If {@code authorities} contains null</li>
     *            </ul>
     */
    @JsonCreator
-   public User(@NonNull @JsonProperty("username") final String username,
+   @PersistenceConstructor
+   public User(@NonNull @JsonProperty("id") final UUID id,
+            @NonNull @JsonProperty("username") final String username,
             @Nullable @JsonProperty("password") final String password,
             @NonNull @JsonProperty("authorities") final Set<Authority> authorities,
             @JsonProperty("accountNonExpired") final boolean accountNonExpired,
             @JsonProperty("accountNonLocked") final boolean accountNonLocked,
             @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
             @JsonProperty("enabled") final boolean enabled) {
-      this.username = Objects.requireNonNull(username, "username");
-      this.password = password;
-      this.authorities = authorities.isEmpty() ? Collections.emptySet()
-               : Collections.unmodifiableSet(EnumSet.copyOf(authorities));
-      this.accountNonExpired = accountNonExpired;
-      this.accountNonLocked = accountNonLocked;
-      this.credentialsNonExpired = credentialsNonExpired;
-      this.enabled = enabled;
+      super(username, password, authorities, accountNonExpired,
+               accountNonLocked, credentialsNonExpired, enabled);
+      this.id = Objects.requireNonNull(id, "id");
    }
 
    /**
@@ -132,10 +214,10 @@ public final class User implements UserDetails {
     * </p>
     * <ul>
     * <li>The {@link User} class has <i>entity semantics</i>, with the
-    * {@linkplain #getUsername() username} serving as a unique ID: this object
-    * is equivalent to another object if, and only of, the other object is also
-    * a {@link User} and the two have {@linkplain String#equals(Object)
-    * equivalent} {@linkplain #getUsername() usernames}.</li>
+    * {@linkplain #getId() ID} attribute serving as a unique ID: this object is
+    * equivalent to another object if, and only of, the other object is also a
+    * {@link User} and the two have {@linkplain String#equals(Object)
+    * equivalent} {@linkplain #getId() IDs}.</li>
     * </ul>
     *
     * @param that
@@ -153,54 +235,38 @@ public final class User implements UserDetails {
       if (!(that instanceof User)) {
          return false;
       }
-      final User other = (User) that;
-      return username.equals(other.username);
+      final var other = (User) that;
+      return id.equals(other.id);
    }
 
-   @Override
-   public Set<Authority> getAuthorities() {
-      return authorities;
-   }
-
-   @Override
-   public String getPassword() {
-      return password;
-   }
-
-   @Override
+   /**
+    * <p>
+    * The unique ID of this user.
+    * </p>
+    * <ul>
+    * <li>Not null</li>
+    * </ul>
+    * <p>
+    * Note that the {@linkplain #getUsername() username} need not be unique.
+    * However, in practice it will be enforced to be unique, with the username
+    * used as the human readable ID.
+    * </p>
+    *
+    * @return the unique ID.
+    */
    @NonNull
-   public String getUsername() {
-      return username;
+   public UUID getId() {
+      return id;
    }
 
    @Override
    public int hashCode() {
-      return username.hashCode();
-   }
-
-   @Override
-   public boolean isAccountNonExpired() {
-      return accountNonExpired;
-   }
-
-   @Override
-   public boolean isAccountNonLocked() {
-      return accountNonLocked;
-   }
-
-   @Override
-   public boolean isCredentialsNonExpired() {
-      return credentialsNonExpired;
-   }
-
-   @Override
-   public boolean isEnabled() {
-      return enabled;
+      return id.hashCode();
    }
 
    @Override
    public String toString() {
-      return "User [username=" + username + "]";
+      return "User [id=" + id + "]";
    }
 
 }

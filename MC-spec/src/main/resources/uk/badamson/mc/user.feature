@@ -21,29 +21,34 @@ Feature: User
 
   @integration
   @back-end
-  Scenario: List users
-    Given user has the "player" role
+  Scenario Outline: List users
+    Given user has the "<role>" role
     And logged in
     When getting the users
     Then MC serves the users page
     And the response is a list of users
     And the list of users has at least one user
+    
+    Examples:
+      |role|
+      |player|
+      |manage users|
 
   @integration
   @back-end
   Scenario: Examine user
-    Given user has the "player" role
+    Given user has the "manage users" role
     And logged in
     And Viewing the list of users
-    When Navigate to one user
+    When Navigate to one user page
     Then MC serves the user page
     And The user page includes the user name
     And The user page lists the roles of the user
     
   @integration
   Scenario: Login as player
-    # Implicitly not logged in
-    Given user has the "player" role
+    Given not logged in
+    And user has the "player" role
     When log in using correct password
     Then MC accepts the login
     And redirected to home-page
@@ -60,16 +65,16 @@ Feature: User
     
   @integration
   Scenario: Login as administrator
-    # Implicitly not logged in
-    Given user is the administrator
+    Given not logged in
+    And user is the administrator
     When log in using correct password
     Then MC accepts the login
     And redirected to home-page
     
   @integration
   Scenario: Login denied
-    # Implicitly not logged in
-    Given unknown user
+    Given not logged in
+    And unknown user
     When try to login
     Then MC rejects the login
     
@@ -91,7 +96,16 @@ Feature: User
   @integration
   @back-end
   Scenario: Only administrator may add user
-    Given user does not have the "manage users" role
+    Given user has the "player" role but not the "manage users" role
     And logged in
     Then MC does not allow adding a user
+ 
+  @integration
+  @back-end
+  Scenario: Only administrator my examine user
+    Given user has the "player" role but not the "manage users" role
+    And logged in
+    And Viewing the list of users
+    When Trying to navigate to a user page
+    Then MC does not allow navigating to a user page
     
