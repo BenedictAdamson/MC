@@ -19,6 +19,7 @@ package uk.badamson.mc;
  */
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,6 +46,38 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * </p>
  */
 public class GameTest {
+
+   @Nested
+   public class AddPlayer {
+
+      @Test
+      public void a() {
+         test(Set.of(), PLAYER_ID_A);
+      }
+
+      @Test
+      public void alreadyPlayer() {
+         test(Set.of(PLAYER_ID_A), PLAYER_ID_A);
+      }
+
+      @Test
+      public void b() {
+         test(Set.of(), PLAYER_ID_B);
+      }
+
+      @Test
+      public void notEmpty() {
+         test(Set.of(PLAYER_ID_A), PLAYER_ID_B);
+      }
+
+      private void test(final Set<UUID> players0, final UUID player) {
+         final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+         final var game = new Game(identifier, true, players0);
+
+         addPlayer(game, player);
+      }
+
+   }// class
 
    @Nested
    public class Construct2 {
@@ -173,10 +206,7 @@ public class GameTest {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
          final var game = new Game(identifier, recruitment0, PLAYERS_A);
 
-         game.endRecruitment();
-
-         assertInvariants(game);
-         assertFalse(game.isRecruiting(), "This game is not recruiting.");
+         endRecruitment(game);
       }
    }// class
 
@@ -338,10 +368,26 @@ public class GameTest {
 
    private static final UUID SCENARIO_ID_A = UUID.randomUUID();
    private static final UUID SCENARIO_ID_B = UUID.randomUUID();
+   private static final UUID PLAYER_ID_A = UUID.randomUUID();
+   private static final UUID PLAYER_ID_B = UUID.randomUUID();
    private static final Instant CREATED_A = Instant.EPOCH;
    private static final Instant CREATED_B = Instant.now();
    private static final Set<UUID> PLAYERS_A = Set.of();
-   private static final Set<UUID> PLAYERS_B = Set.of(UUID.randomUUID());
+   private static final Set<UUID> PLAYERS_B = Set.of(PLAYER_ID_B);
+
+   public static void addPlayer(final Game game, final UUID player) {
+      final var players0 = Set.copyOf(game.getPlayers());
+
+      game.addPlayer(player);
+
+      assertInvariants(game);
+      final var players = game.getPlayers();
+      assertAll(() -> assertThat(
+               "Does not remove any players from the set of players of this game.",
+               players.containsAll(players0)),
+               () -> assertThat("The set of players contains the given player.",
+                        players, hasItem(player)));
+   }
 
    public static void assertInvariants(final Game game) {
       ObjectTest.assertInvariants(game);// inherited
@@ -382,5 +428,12 @@ public class GameTest {
                         !(equals && !identifierA.getCreated()
                                  .equals(identifierB.getCreated())),
                         "creation time"));
+   }
+
+   public static void endRecruitment(final Game game) {
+      game.endRecruitment();
+
+      assertInvariants(game);
+      assertFalse(game.isRecruiting(), "This game is not recruiting.");
    }
 }

@@ -225,6 +225,35 @@ public class Game {
 
    /**
     * <p>
+    * Add a player ({@linkplain User#getId() unique ID} of a {@linkplain User
+    * users}) to the {@linkplain #getPlayers() set of users who played, or are
+    * playing}, this game.
+    * </p>
+    * <ul>
+    * <li>Does not remove any players from the {@linkplain #getPlayers() set of
+    * players} of this game.</li>
+    * <li>The {@linkplain #getPlayers() set of players}
+    * {@linkplain Set#contains(Object) contains} the given player.</li>
+    * </ul>
+    *
+    * @param player
+    *           The unique ID of the user to add as a player.
+    * @throws NullPointerException
+    *            If {@code player} is null.
+    * @throws IllegalStateException
+    *            If this game is not {@linkplain #isRecruiting() recruiting}
+    *            players.
+    */
+   public final void addPlayer(@Nonnull final UUID player) {
+      Objects.requireNonNull(player, "player");
+      if (!recruiting) {
+         throw new IllegalStateException("Game not recruiting players");
+      }
+      players.add(player);
+   }
+
+   /**
+    * <p>
     * Indicate that this game is not {@linkplain #isRecruiting() recruiting}
     * players (any longer).
     * </p>
@@ -315,7 +344,8 @@ public class Game {
     * Whether this game is <i>recruiting</i> new players.
     * </p>
     * <p>
-    * That is, whether players may join this game.
+    * That is, whether players may be {@linkplain #addPlayer(UUID) added} to
+    * this game.
     * </p>
     *
     * @return whether recruiting
