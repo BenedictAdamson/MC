@@ -96,7 +96,7 @@ Feature: User
   @integration
   @back-end
   Scenario: Only administrator may add user
-    Given user does not have the "manage users" role
+    Given user has the "player" role but not the "manage users" role
     And logged in
     Then MC does not allow adding a user
  
