@@ -326,7 +326,12 @@ public class GameTest {
    public static void assertInvariants(final Game game) {
       ObjectTest.assertInvariants(game);// inherited
 
-      assertNotNull(game.getIdentifier(), "Not null, identifier");
+      final var players = game.getPlayers();
+      assertAll("Not null",
+               () -> assertNotNull(game.getIdentifier(), "identifier"),
+               () -> assertNotNull(players, "players"));
+      assertTrue(players.stream().filter(p -> p == null).findAny().isEmpty(),
+               "The set of players does not include null.");
    }
 
    public static void assertInvariants(final Game gameA, final Game gameB) {

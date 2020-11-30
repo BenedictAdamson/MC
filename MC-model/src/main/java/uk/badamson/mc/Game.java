@@ -19,7 +19,10 @@ package uk.badamson.mc;
  */
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -149,6 +152,7 @@ public class Game {
    private final Identifier identifier;
 
    private boolean recruiting;
+   private final Set<UUID> players = new HashSet<>();
 
    /**
     * <p>
@@ -265,6 +269,23 @@ public class Game {
    @JsonProperty("identifier")
    public final Identifier getIdentifier() {
       return identifier;
+   }
+
+   /**
+    * <p>
+    * The ({@linkplain User#getId() unique IDs} of the {@linkplain User users}
+    * who played, or are playing, this game.
+    * </p>
+    * <ul>
+    * <li>Always returns a (non null) set of players.</li>
+    * <li>The set of players does not include null.</li>
+    * <li>The returned set of players in not modifiable.</li>
+    * </ul>
+    *
+    * @return the players
+    */
+   public final Set<UUID> getPlayers() {
+      return Collections.unmodifiableSet(players);
    }
 
    @Override
