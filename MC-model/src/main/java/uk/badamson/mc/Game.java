@@ -215,9 +215,9 @@ public class Game {
     */
    @JsonCreator
    @PersistenceConstructor
-   public Game(@NonNull @JsonProperty("identifier") final Identifier identifier,
+   public Game(@Nonnull @JsonProperty("identifier") final Identifier identifier,
             @JsonProperty("recruiting") final boolean recruiting,
-            @JsonProperty("players") final Set<UUID> players) {
+            @Nonnull @JsonProperty("players") final Set<UUID> players) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.recruiting = recruiting;
       this.players.addAll(Objects.requireNonNull(players, "players"));
@@ -299,6 +299,8 @@ public class Game {
     *
     * @return the players
     */
+   @NonNull
+   @JsonProperty("players")
    public final Set<UUID> getPlayers() {
       return Collections.unmodifiableSet(players);
    }
