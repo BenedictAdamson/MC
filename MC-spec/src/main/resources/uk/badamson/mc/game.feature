@@ -36,10 +36,11 @@ Feature: Game
   @integration
   @back-end
   Scenario: Examine game as player
-    When A scenario has games
+    Given A scenario has games
     And user has the "player" role
     And logged in
     And Viewing the games of the scenario
+    When Navigate to one game page
     Then MC provides a game page
     And The game page lists the players of the game
     And The game page indicates whether the user may join the game
