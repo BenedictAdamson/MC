@@ -30,7 +30,6 @@ Feature: Game
     And The game page includes the scenario description
     And The game page includes the date and time that the game was set up
     And The game page indicates that the user may not join the game
-    And The game page indicates the number of players of the game
     And The game page does not list the players of the game
     And The game page does not indicate whether the game is recruiting players
 
