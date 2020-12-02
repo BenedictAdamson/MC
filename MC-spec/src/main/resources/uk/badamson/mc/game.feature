@@ -71,6 +71,7 @@ Feature: Game
     And viewing a game that is recruiting players
     When user ends recruitment for the game
     Then MC accepts ending recruitment for the game
+    And MC provides a game page
     And the game page indicates that the game is not recruiting players
     
   @integration
