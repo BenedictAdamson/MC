@@ -40,8 +40,7 @@ Feature: Game
     And user has the "player" role
     And logged in
     And Viewing the games of the scenario
-    And Navigate to one game of the scenario
-    Then MC serves the game page
+    Then MC provides a game page
     And The game page lists the players of the game
     And The game page indicates whether the user may join the game
     
@@ -52,7 +51,7 @@ Feature: Game
     And logged in
     When creating a game
     Then MC accepts the creation of the game
-    And MC serves the game page
+    And MC provides a game page
     And the game page indicates that the game is recruiting players
     And The game page indicates that the game has no players
     And can get the list of games
