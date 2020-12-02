@@ -52,6 +52,7 @@ Feature: Game
     And logged in
     When creating a game
     Then MC accepts the creation of the game
+    And MC serves the game page
     And the game page indicates that the game is recruiting players
     And The game page indicates that the game has no players
     And can get the list of games
