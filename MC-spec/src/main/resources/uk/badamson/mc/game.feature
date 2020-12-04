@@ -113,5 +113,6 @@ Feature: Game
     Given user does not have the "player" role
     And logged in
     And user is not playing any games
-    When examining a game recruiting players
-    Then The game page indicates that the user may not join the game
+    And examining a game recruiting players
+    Then MC provides a game page
+    And The game page indicates that the user may not join the game
