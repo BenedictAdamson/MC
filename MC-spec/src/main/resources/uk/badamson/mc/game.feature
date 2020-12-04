@@ -100,8 +100,8 @@ Feature: Game
     Given user has the "player" role
     And logged in
     And user is not playing any games
-    When examining a game recruiting players
-    And the user joins the game
+    And examining a game recruiting players
+    When the user joins the game
     Then MC accepts joining the game
     And The game page indicates that the game has one more player
     And The game page indicates that the user may not join the game
