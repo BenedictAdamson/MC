@@ -91,7 +91,8 @@ Feature: Game
     And logged in
     And user is not playing any games
     When examining a game recruiting players
-    Then the game page indicates that the user may join the game
+    Then MC provides a game page
+    And the game page indicates that the user may join the game
     
   @integration
   @back-end
