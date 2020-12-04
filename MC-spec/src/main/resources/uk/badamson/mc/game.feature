@@ -105,7 +105,6 @@ Feature: Game
     Then MC accepts joining the game
     And MC provides a game page
     And The game page indicates that the game has one more player
-    And The game page indicates that the user may not join the game
     And The game page lists the user as a player of the game
     
   @integration
