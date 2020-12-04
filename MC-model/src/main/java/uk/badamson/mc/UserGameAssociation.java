@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -40,6 +41,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Immutable
 public final class UserGameAssociation {
 
+   @Id
+   @org.springframework.data.annotation.Id
    private final UUID user;
    private final Game.Identifier game;
 
