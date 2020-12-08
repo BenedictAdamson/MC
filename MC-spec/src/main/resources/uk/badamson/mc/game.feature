@@ -75,7 +75,7 @@ Feature: Game
   @integration
   @back-end
   Scenario: Only a game manager may end recruitment for a game
-    Given user does not have the "manage games" role
+    Given user has the "player" role but not the "manage games" role
     And logged in
     And viewing a game that is recruiting players
     Then MC does not allow ending recruitment for the game
