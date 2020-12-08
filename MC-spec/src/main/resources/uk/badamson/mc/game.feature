@@ -106,7 +106,7 @@ Feature: Game
   @integration
   @back-end
   Scenario: Only a player may join a game
-    Given user does not have the "player" role
+    Given user has the "player" role but not the "manage games" role
     And logged in
     And user is not playing any games
     And examining a game recruiting players
