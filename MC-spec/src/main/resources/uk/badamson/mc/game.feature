@@ -20,30 +20,24 @@ Feature: Game
 
   @integration
   @back-end
-  Scenario: Examine game
+  Scenario Outline: Examine game
     Given A scenario has games
-    And not logged in
+    And user has the "<role>" role
+    And logged in
     And Viewing the games of the scenario
     When Navigate to one game page
     Then MC provides a game page
     And The game page includes the scenario title
     And The game page includes the scenario description
     And The game page includes the date and time that the game was set up
-    And The game page indicates that the user may not join the game
-    And The game page does not list the players of the game
-    And The game page does not indicate whether the game is recruiting players
-
-  @integration
-  @back-end
-  Scenario: Examine game as player
-    Given A scenario has games
-    And user has the "player" role
-    And logged in
-    And Viewing the games of the scenario
-    When Navigate to one game page
-    Then MC provides a game page
     And The game page lists the players of the game
+    And The game page indicates whether the game is recruiting players
     And The game page indicates whether the user may join the game
+    
+    Examples:
+      |role|
+      |player|
+      |manage games|
     
   @integration
   @back-end
