@@ -30,9 +30,10 @@ Feature: Game
     And The game page includes the scenario title
     And The game page includes the scenario description
     And The game page includes the date and time that the game was set up
-    And The game page lists the players of the game or reports it has no players
+    And The game page indicates whether the game has players
     And The game page indicates whether the game is recruiting players
     And The game page indicates whether the user may join the game
+    And The game page indicates whether the user is playing the game
     
     Examples:
       |role|
@@ -89,6 +90,7 @@ Feature: Game
     When examining a game recruiting players
     Then MC provides a game page
     And the game page indicates that the user may join the game
+    And The game page indicates that the user is not playing the game
     
   @integration
   @back-end
@@ -100,8 +102,8 @@ Feature: Game
     When the user joins the game
     Then MC accepts joining the game
     And MC provides a game page
-    And The game page indicates that the game has one more player
-    And The game page lists the user as a player of the game
+    And The game page indicates that the game has a player
+    And The game page indicates that the user is playing the game
     
   @integration
   @back-end
