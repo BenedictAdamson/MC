@@ -34,6 +34,7 @@ Feature: Scenario
     And Navigate to a scenario with games
     Then MC serves the scenario page
     And The scenario page includes the scenario description
+    And The scenario page includes the list of playable characters of that scenario
     And The scenario page includes the list of games of that scenario
     And The scenario page does not allow navigation to game pages
 
@@ -47,6 +48,7 @@ Feature: Scenario
     And Navigate to a scenario with games
     Then MC serves the scenario page
     And The scenario page includes the scenario description
+    And The scenario page includes the list of playable characters of that scenario
     And The scenario page includes the list of games of that scenario
     And The scenario page allows navigation to game pages
     
