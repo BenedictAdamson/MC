@@ -24,11 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.hamcrest.CustomTypeSafeMatcher;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +48,10 @@ public class ScenarioTest {
       @Test
       public void differentIdentifiers() {
          // Tough test: all else equal
-         final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A);
-         final var scenarioB = new Scenario(ID_B, TITLE_A, DESCRIPTION_A);
+         final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A,
+                  CHARACTERS_A);
+         final var scenarioB = new Scenario(ID_B, TITLE_A, DESCRIPTION_A,
+                  CHARACTERS_A);
          assertInvariants(scenarioA, scenarioB);
          assertNotEquals(scenarioA, scenarioB);
       }
@@ -53,8 +59,10 @@ public class ScenarioTest {
       @Test
       public void equalIdentifiers() {
          // Tough test: have different attributes and aggregates
-         final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A);
-         final var scenarioB = new Scenario(ID_A, TITLE_B, DESCRIPTION_B);
+         final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A,
+                  CHARACTERS_A);
+         final var scenarioB = new Scenario(ID_A, TITLE_B, DESCRIPTION_B,
+                  CHARACTERS_B);
          assertInvariants(scenarioA, scenarioB);
          assertEquals(scenarioA, scenarioB);
       }
@@ -66,17 +74,18 @@ public class ScenarioTest {
 
       @Test
       public void a() {
-         test(ID_A, TITLE_A, DESCRIPTION_A);
+         test(ID_A, TITLE_A, DESCRIPTION_A, CHARACTERS_A);
       }
 
       @Test
       public void b() {
-         test(ID_B, TITLE_B, DESCRIPTION_B);
+         test(ID_B, TITLE_B, DESCRIPTION_B, CHARACTERS_B);
       }
 
       private void test(final UUID identifier, final String title,
-               final String description) {
-         final var scenario = new Scenario(identifier, title, description);
+               final String description, final List<String> characters) {
+         final var scenario = new Scenario(identifier, title, description,
+                  characters);
 
          assertInvariants(scenario);
          assertAll(
@@ -84,7 +93,11 @@ public class ScenarioTest {
                            "identifier"),
                   () -> assertSame(title, scenario.getTitle(), "title"),
                   () -> assertSame(description, scenario.getDescription(),
-                           "description"));
+                           "description"),
+                  () -> assertNotSame(characters, scenario.getCharacters(),
+                           "characters not the same"),
+                  () -> assertEquals(characters, scenario.getCharacters(),
+                           "characters equal"));
       }
    }// class
 
@@ -93,17 +106,18 @@ public class ScenarioTest {
 
       @Test
       public void a() {
-         test(ID_A, TITLE_A, DESCRIPTION_A);
+         test(ID_A, TITLE_A, DESCRIPTION_A, CHARACTERS_A);
       }
 
       @Test
       public void b() {
-         test(ID_B, TITLE_B, DESCRIPTION_B);
+         test(ID_B, TITLE_B, DESCRIPTION_B, CHARACTERS_B);
       }
 
       private void test(final UUID identifier, final String title,
-               final String description) {
-         final var scenario = new Scenario(identifier, title, description);
+               final String description, final List<String> characters) {
+         final var scenario = new Scenario(identifier, title, description,
+                  characters);
          final var deserialized = JsonTest.serializeAndDeserialize(scenario);
 
          assertInvariants(deserialized);
@@ -113,7 +127,9 @@ public class ScenarioTest {
                            "identifier"),
                   () -> assertEquals(title, scenario.getTitle(), "title"),
                   () -> assertEquals(description, scenario.getDescription(),
-                           "description"));
+                           "description"),
+                  () -> assertEquals(characters, scenario.getCharacters(),
+                           "characters"));
       }
    }// class
 
@@ -123,6 +139,24 @@ public class ScenarioTest {
    private static final String TITLE_B = "0123456789012345678901234567890123456789012345678901234567890123";// longest
    private static final String DESCRIPTION_A = "";// shortest
    private static final String DESCRIPTION_B = "Simple training scenario.";
+   private static final List<String> CHARACTERS_A = List.of("Lt. Winters");
+   private static final List<String> CHARACTERS_B = List.of("Sgt. Summer",
+            "Cpl. Klegg");
+
+   private static final Matcher<List<String>> VALID_CHARACTERS_MATCHER = new CustomTypeSafeMatcher<>(
+            "valid characters") {
+
+      @Override
+      protected boolean matchesSafely(final List<String> item) {
+         return Scenario.isValidCharacters(item);
+      }
+   };
+
+   private static void assertCharactersInvariants(
+            final List<String> characters) {
+      assertAll("characters", () -> assertNotNull(characters, "not null"),
+               () -> assertThat(characters, VALID_CHARACTERS_MATCHER));
+   }
 
    public static void assertInvariants(final Scenario scenario) {
       ObjectTest.assertInvariants(scenario);// inherited
@@ -131,18 +165,21 @@ public class ScenarioTest {
       final var title = scenario.getTitle();
       final var description = scenario.getDescription();
       final var namedUUID = scenario.getNamedUUID();
+      final var characters = scenario.getCharacters();
       assertAll("Non null attributes and aggregates",
                () -> assertNotNull(identifier, "identifier"), // guard
                () -> assertNotNull(title, "title"), // guard
                () -> assertNotNull(description, "description"),
-               () -> assertNotNull(namedUUID, "namedUUID") // guard
+               () -> assertNotNull(namedUUID, "namedUUID"), // guard
+               () -> assertNotNull(characters, "characters") // guard
       );
 
       assertAll(() -> NamedUUIDTest.assertInvariants(namedUUID),
                () -> assertTrue(NamedUUID.isValidTitle(title),
                         "title is valid"),
                () -> assertThat("namedUUID.title", title,
-                        is(namedUUID.getTitle())));
+                        is(namedUUID.getTitle())),
+               () -> assertCharactersInvariants(characters));
    }
 
    public static void assertInvariants(final Scenario scenarioA,
