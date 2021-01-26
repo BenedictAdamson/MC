@@ -39,7 +39,7 @@ Feature: Scenario
 
   @integration
   @back-end
-  Scenario Outline: Outline Examine scenario with authorization
+  Scenario Outline: Examine scenario with authorization
     Given A scenario has games
     And user has the "<role>" role
     And logged in
