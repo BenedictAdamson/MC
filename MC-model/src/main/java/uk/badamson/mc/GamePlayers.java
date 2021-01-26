@@ -18,8 +18,10 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -41,12 +43,49 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class GamePlayers {
 
+   private static boolean hasNoDuplicates(final Collection<UUID> values) {
+      return values.size() == Set.copyOf(values).size();
+   }
+
+   /**
+    * <p>
+    * Whether a given map is a valid {@linkplain #getUsers() users} map.
+    * </p>
+    * <p>
+    * A valid map conforms to all the following constraints.
+    * </p>
+    * <ul>
+    * <li>non null</li>
+    * <li>does not include a null key.</li>
+    * <li>does not include any null values.</li>
+    * <li>does not include any blank keys.</li>
+    * <li>does not include any duplicate values.</li>
+    * </ul>
+    *
+    * @param users
+    *           The map to examine
+    * @return whether valid
+    */
+   public static final boolean isValidUsers(final Map<String, UUID> users) {
+      return users != null
+               && users.entrySet().stream()
+                        .allMatch(entry -> isValidUsersEntry(entry))
+               && hasNoDuplicates(users.values());
+   }
+
+   private static boolean isValidUsersEntry(
+            final Map.Entry<String, UUID> entry) {
+      final var character = entry.getKey();
+      final var user = entry.getValue();
+      return character != null && user != null && !character.isBlank();
+   }
+
    @Id
    @org.springframework.data.annotation.Id
    private final Game.Identifier game;
 
    private boolean recruiting;
-   private final Set<UUID> users = new HashSet<>();
+   private final Map<String, UUID> users;
 
    /**
     * <p>
@@ -72,21 +111,28 @@ public class GamePlayers {
     * @param users
     *           The ({@linkplain User#getId() unique IDs} of the
     *           {@linkplain User users} who played, or are playing, the
-    *           {@code game}.
+    *           {@code game}, and the names of the characters they played.
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code game} is null.</li>
     *            <li>If {@code users} is null.</li>
     *            </ul>
+    * @throws IllegalArgumentException
+    *            If {@code users} is not a {@linkplain #isValidUsers(Map) valid
+    *            users map}
     */
    @JsonCreator
    @PersistenceConstructor
    public GamePlayers(@Nonnull @JsonProperty("game") final Game.Identifier game,
             @JsonProperty("recruiting") final boolean recruiting,
-            @Nonnull @JsonProperty("users") final Set<UUID> users) {
+            @Nonnull @JsonProperty("users") final Map<String, UUID> users) {
       this.game = Objects.requireNonNull(game, "game");
       this.recruiting = recruiting;
-      this.users.addAll(Objects.requireNonNull(users, "users"));
+      this.users = new HashMap<>(Objects.requireNonNull(users, "users"));
+
+      if (!isValidUsers(this.users)) {// copy then test to avoid race hazards
+         throw new IllegalArgumentException("users");
+      }
    }
 
    /**
@@ -116,7 +162,7 @@ public class GamePlayers {
       Objects.requireNonNull(that, "that");
       game = that.game;
       recruiting = that.recruiting;
-      users.addAll(that.users);
+      this.users = new HashMap<>(that.users);
    }
 
    /**
@@ -125,26 +171,47 @@ public class GamePlayers {
     * of users who played, or are playing}, the {@linkplain #getGame() game}.
     * </p>
     * <ul>
-    * <li>Does not remove any users from the {@linkplain #getUsers() set of
-    * users} of the game.</li>
-    * <li>The {@linkplain #getUsers() set of users}
-    * {@linkplain Set#contains(Object) contains} the given user ID.</li>
+    * <li>The {@linkplain #getUsers() map of users} contains an entry that maps
+    * the given character name to the given user ID.</li>
+    * <li>The method does not alter any other entries of the map of users.</li>
+    * <li>The method adds at most one entry to the map of users.</li>
     * </ul>
     *
+    * @param character
+    *           The name of the character that the user played.
     * @param user
     *           The unique ID of the user to add as a player.
     * @throws NullPointerException
-    *            If {@code user} is null.
+    *            <ul>
+    *            <li>If {@code character} is null.</li>
+    *            <li>If {@code user} is null.</li>
+    *            </ul>
+    * @throws IllegalArgumentException
+    *            If {@code character} {@linkplain String#isBlank() is blank}.
     * @throws IllegalStateException
-    *            If the game is not {@linkplain #isRecruiting() recruiting}
-    *            players.
+    *            <ul>
+    *            <li>If the game is not {@linkplain #isRecruiting() recruiting}
+    *            players.</li>
+    *            <li>If the game already has the given user, but for a different
+    *            character.</li>
+    *            </ul>
     */
-   public final void addUser(@Nonnull final UUID user) {
+   public final void addUser(@Nonnull final String character,
+            @Nonnull final UUID user) {
+      Objects.requireNonNull(character, "character");
       Objects.requireNonNull(user, "users");
+      if (character.isBlank()) {
+         throw new IllegalArgumentException("blank character");
+      }
       if (!recruiting) {
          throw new IllegalStateException("Game not recruiting players");
       }
-      users.add(user);
+      if (!user.equals(users.get(character)) && users.containsValue(user)) {
+         throw new IllegalArgumentException(
+                  "User already present with a different character");
+      }
+
+      users.put(character, user);
    }
 
    /**
@@ -214,20 +281,24 @@ public class GamePlayers {
    /**
     * <p>
     * The ({@linkplain User#getId() unique IDs} of the {@linkplain User users}
-    * who played, or are playing, the {@linkplain #getGame() game}.
+    * who played, or are playing, the {@linkplain #getGame() game}, and the
+    * names of the characters they played.
     * </p>
     * <ul>
-    * <li>Always returns a (non null) set of users.</li>
-    * <li>The set of users does not include null.</li>
-    * <li>The returned set of users in not modifiable.</li>
+    * <li>The map maps a <i>character name</i> to the ID of the user who is
+    * playing (or played, or will play) that character.</li>
+    * </ul>
+    * <ul>
+    * <li>Always returns a {@linkplain #isValidUsers(Map) valid users map}.</li>
+    * <li>The returned map of users is not modifiable.</li>
     * </ul>
     *
     * @return the users
     */
    @NonNull
    @JsonProperty("users")
-   public final Set<UUID> getUsers() {
-      return Collections.unmodifiableSet(users);
+   public final Map<String, UUID> getUsers() {
+      return Collections.unmodifiableMap(users);
    }
 
    @Override
@@ -240,8 +311,8 @@ public class GamePlayers {
     * Whether the {@linkplain #getGame() game} is <i>recruiting</i> new players.
     * </p>
     * <p>
-    * That is, whether users may be {@linkplain #addUser(UUID) added} to this
-    * set of players.
+    * That is, whether users may be {@linkplain #addUser(String, UUID) added} to
+    * this set of players.
     * </p>
     *
     * @return whether recruiting

@@ -18,8 +18,9 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.hamcrest.CoreMatchers.hasItem;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Nested;
@@ -48,28 +49,34 @@ public class GamePlayersTest {
 
       @Test
       public void a() {
-         test(Set.of(), USER_ID_A);
+         test(Map.of(), CHARACTER_A, USER_ID_A);
       }
 
       @Test
       public void alreadyPlayer() {
-         test(Set.of(USER_ID_A), USER_ID_A);
+         test(Map.of(CHARACTER_A, USER_ID_A), CHARACTER_A, USER_ID_A);
       }
 
       @Test
       public void b() {
-         test(Set.of(), USER_ID_B);
+         test(Map.of(), CHARACTER_B, USER_ID_B);
       }
 
       @Test
       public void notEmpty() {
-         test(Set.of(USER_ID_A), USER_ID_B);
+         test(Map.of(CHARACTER_A, USER_ID_A), CHARACTER_B, USER_ID_B);
       }
 
-      private void test(final Set<UUID> users0, final UUID user) {
+      @Test
+      public void replace() {
+         test(Map.of(CHARACTER_A, USER_ID_A), CHARACTER_A, USER_ID_B);
+      }
+
+      private void test(final Map<String, UUID> users0, final String character,
+               final UUID user) {
          final var players = new GamePlayers(GAME_A, true, users0);
 
-         addUser(players, user);
+         addUser(players, character, user);
       }
 
    }// class
@@ -128,7 +135,7 @@ public class GamePlayersTest {
       }
 
       private void test(final Game.Identifier game, final boolean recruiting,
-               final Set<UUID> users) {
+               final Map<String, UUID> users) {
          final var players0 = new GamePlayers(game, recruiting, users);
 
          final var copy = new GamePlayers(players0);
@@ -160,7 +167,7 @@ public class GamePlayersTest {
       }
 
       private void test(final Game.Identifier game, final boolean recruiting,
-               final Set<UUID> users) {
+               final Map<String, UUID> users) {
          final var players = new GamePlayers(game, recruiting, users);
 
          assertInvariants(players);
@@ -194,6 +201,29 @@ public class GamePlayersTest {
    }// class
 
    @Nested
+   public class IsValidUsers {
+
+      @Test
+      public void empty() {
+         final Map<String, UUID> users = Map.of();
+         assertTrue(GamePlayers.isValidUsers(users));
+      }
+
+      @Test
+      public void one() {
+         final Map<String, UUID> users = Map.of(CHARACTER_A, USER_ID_A);
+         assertTrue(GamePlayers.isValidUsers(users));
+      }
+
+      @Test
+      public void two() {
+         final Map<String, UUID> users = Map.of(CHARACTER_A, USER_ID_A,
+                  CHARACTER_B, USER_ID_B);
+         assertTrue(GamePlayers.isValidUsers(users));
+      }
+   }// class
+
+   @Nested
    public class Json {
 
       @Test
@@ -207,7 +237,7 @@ public class GamePlayersTest {
       }
 
       private void test(final Game.Identifier game, final boolean recruiting,
-               final Set<UUID> users) {
+               final Map<String, UUID> users) {
          final var players = new GamePlayers(game, recruiting, users);
          final var deserialized = JsonTest.serializeAndDeserialize(players);
 
@@ -222,27 +252,37 @@ public class GamePlayersTest {
       }
    }// class
 
+   private static final String CHARACTER_A = "Lt. Winters";
+   private static final String CHARACTER_B = "Sgt. Summer";
    private static final UUID USER_ID_A = UUID.randomUUID();
    private static final UUID USER_ID_B = UUID.randomUUID();
    private static final Game.Identifier GAME_A = new Game.Identifier(
             UUID.randomUUID(), Instant.EPOCH);
    private static final Game.Identifier GAME_B = new Game.Identifier(
             UUID.randomUUID(), Instant.now());
-   private static final Set<UUID> USERS_A = Set.of();
-   private static final Set<UUID> USERS_B = Set.of(USER_ID_B);
+   private static final Map<String, UUID> USERS_A = Map.of();
+   private static final Map<String, UUID> USERS_B = Map.of(CHARACTER_B,
+            USER_ID_B);
 
-   public static void addUser(final GamePlayers players, final UUID user) {
-      final var users0 = Set.copyOf(players.getUsers());
+   public static void addUser(final GamePlayers players, final String character,
+            final UUID user) {
+      final var users0 = Map.copyOf(players.getUsers());
+      final var otherCharacters0 = users0.keySet().stream()
+               .filter(c -> !character.equals(c)).collect(toUnmodifiableSet());
 
-      players.addUser(user);
+      players.addUser(character, user);
 
       assertInvariants(players);
       final var users = players.getUsers();
       assertAll(() -> assertThat(
-               "Does not remove any users from the set of users of the game.",
-               users.containsAll(users0)),
-               () -> assertThat("The set of users contains the given user.",
-                        users, hasItem(user)));
+               "The map of users contains an entry that maps the given character name to the given user ID.",
+               users, hasEntry(character, user)),
+               () -> assertTrue(
+                        otherCharacters0.stream().allMatch(
+                                 c -> users.get(c).equals(users0.get(c))),
+                        "The method does not alter any other entries of the map of users."),
+               () -> assertTrue(users.size() <= users0.size() + 1,
+                        "The method adds at most one entry to the map of users."));
    }
 
    public static void assertInvariants(final Game.Identifier identifier) {
@@ -274,8 +314,7 @@ public class GamePlayersTest {
       final var users = players.getUsers();
       assertAll("Not null", () -> assertNotNull(players.getGame(), "game"),
                () -> assertNotNull(users, "users"));
-      assertTrue(users.stream().filter(p -> p == null).findAny().isEmpty(),
-               "The set of users does not include null.");
+      assertTrue(GamePlayers.isValidUsers(users), "valid users map");
    }
 
    public static void assertInvariants(final GamePlayers playersA,
