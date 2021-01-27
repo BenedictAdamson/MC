@@ -58,7 +58,6 @@ public class GamePlayers {
     * <li>non null</li>
     * <li>does not include a null key.</li>
     * <li>does not include any null values.</li>
-    * <li>does not include any blank keys.</li>
     * <li>does not include any duplicate values.</li>
     * </ul>
     *
@@ -66,18 +65,17 @@ public class GamePlayers {
     *           The map to examine
     * @return whether valid
     */
-   public static final boolean isValidUsers(final Map<String, UUID> users) {
+   public static final boolean isValidUsers(final Map<UUID, UUID> users) {
       return users != null
                && users.entrySet().stream()
                         .allMatch(entry -> isValidUsersEntry(entry))
                && hasNoDuplicates(users.values());
    }
 
-   private static boolean isValidUsersEntry(
-            final Map.Entry<String, UUID> entry) {
+   private static boolean isValidUsersEntry(final Map.Entry<UUID, UUID> entry) {
       final var character = entry.getKey();
       final var user = entry.getValue();
-      return character != null && user != null && !character.isBlank();
+      return character != null && user != null;
    }
 
    @Id
@@ -85,7 +83,7 @@ public class GamePlayers {
    private final Game.Identifier game;
 
    private boolean recruiting;
-   private final Map<String, UUID> users;
+   private final Map<UUID, UUID> users;
 
    /**
     * <p>
@@ -111,7 +109,7 @@ public class GamePlayers {
     * @param users
     *           The ({@linkplain User#getId() unique IDs} of the
     *           {@linkplain User users} who played, or are playing, the
-    *           {@code game}, and the names of the characters they played.
+    *           {@code game}, and the unique IDs of the characters they played.
     * @throws NullPointerException
     *            <ul>
     *            <li>If {@code game} is null.</li>
@@ -125,7 +123,7 @@ public class GamePlayers {
    @PersistenceConstructor
    public GamePlayers(@Nonnull @JsonProperty("game") final Game.Identifier game,
             @JsonProperty("recruiting") final boolean recruiting,
-            @Nonnull @JsonProperty("users") final Map<String, UUID> users) {
+            @Nonnull @JsonProperty("users") final Map<UUID, UUID> users) {
       this.game = Objects.requireNonNull(game, "game");
       this.recruiting = recruiting;
       this.users = new HashMap<>(Objects.requireNonNull(users, "users"));
@@ -172,13 +170,13 @@ public class GamePlayers {
     * </p>
     * <ul>
     * <li>The {@linkplain #getUsers() map of users} contains an entry that maps
-    * the given character name to the given user ID.</li>
+    * the given character ID to the given user ID.</li>
     * <li>The method does not alter any other entries of the map of users.</li>
     * <li>The method adds at most one entry to the map of users.</li>
     * </ul>
     *
     * @param character
-    *           The name of the character that the user played.
+    *           The ID of the character that the user played.
     * @param user
     *           The unique ID of the user to add as a player.
     * @throws NullPointerException
@@ -186,8 +184,6 @@ public class GamePlayers {
     *            <li>If {@code character} is null.</li>
     *            <li>If {@code user} is null.</li>
     *            </ul>
-    * @throws IllegalArgumentException
-    *            If {@code character} {@linkplain String#isBlank() is blank}.
     * @throws IllegalStateException
     *            <ul>
     *            <li>If the game is not {@linkplain #isRecruiting() recruiting}
@@ -196,13 +192,10 @@ public class GamePlayers {
     *            character.</li>
     *            </ul>
     */
-   public final void addUser(@Nonnull final String character,
+   public final void addUser(@Nonnull final UUID character,
             @Nonnull final UUID user) {
       Objects.requireNonNull(character, "character");
       Objects.requireNonNull(user, "users");
-      if (character.isBlank()) {
-         throw new IllegalArgumentException("blank character");
-      }
       if (!recruiting) {
          throw new IllegalStateException("Game not recruiting players");
       }
@@ -281,12 +274,12 @@ public class GamePlayers {
    /**
     * <p>
     * The ({@linkplain User#getId() unique IDs} of the {@linkplain User users}
-    * who played, or are playing, the {@linkplain #getGame() game}, and the
-    * names of the characters they played.
+    * who played, or are playing, the {@linkplain #getGame() game}, and the IDs
+    * of the characters they played.
     * </p>
     * <ul>
-    * <li>The map maps a <i>character name</i> to the ID of the user who is
-    * playing (or played, or will play) that character.</li>
+    * <li>The map maps a character ID to the ID of the user who is playing (or
+    * played, or will play) that character.</li>
     * </ul>
     * <ul>
     * <li>Always returns a {@linkplain #isValidUsers(Map) valid users map}.</li>
@@ -297,7 +290,7 @@ public class GamePlayers {
     */
    @NonNull
    @JsonProperty("users")
-   public final Map<String, UUID> getUsers() {
+   public final Map<UUID, UUID> getUsers() {
       return Collections.unmodifiableMap(users);
    }
 
@@ -311,7 +304,7 @@ public class GamePlayers {
     * Whether the {@linkplain #getGame() game} is <i>recruiting</i> new players.
     * </p>
     * <p>
-    * That is, whether users may be {@linkplain #addUser(String, UUID) added} to
+    * That is, whether users may be {@linkplain #addUser(UUID, UUID) added} to
     * this set of players.
     * </p>
     *

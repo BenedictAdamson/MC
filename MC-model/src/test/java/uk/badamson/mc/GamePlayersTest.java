@@ -49,30 +49,30 @@ public class GamePlayersTest {
 
       @Test
       public void a() {
-         test(Map.of(), CHARACTER_A, USER_ID_A);
+         test(Map.of(), CHARACTER_ID_A, USER_ID_A);
       }
 
       @Test
       public void alreadyPlayer() {
-         test(Map.of(CHARACTER_A, USER_ID_A), CHARACTER_A, USER_ID_A);
+         test(Map.of(CHARACTER_ID_A, USER_ID_A), CHARACTER_ID_A, USER_ID_A);
       }
 
       @Test
       public void b() {
-         test(Map.of(), CHARACTER_B, USER_ID_B);
+         test(Map.of(), CHARACTER_ID_B, USER_ID_B);
       }
 
       @Test
       public void notEmpty() {
-         test(Map.of(CHARACTER_A, USER_ID_A), CHARACTER_B, USER_ID_B);
+         test(Map.of(CHARACTER_ID_A, USER_ID_A), CHARACTER_ID_B, USER_ID_B);
       }
 
       @Test
       public void replace() {
-         test(Map.of(CHARACTER_A, USER_ID_A), CHARACTER_A, USER_ID_B);
+         test(Map.of(CHARACTER_ID_A, USER_ID_A), CHARACTER_ID_A, USER_ID_B);
       }
 
-      private void test(final Map<String, UUID> users0, final String character,
+      private void test(final Map<UUID, UUID> users0, final UUID character,
                final UUID user) {
          final var players = new GamePlayers(GAME_A, true, users0);
 
@@ -135,7 +135,7 @@ public class GamePlayersTest {
       }
 
       private void test(final Game.Identifier game, final boolean recruiting,
-               final Map<String, UUID> users) {
+               final Map<UUID, UUID> users) {
          final var players0 = new GamePlayers(game, recruiting, users);
 
          final var copy = new GamePlayers(players0);
@@ -167,7 +167,7 @@ public class GamePlayersTest {
       }
 
       private void test(final Game.Identifier game, final boolean recruiting,
-               final Map<String, UUID> users) {
+               final Map<UUID, UUID> users) {
          final var players = new GamePlayers(game, recruiting, users);
 
          assertInvariants(players);
@@ -205,20 +205,20 @@ public class GamePlayersTest {
 
       @Test
       public void empty() {
-         final Map<String, UUID> users = Map.of();
+         final Map<UUID, UUID> users = Map.of();
          assertTrue(GamePlayers.isValidUsers(users));
       }
 
       @Test
       public void one() {
-         final Map<String, UUID> users = Map.of(CHARACTER_A, USER_ID_A);
+         final Map<UUID, UUID> users = Map.of(CHARACTER_ID_A, USER_ID_A);
          assertTrue(GamePlayers.isValidUsers(users));
       }
 
       @Test
       public void two() {
-         final Map<String, UUID> users = Map.of(CHARACTER_A, USER_ID_A,
-                  CHARACTER_B, USER_ID_B);
+         final Map<UUID, UUID> users = Map.of(CHARACTER_ID_A, USER_ID_A,
+                  CHARACTER_ID_B, USER_ID_B);
          assertTrue(GamePlayers.isValidUsers(users));
       }
    }// class
@@ -237,7 +237,7 @@ public class GamePlayersTest {
       }
 
       private void test(final Game.Identifier game, final boolean recruiting,
-               final Map<String, UUID> users) {
+               final Map<UUID, UUID> users) {
          final var players = new GamePlayers(game, recruiting, users);
          final var deserialized = JsonTest.serializeAndDeserialize(players);
 
@@ -252,19 +252,19 @@ public class GamePlayersTest {
       }
    }// class
 
-   private static final String CHARACTER_A = "Lt. Winters";
-   private static final String CHARACTER_B = "Sgt. Summer";
    private static final UUID USER_ID_A = UUID.randomUUID();
    private static final UUID USER_ID_B = UUID.randomUUID();
+   private static final UUID CHARACTER_ID_A = UUID.randomUUID();
+   private static final UUID CHARACTER_ID_B = UUID.randomUUID();
    private static final Game.Identifier GAME_A = new Game.Identifier(
             UUID.randomUUID(), Instant.EPOCH);
    private static final Game.Identifier GAME_B = new Game.Identifier(
             UUID.randomUUID(), Instant.now());
-   private static final Map<String, UUID> USERS_A = Map.of();
-   private static final Map<String, UUID> USERS_B = Map.of(CHARACTER_B,
+   private static final Map<UUID, UUID> USERS_A = Map.of();
+   private static final Map<UUID, UUID> USERS_B = Map.of(CHARACTER_ID_B,
             USER_ID_B);
 
-   public static void addUser(final GamePlayers players, final String character,
+   public static void addUser(final GamePlayers players, final UUID character,
             final UUID user) {
       final var users0 = Map.copyOf(players.getUsers());
       final var otherCharacters0 = users0.keySet().stream()
