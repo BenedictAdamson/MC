@@ -18,6 +18,8 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import static java.util.stream.Collectors.toUnmodifiableSet;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,28 +42,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Scenario {
 
+   private static final boolean hasDuplicateIds(
+            final List<NamedUUID> characters) {
+      final var ids = characters.stream().map(c -> c.getId())
+               .collect(toUnmodifiableSet());
+      return ids.size() != Set.copyOf(ids).size();
+   }
+
    /**
     * <p>
-    * Whether a given list of strings is a valid list of names of the persons in
-    * a scenario that {@linkplain GamePlayers players} can play.
+    * Whether a given list of named IDs is a valid list of persons in a scenario
+    * that {@linkplain GamePlayers players} can play.
     * </p>
     * A valid list meets all these constraints:
     * <ul>
     * <li>Non null.</li>
     * <li>not {@linkplain List#isEmpty() empty}.</li>
     * <li>has no null elements.</li>
-    * <li>has no {@linkplain String#isBlank() blank} elements.</li>
-    * <li>has no duplicate elements.</li>
+    * <li>has no elements with duplicate {@linkplain NamedUUID#getId()
+    * IDs}.</li>
     * </ul>
     *
     * @return whether valid.
     */
    public static final boolean isValidCharacters(
-            final List<String> characters) {
+            final List<NamedUUID> characters) {
       return characters != null && !characters.isEmpty()
-               && characters.stream().map(c -> c != null && !c.isBlank())
-                        .allMatch(ok -> ok)
-               && characters.size() == Set.copyOf(characters).size();
+               && !hasDuplicateIds(characters);
    }
 
    @Id
@@ -69,7 +76,7 @@ public class Scenario {
    private final UUID identifier;
    private final String title;
    private final String description;
-   private final List<String> characters;
+   private final List<NamedUUID> characters;
 
    /**
     * <p>
@@ -118,7 +125,7 @@ public class Scenario {
    public Scenario(@JsonProperty("identifier") @NonNull final UUID identifier,
             @NonNull @JsonProperty("title") final String title,
             @NonNull @JsonProperty("description") final String description,
-            @NonNull @JsonProperty("characters") final List<String> characters) {
+            @NonNull @JsonProperty("characters") final List<NamedUUID> characters) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.title = Objects.requireNonNull(title, "title");
       this.description = Objects.requireNonNull(description, "description");
@@ -166,8 +173,8 @@ public class Scenario {
 
    /**
     * <p>
-    * The names of the persons in this scenario that {@linkplain GamePlayers
-    * players} can play.
+    * The names and IDs of the persons in this scenario that
+    * {@linkplain GamePlayers players} can play.
     * </p>
     * <ul>
     * <li>Always a {@linkplain #isValidCharacters(List) valid list of
@@ -175,7 +182,7 @@ public class Scenario {
     * </ul>
     * <ul>
     * <li>The list of characters is in descending order of selection priority:
-    * for all else equal, players should be allocated characters near the start
+    * with all else equal, players should be allocated characters near the start
     * of the list.</li>
     * <li>The returned list is not modifiable.</li>
     * </ul>
@@ -184,7 +191,7 @@ public class Scenario {
     */
    @NonNull
    @JsonProperty("characters")
-   public final List<String> getCharacters() {
+   public final List<NamedUUID> getCharacters() {
       return characters;
    }
 

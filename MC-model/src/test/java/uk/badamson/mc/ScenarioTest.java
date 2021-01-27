@@ -83,7 +83,7 @@ public class ScenarioTest {
       }
 
       private void test(final UUID identifier, final String title,
-               final String description, final List<String> characters) {
+               final String description, final List<NamedUUID> characters) {
          final var scenario = new Scenario(identifier, title, description,
                   characters);
 
@@ -115,7 +115,7 @@ public class ScenarioTest {
       }
 
       private void test(final UUID identifier, final String title,
-               final String description, final List<String> characters) {
+               final String description, final List<NamedUUID> characters) {
          final var scenario = new Scenario(identifier, title, description,
                   characters);
          final var deserialized = JsonTest.serializeAndDeserialize(scenario);
@@ -139,21 +139,25 @@ public class ScenarioTest {
    private static final String TITLE_B = "0123456789012345678901234567890123456789012345678901234567890123";// longest
    private static final String DESCRIPTION_A = "";// shortest
    private static final String DESCRIPTION_B = "Simple training scenario.";
-   private static final List<String> CHARACTERS_A = List.of("Lt. Winters");
-   private static final List<String> CHARACTERS_B = List.of("Sgt. Summer",
-            "Cpl. Klegg");
+   private static final NamedUUID CHARACTER_A = new NamedUUID(ID_A,
+            "Lt. Winters");
+   private static final NamedUUID CHARACTER_B = new NamedUUID(ID_B,
+            "Sgt. Summer");
+   private static final List<NamedUUID> CHARACTERS_A = List.of(CHARACTER_A);
+   private static final List<NamedUUID> CHARACTERS_B = List.of(CHARACTER_A,
+            CHARACTER_B);
 
-   private static final Matcher<List<String>> VALID_CHARACTERS_MATCHER = new CustomTypeSafeMatcher<>(
+   private static final Matcher<List<NamedUUID>> VALID_CHARACTERS_MATCHER = new CustomTypeSafeMatcher<>(
             "valid characters") {
 
       @Override
-      protected boolean matchesSafely(final List<String> item) {
+      protected boolean matchesSafely(final List<NamedUUID> item) {
          return Scenario.isValidCharacters(item);
       }
    };
 
    private static void assertCharactersInvariants(
-            final List<String> characters) {
+            final List<NamedUUID> characters) {
       assertAll("characters", () -> assertNotNull(characters, "not null"),
                () -> assertThat(characters, VALID_CHARACTERS_MATCHER));
    }
