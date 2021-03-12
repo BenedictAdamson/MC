@@ -20,9 +20,9 @@ Feature: Game
 
   @integration
   @back-end
-  Scenario Outline: Examine game
+  Scenario: Examine game as player
     Given A scenario has games
-    And user has the "<role>" role
+    And user has the "player" role
     And logged in
     And Viewing the games of the scenario
     When Navigate to one game page
@@ -34,11 +34,27 @@ Feature: Game
     And The game page indicates whether the game is recruiting players
     And The game page indicates whether the user may join the game
     And The game page indicates whether the user is playing the game
-    
-    Examples:
-      |role|
-      |player|
-      |manage games|
+    And The game page indicates which character (if any) the user is playing
+    And The game page does not indicate which characters are played by which (other) users
+
+  @integration
+  @back-end
+  Scenario: Examine game as game manager
+    Given A scenario has games
+    And user has the "manage games" role
+    And logged in
+    And Viewing the games of the scenario
+    When Navigate to one game page
+    Then MC provides a game page
+    And The game page includes the scenario title
+    And The game page includes the scenario description
+    And The game page includes the date and time that the game was set up
+    And The game page indicates whether the game has players
+    And The game page indicates whether the game is recruiting players
+    And The game page indicates whether the user may join the game
+    And The game page indicates whether the user is playing the game
+    And The game page indicates which character (if any) the user is playing
+    And The game page indicates which characters are played by which users
     
   @integration
   @back-end
@@ -102,7 +118,6 @@ Feature: Game
     When the user joins the game
     Then MC accepts joining the game
     And MC provides a game page
-    And The game page indicates that the game has a player
     And The game page indicates that the user is playing the game
     
   @integration
