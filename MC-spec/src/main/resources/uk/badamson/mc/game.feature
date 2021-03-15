@@ -118,7 +118,7 @@ Feature: Game
     When the user joins the game
     Then MC accepts joining the game
     And MC provides a game page
-    And The current-game page indicates that the current-game is the game joined
+    And The game page indicates that the current game is the game joined
     
   @integration
   @back-end
