@@ -35,9 +35,5 @@ Feature: Current Game
     And logged in
     And user is playing a game
     When navigate to the current-game page
-    Then MC provides a current-game page
-    And the current-game page includes the scenario title
-    And the current-game page includes the scenario description
-    And the current-game page includes the date and time that the game was set up
-    And the current-game page indicates which character the user is playing
+    Then MC provides a game page
  
