@@ -1,4 +1,4 @@
-# © Copyright Benedict Adamson 2020.
+# © Copyright Benedict Adamson 2020-21.
 #
 # This file is part of MC.
 #
@@ -118,7 +118,6 @@ Feature: Game
     When the user joins the game
     Then MC accepts joining the game
     And MC provides a game page
-    And The game page indicates that the user is playing the game
     
   @integration
   @back-end
