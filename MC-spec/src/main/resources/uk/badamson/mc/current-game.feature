@@ -32,8 +32,8 @@ Feature: Current Game
   Scenario: Examine current game
     Given A scenario has games
     And user has the "player" role
-    And user is playing a game
     And logged in
+    And user is playing a game
     When navigate to the current-game page
     Then MC provides a game page
  
