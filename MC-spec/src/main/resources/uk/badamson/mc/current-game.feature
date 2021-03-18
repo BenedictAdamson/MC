@@ -20,17 +20,17 @@ Feature: Current Game
 
   @integration
   Scenario: May examine current-game only if playing
-    Given A scenario has games
+    Given a scenario has games
     And user has the "player" role
     And logged in
     And user is not playing any games
     When examine home page
-    Then The home-page does not indicate that the user has a current game
+    Then the home-page does not indicate that the user has a current game
 
   @integration
   @back-end
   Scenario: Examine current game
-    Given A scenario has games
+    Given a scenario has games
     And user has the "player" role
     And logged in
     And user is playing a game

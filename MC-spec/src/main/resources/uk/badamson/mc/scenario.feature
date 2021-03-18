@@ -28,29 +28,29 @@ Feature: Scenario
   @integration
   @back-end
   Scenario: Examine scenario anonymously
-    Given A scenario has games
+    Given a scenario has games
     And not logged in
-    When Viewing the scenarios
-    And Navigate to a scenario with games
+    When viewing the scenarios
+    And navigate to a scenario with games
     Then MC serves the scenario page
-    And The scenario page includes the scenario description
-    And The scenario page includes the list of playable characters of that scenario
-    And The scenario page includes the list of games of that scenario
-    And The scenario page does not allow navigation to game pages
+    And the scenario page includes the scenario description
+    And the scenario page includes the list of playable characters of that scenario
+    And the scenario page includes the list of games of that scenario
+    And the scenario page does not allow navigation to game pages
 
   @integration
   @back-end
   Scenario Outline: Examine scenario with authorization
-    Given A scenario has games
+    Given a scenario has games
     And user has the "<role>" role
     And logged in
-    When Viewing the scenarios
-    And Navigate to a scenario with games
+    When viewing the scenarios
+    And navigate to a scenario with games
     Then MC serves the scenario page
-    And The scenario page includes the scenario description
-    And The scenario page includes the list of playable characters of that scenario
-    And The scenario page includes the list of games of that scenario
-    And The scenario page allows navigation to game pages
+    And the scenario page includes the scenario description
+    And the scenario page includes the list of playable characters of that scenario
+    And the scenario page includes the list of games of that scenario
+    And the scenario page allows navigation to game pages
     
     Examples:
       |role|

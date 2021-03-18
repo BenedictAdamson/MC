@@ -39,11 +39,11 @@ Feature: User
   Scenario: Examine user
     Given user has the "manage users" role
     And logged in
-    And Viewing the list of users
-    When Navigate to one user page
+    And viewing the list of users
+    When navigate to one user page
     Then MC serves the user page
-    And The user page includes the user name
-    And The user page lists the roles of the user
+    And the user page includes the user name
+    And the user page lists the roles of the user
     
   @integration
   Scenario: Login as player
@@ -105,7 +105,7 @@ Feature: User
   Scenario: Only administrator my examine user
     Given user has the "player" role but not the "manage users" role
     And logged in
-    And Viewing the list of users
-    When Trying to navigate to a user page
+    And viewing the list of users
+    When trying to navigate to a user page
     Then MC does not allow navigating to a user page
     

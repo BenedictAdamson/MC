@@ -21,40 +21,40 @@ Feature: Game
   @integration
   @back-end
   Scenario: Examine game as player
-    Given A scenario has games
+    Given a scenario has games
     And user has the "player" role
     And logged in
-    And Viewing the games of the scenario
-    When Navigate to one game page
+    And viewing the games of the scenario
+    When navigate to one game page
     Then MC provides a game page
-    And The game page includes the scenario title
-    And The game page includes the scenario description
-    And The game page includes the date and time that the game was set up
-    And The game page indicates whether the game has players
-    And The game page indicates whether the game is recruiting players
-    And The game page indicates whether the user may join the game
-    And The game page indicates whether the user is playing the game
-    And The game page indicates which character (if any) the user is playing
-    And The game page does not indicate which characters are played by which (other) users
+    And the game page includes the scenario title
+    And the game page includes the scenario description
+    And the game page includes the date and time that the game was set up
+    And the game page indicates whether the game has players
+    And the game page indicates whether the game is recruiting players
+    And the game page indicates whether the user may join the game
+    And the game page indicates whether the user is playing the game
+    And the game page indicates which character (if any) the user is playing
+    And the game page does not indicate which characters are played by which (other) users
 
   @integration
   @back-end
   Scenario: Examine game as game manager
-    Given A scenario has games
+    Given a scenario has games
     And user has the "manage games" role
     And logged in
-    And Viewing the games of the scenario
-    When Navigate to one game page
+    And viewing the games of the scenario
+    When navigate to one game page
     Then MC provides a game page
-    And The game page includes the scenario title
-    And The game page includes the scenario description
-    And The game page includes the date and time that the game was set up
-    And The game page indicates whether the game has players
-    And The game page indicates whether the game is recruiting players
-    And The game page indicates whether the user may join the game
-    And The game page indicates whether the user is playing the game
-    And The game page indicates which character (if any) the user is playing
-    And The game page indicates which characters are played by which users
+    And the game page includes the scenario title
+    And the game page includes the scenario description
+    And the game page includes the date and time that the game was set up
+    And the game page indicates whether the game has players
+    And the game page indicates whether the game is recruiting players
+    And the game page indicates whether the user may join the game
+    And the game page indicates whether the user is playing the game
+    And the game page indicates which character (if any) the user is playing
+    And the game page indicates which characters are played by which users
     
   @integration
   @back-end
@@ -66,7 +66,7 @@ Feature: Game
     Then MC accepts the creation of the game
     And MC provides a game page
     And the game page indicates that the game is recruiting players
-    And The game page indicates that the game has no players
+    And the game page indicates that the game has no players
     And can get the list of games
     And the list of games includes the new game
     
@@ -106,7 +106,7 @@ Feature: Game
     When examining a game recruiting players
     Then MC provides a game page
     And the game page indicates that the user may join the game
-    And The game page indicates that the user is not playing the game
+    And the game page indicates that the user is not playing the game
     
   @integration
   @back-end
@@ -127,4 +127,4 @@ Feature: Game
     And user is not playing any games
     And examining a game recruiting players
     Then MC provides a game page
-    And The game page indicates that the user may not join the game
+    And the game page indicates that the user may not join the game
