@@ -32,11 +32,11 @@ Feature: Scenario
     And not logged in
     When viewing the scenarios
     And navigate to a scenario with games
-    Then MC serves the scenario page
-    And the scenario page includes the scenario description
-    And the scenario page includes the list of playable characters of that scenario
-    And the scenario page includes the list of games of that scenario
-    And the scenario page does not allow navigation to game pages
+    Then MC serves the scenario
+    And the scenario includes the scenario description
+    And the scenario includes the list of playable characters of that scenario
+    And the scenario includes the list of games of that scenario
+    And the scenario does not allow navigation to game pages
 
   @integration
   @back-end
@@ -46,11 +46,11 @@ Feature: Scenario
     And logged in
     When viewing the scenarios
     And navigate to a scenario with games
-    Then MC serves the scenario page
-    And the scenario page includes the scenario description
-    And the scenario page includes the list of playable characters of that scenario
-    And the scenario page includes the list of games of that scenario
-    And the scenario page allows navigation to game pages
+    Then MC serves the scenario
+    And the scenario includes the scenario description
+    And the scenario includes the list of playable characters of that scenario
+    And the scenario includes the list of games of that scenario
+    And the scenario allows navigation to game pages
     
     Examples:
       |role|
