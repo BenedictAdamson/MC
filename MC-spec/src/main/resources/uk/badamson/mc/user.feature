@@ -25,7 +25,7 @@ Feature: User
     Given user has the "<role>" role
     And logged in
     When getting the users
-    Then MC serves the users page
+    Then it serves the users
     And the response is a list of users
     And the list of users has at least one user
     
@@ -40,10 +40,10 @@ Feature: User
     Given user has the "manage users" role
     And logged in
     And viewing the list of users
-    When navigate to one user page
-    Then MC serves the user page
-    And the user page includes the user name
-    And the user page lists the roles of the user
+    When navigate to one user
+    Then MC serves the user
+    And the user includes the user name
+    And the user lists the roles of the user
     
   @integration
   Scenario: Login as player
@@ -106,6 +106,6 @@ Feature: User
     Given user has the "player" role but not the "manage users" role
     And logged in
     And viewing the list of users
-    When trying to navigate to a user page
-    Then MC does not allow navigating to a user page
+    When trying to navigate to a user
+    Then MC does not allow navigating to a user
     
