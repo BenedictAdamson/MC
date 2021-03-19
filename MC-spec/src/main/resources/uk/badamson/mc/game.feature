@@ -25,17 +25,17 @@ Feature: Game
     And user has the "player" role
     And logged in
     And viewing the games of the scenario
-    When navigate to one game page
+    When navigate to one game
     Then it provides a game
-    And the game page includes the scenario title
-    And the game page includes the scenario description
-    And the game page includes the date and time that the game was set up
-    And the game page indicates whether the game has players
-    And the game page indicates whether the game is recruiting players
-    And the game page indicates whether the user may join the game
-    And the game page indicates whether the user is playing the game
-    And the game page indicates which character (if any) the user is playing
-    And the game page does not indicate which characters are played by which (other) users
+    And the game includes the scenario title
+    And the game includes the scenario description
+    And the game includes the date and time that the game was set up
+    And the game indicates whether the game has players
+    And the game indicates whether the game is recruiting players
+    And the game indicates whether the user may join the game
+    And the game indicates whether the user is playing the game
+    And the game indicates which character (if any) the user is playing
+    And the game does not indicate which characters are played by which (other) users
 
   @integration
   @back-end
@@ -44,17 +44,17 @@ Feature: Game
     And user has the "manage games" role
     And logged in
     And viewing the games of the scenario
-    When navigate to one game page
+    When navigate to one game
     Then it provides a game
-    And the game page includes the scenario title
-    And the game page includes the scenario description
-    And the game page includes the date and time that the game was set up
-    And the game page indicates whether the game has players
-    And the game page indicates whether the game is recruiting players
-    And the game page indicates whether the user may join the game
-    And the game page indicates whether the user is playing the game
-    And the game page indicates which character (if any) the user is playing
-    And the game page indicates which characters are played by which users
+    And the game includes the scenario title
+    And the game includes the scenario description
+    And the game includes the date and time that the game was set up
+    And the game indicates whether the game has players
+    And the game indicates whether the game is recruiting players
+    And the game indicates whether the user may join the game
+    And the game indicates whether the user is playing the game
+    And the game indicates which character (if any) the user is playing
+    And the game indicates which characters are played by which users
     
   @integration
   @back-end
@@ -65,8 +65,8 @@ Feature: Game
     When creating a game
     Then MC accepts the creation of the game
     And it provides a game
-    And the game page indicates that the game is recruiting players
-    And the game page indicates that the game has no players
+    And the game indicates that the game is recruiting players
+    And the game indicates that the game has no players
     And can get the list of games
     And the list of games includes the new game
     
@@ -87,7 +87,7 @@ Feature: Game
     When user ends recruitment for the game
     Then MC accepts ending recruitment for the game
     And it provides a game
-    And the game page indicates that the game is not recruiting players
+    And the game indicates that the game is not recruiting players
     
   @integration
   @back-end
@@ -105,8 +105,8 @@ Feature: Game
     And user is not playing any games
     When examining a game recruiting players
     Then it provides a game
-    And the game page indicates that the user may join the game
-    And the game page indicates that the user is not playing the game
+    And the game indicates that the user may join the game
+    And the game indicates that the user is not playing the game
     
   @integration
   @back-end
@@ -127,4 +127,4 @@ Feature: Game
     And user is not playing any games
     And examining a game recruiting players
     Then it provides a game
-    And the game page indicates that the user may not join the game
+    And the game indicates that the user may not join the game
