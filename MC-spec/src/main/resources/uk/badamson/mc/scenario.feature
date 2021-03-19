@@ -27,11 +27,9 @@ Feature: Scenario
   @integration
   @back-end
   Scenario: Examine scenario anonymously
-    Given a scenario has games
+    Given a scenario that has a game
     And not logged in
-    When viewing the scenarios
-    And navigate to a scenario with games
-    Then MC serves the scenario
+    When examine the scenario
     And the scenario includes the scenario description
     And the scenario includes the list of playable characters of that scenario
     And the scenario includes the list of games of that scenario
@@ -40,12 +38,10 @@ Feature: Scenario
   @integration
   @back-end
   Scenario Outline: Examine scenario with authorization
-    Given a scenario has games
+    Given a scenario that has a game
     And user has the "<role>" role
     And logged in
-    When viewing the scenarios
-    And navigate to a scenario with games
-    Then MC serves the scenario
+    When examine the scenario
     And the scenario includes the scenario description
     And the scenario includes the list of playable characters of that scenario
     And the scenario includes the list of games of that scenario

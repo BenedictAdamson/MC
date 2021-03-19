@@ -20,7 +20,7 @@ Feature: Current Game
 
   @integration
   Scenario: May examine current-game only if playing
-    Given a scenario has games
+    Given has a game
     And user has the "player" role
     And logged in
     And user is not playing any games
@@ -30,7 +30,7 @@ Feature: Current Game
   @integration
   @back-end
   Scenario: Examine current game
-    Given a scenario has games
+    Given has a game
     And user has the "player" role
     And logged in
     And user is playing a game

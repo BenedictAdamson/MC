@@ -21,7 +21,7 @@ Feature: Game
   @integration
   @back-end
   Scenario: Examine game as player
-    Given a scenario has games
+    Given has a game
     And user has the "player" role
     And logged in
     When examine a game
@@ -38,7 +38,7 @@ Feature: Game
   @integration
   @back-end
   Scenario: Examine game as game manager
-    Given a scenario has games
+    Given has a game
     And user has the "manage games" role
     And logged in
     When examine a game
