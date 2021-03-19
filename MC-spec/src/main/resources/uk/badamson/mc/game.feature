@@ -26,7 +26,7 @@ Feature: Game
     And logged in
     And viewing the games of the scenario
     When navigate to one game page
-    Then MC provides a game page
+    Then it provides a game
     And the game page includes the scenario title
     And the game page includes the scenario description
     And the game page includes the date and time that the game was set up
@@ -45,7 +45,7 @@ Feature: Game
     And logged in
     And viewing the games of the scenario
     When navigate to one game page
-    Then MC provides a game page
+    Then it provides a game
     And the game page includes the scenario title
     And the game page includes the scenario description
     And the game page includes the date and time that the game was set up
@@ -64,7 +64,7 @@ Feature: Game
     And examining scenario
     When creating a game
     Then MC accepts the creation of the game
-    And MC provides a game page
+    And it provides a game
     And the game page indicates that the game is recruiting players
     And the game page indicates that the game has no players
     And can get the list of games
@@ -86,7 +86,7 @@ Feature: Game
     And viewing a game that is recruiting players
     When user ends recruitment for the game
     Then MC accepts ending recruitment for the game
-    And MC provides a game page
+    And it provides a game
     And the game page indicates that the game is not recruiting players
     
   @integration
@@ -104,7 +104,7 @@ Feature: Game
     And logged in
     And user is not playing any games
     When examining a game recruiting players
-    Then MC provides a game page
+    Then it provides a game
     And the game page indicates that the user may join the game
     And the game page indicates that the user is not playing the game
     
@@ -117,7 +117,7 @@ Feature: Game
     And examining a game recruiting players
     When the user joins the game
     Then MC accepts joining the game
-    And MC provides a game page
+    And it provides a game
     
   @integration
   @back-end
@@ -126,5 +126,5 @@ Feature: Game
     And logged in
     And user is not playing any games
     And examining a game recruiting players
-    Then MC provides a game page
+    Then it provides a game
     And the game page indicates that the user may not join the game

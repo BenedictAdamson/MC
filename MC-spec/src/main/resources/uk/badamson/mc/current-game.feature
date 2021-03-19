@@ -24,8 +24,8 @@ Feature: Current Game
     And user has the "player" role
     And logged in
     And user is not playing any games
-    When examine home page
-    Then the home-page does not indicate that the user has a current game
+    When examine whether have a current game
+    Then it does not indicate that the user has a current game
 
   @integration
   @back-end
@@ -34,6 +34,6 @@ Feature: Current Game
     And user has the "player" role
     And logged in
     And user is playing a game
-    When navigate to the current-game page
-    Then MC provides a game page
+    When examine the current-game
+    Then it provides a game
  
