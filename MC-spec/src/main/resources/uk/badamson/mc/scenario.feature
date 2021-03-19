@@ -21,9 +21,8 @@ Feature: Scenario
   @integration
   @back-end
   Scenario: List scenarios
-    When getting the scenarios
-    Then MC serves the scenarios page
-    And the response is a list of scenarios
+    When examine scenarios
+    Then the response is a list of scenarios
 
   @integration
   @back-end
