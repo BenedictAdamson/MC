@@ -35,5 +35,4 @@ Feature: Current Game
     And logged in
     And user is playing a game
     When examine the current-game
-    Then it provides a game
  
