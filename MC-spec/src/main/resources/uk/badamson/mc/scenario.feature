@@ -33,7 +33,7 @@ Feature: Scenario
     And the scenario includes the scenario description
     And the scenario includes the list of playable characters of that scenario
     And the scenario includes the list of games of that scenario
-    And the scenario does not allow navigation to game pages
+    And it does not allow examination of games of the scenario
 
   @integration
   @back-end
@@ -45,7 +45,7 @@ Feature: Scenario
     And the scenario includes the scenario description
     And the scenario includes the list of playable characters of that scenario
     And the scenario includes the list of games of that scenario
-    And the scenario allows navigation to game pages
+    And it allows examination of games of the scenario
     
     Examples:
       |role|
