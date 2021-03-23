@@ -21,36 +21,31 @@ Feature: Scenario
   @integration
   @back-end
   Scenario: List scenarios
-    When getting the scenarios
-    Then MC serves the scenarios page
-    And the response is a list of scenarios
+    When examine scenarios
+    Then the response is a list of scenarios
 
   @integration
   @back-end
   Scenario: Examine scenario anonymously
-    Given A scenario has games
+    Given a scenario that has a game
     And not logged in
-    When Viewing the scenarios
-    And Navigate to a scenario with games
-    Then MC serves the scenario page
-    And The scenario page includes the scenario description
-    And The scenario page includes the list of playable characters of that scenario
-    And The scenario page includes the list of games of that scenario
-    And The scenario page does not allow navigation to game pages
+    When examine the scenario
+    And the scenario includes the scenario description
+    And the scenario includes the list of playable characters of that scenario
+    And the scenario includes the list of games of that scenario
+    And it does not allow examination of games of the scenario
 
   @integration
   @back-end
   Scenario Outline: Examine scenario with authorization
-    Given A scenario has games
+    Given a scenario that has a game
     And user has the "<role>" role
     And logged in
-    When Viewing the scenarios
-    And Navigate to a scenario with games
-    Then MC serves the scenario page
-    And The scenario page includes the scenario description
-    And The scenario page includes the list of playable characters of that scenario
-    And The scenario page includes the list of games of that scenario
-    And The scenario page allows navigation to game pages
+    When examine the scenario
+    And the scenario includes the scenario description
+    And the scenario includes the list of playable characters of that scenario
+    And the scenario includes the list of games of that scenario
+    And it allows examination of games of the scenario
     
     Examples:
       |role|

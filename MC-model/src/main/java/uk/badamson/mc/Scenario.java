@@ -42,7 +42,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Scenario {
 
-   private static final boolean hasDuplicateIds(
+   private static boolean hasDuplicateIds(
             final List<NamedUUID> characters) {
       final var ids = characters.stream().map(c -> c.getId())
                .collect(toUnmodifiableSet());

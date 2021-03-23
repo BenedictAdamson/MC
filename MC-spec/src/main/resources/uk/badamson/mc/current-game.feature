@@ -20,20 +20,19 @@ Feature: Current Game
 
   @integration
   Scenario: May examine current-game only if playing
-    Given A scenario has games
+    Given has a game
     And user has the "player" role
     And logged in
     And user is not playing any games
-    When examine home page
-    Then The home-page does not indicate that the user has a current game
+    When examine whether have a current game
+    Then it does not indicate that the user has a current game
 
   @integration
   @back-end
   Scenario: Examine current game
-    Given A scenario has games
+    Given has a game
     And user has the "player" role
     And logged in
     And user is playing a game
-    When navigate to the current-game page
-    Then MC provides a game page
+    When examine the current-game
  

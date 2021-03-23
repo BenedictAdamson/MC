@@ -32,4 +32,4 @@ Feature: Home-page
     And MC does not allow logout
     And MC does not allow examining the current user
     And MC does not allow listing users
-    And The home-page does not indicate that the user has a current game
+    And it does not indicate that the user has a current game
