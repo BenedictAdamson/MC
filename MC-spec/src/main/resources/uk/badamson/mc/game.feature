@@ -32,6 +32,7 @@ Feature: Game
     And the game indicates whether the game is recruiting players
     And the game indicates whether the user may join the game
     And the game indicates whether the user is playing the game
+    And the game indicates whether the game is running
     And the game indicates which character (if any) the user is playing
     And the game does not indicate which characters are played by which (other) users
 
@@ -49,6 +50,7 @@ Feature: Game
     And the game indicates whether the game is recruiting players
     And the game indicates whether the user may join the game
     And the game indicates whether the user is playing the game
+    And the game indicates whether the game is running
     And the game indicates which character (if any) the user is playing
     And the game indicates which characters are played by which users
     
@@ -61,6 +63,7 @@ Feature: Game
     Then MC accepts the creation of the game
     And the game indicates that the game is recruiting players
     And the game indicates that the game has no players
+    And the game indicates that the game is not running
     And can get the list of games
     And the list of games includes the new game
     
@@ -121,3 +124,42 @@ Feature: Game
     And a game is recruiting players
     When examining the game
     Then the game indicates that the user may not join the game
+    
+  @integration
+  @back-end
+  Scenario: Start game
+    Given user has the "manage games" role
+    And logged in
+    And a game is waiting to start
+    When user starts the game
+    Then the game accepts starting
+    And the game indicates that the game is running
+    
+  @integration
+  @back-end
+  Scenario: Only a game manager may start a game
+    Given user has the "player" role but not the "manage games" role
+    And logged in
+    And a game is waiting to start
+    When examining the game
+    Then the game does not allow starting
+    
+  @integration
+  @back-end
+  Scenario: Stop game
+    Given user has the "manage games" role
+    And logged in
+    And a game is running
+    When user stops the game
+    Then the game accepts stopping
+    And the game indicates that the game is not running
+    
+  @integration
+  @back-end
+  Scenario: Only a game manager may stop a game
+    Given user has the "player" role but not the "manage games" role
+    And logged in
+    And a game is running
+    When examining the game
+    Then the game does not allow stopping
+    And the game indicates that the user may not join the game
