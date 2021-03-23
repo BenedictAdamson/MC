@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -50,8 +50,8 @@ public class GameTest {
       public void differentIdentifiers() {
          final var identifierA = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
          final var identifierB = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         final var gameA = new Game(identifierA);
-         final var gameB = new Game(identifierB);
+         final var gameA = new Game(identifierA, Game.RunState.RUNNING);
+         final var gameB = new Game(identifierB, Game.RunState.RUNNING);
 
          assertInvariants(gameA, gameB);
          assertNotEquals(gameA, gameB);
@@ -60,8 +60,8 @@ public class GameTest {
       @Test
       public void equalAttributes() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         final var gameA = new Game(identifier);
-         final var gameB = new Game(identifier);
+         final var gameA = new Game(identifier, Game.RunState.RUNNING);
+         final var gameB = new Game(identifier, Game.RunState.RUNNING);
 
          assertInvariants(gameA, gameB);
          assertEquals(gameA, gameB);
@@ -74,17 +74,18 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier);
+         test(identifier, Game.RunState.WAITING_TO_START);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier);
+         test(identifier, Game.RunState.RUNNING);
       }
 
-      private void test(final Game.Identifier identifier) {
-         final var game0 = new Game(identifier);
+      private void test(final Game.Identifier identifier,
+               final Game.RunState runState) {
+         final var game0 = new Game(identifier, runState);
 
          final var copy = new Game(game0);
 
@@ -92,7 +93,9 @@ public class GameTest {
          assertInvariants(game0, copy);
          assertAll("Copied", () -> assertEquals(game0, copy),
                   () -> assertSame(game0.getIdentifier(), copy.getIdentifier(),
-                           "identifier"));
+                           "identifier"),
+                  () -> assertSame(game0.getRunState(), copy.getRunState(),
+                           "runState"));
       }
    }// class
 
@@ -102,22 +105,24 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier);
+         test(identifier, Game.RunState.WAITING_TO_START);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier);
+         test(identifier, Game.RunState.RUNNING);
       }
 
-      private void test(final Game.Identifier identifier) {
-         final var game = new Game(identifier);
+      private void test(final Game.Identifier identifier,
+               final Game.RunState runState) {
+         final var game = new Game(identifier, runState);
 
          assertInvariants(game);
          assertAll("Has the given attribute values",
                   () -> assertSame(identifier, game.getIdentifier(),
-                           "identifier"));
+                           "identifier"),
+                  () -> assertSame(runState, game.getRunState(), "runState"));
       }
    }// class
 
@@ -252,24 +257,28 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier);
+         test(identifier, Game.RunState.WAITING_TO_START);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier);
+         test(identifier, Game.RunState.RUNNING);
       }
 
-      private void test(final Game.Identifier identifier) {
-         final var game = new Game(identifier);
+      private void test(final Game.Identifier identifier,
+               final Game.RunState runState) {
+         final var game = new Game(identifier, runState);
          final var deserialized = JsonTest.serializeAndDeserialize(game);
 
          assertInvariants(deserialized);
          assertInvariants(game, deserialized);
          assertEquals(game, deserialized);
-         assertAll("Deserialised attributes", () -> assertEquals(identifier,
-                  deserialized.getIdentifier(), "identifier"));
+         assertAll("Deserialised attributes",
+                  () -> assertEquals(identifier, deserialized.getIdentifier(),
+                           "identifier"),
+                  () -> assertEquals(runState, deserialized.getRunState(),
+                           "runState"));
       }
    }// class
 
