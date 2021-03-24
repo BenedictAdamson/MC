@@ -162,4 +162,3 @@ Feature: Game
     And a game is running
     When examining the game
     Then the game does not allow stopping
-    And the game indicates that the user may not join the game
