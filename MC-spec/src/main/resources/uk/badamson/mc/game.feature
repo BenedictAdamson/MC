@@ -24,14 +24,15 @@ Feature: Game
     Given has a game
     And user has the "player" role
     And logged in
-    When examine a game
+    When examining the game
     And the game includes the scenario title
     And the game includes the scenario description
     And the game includes the date and time that the game was set up
-    And the game indicates whether the game has players
-    And the game indicates whether the game is recruiting players
+    And the game indicates whether it has players
+    And the game indicates whether it is recruiting players
     And the game indicates whether the user may join the game
     And the game indicates whether the user is playing the game
+    And the game indicates whether it is running
     And the game indicates which character (if any) the user is playing
     And the game does not indicate which characters are played by which (other) users
 
@@ -41,14 +42,15 @@ Feature: Game
     Given has a game
     And user has the "manage games" role
     And logged in
-    When examine a game
+    When examining the game
     And the game includes the scenario title
     And the game includes the scenario description
     And the game includes the date and time that the game was set up
-    And the game indicates whether the game has players
-    And the game indicates whether the game is recruiting players
+    And the game indicates whether it has players
+    And the game indicates whether it is recruiting players
     And the game indicates whether the user may join the game
     And the game indicates whether the user is playing the game
+    And the game indicates whether it is running
     And the game indicates which character (if any) the user is playing
     And the game indicates which characters are played by which users
     
@@ -57,11 +59,11 @@ Feature: Game
   Scenario: Add game
     Given user has the "manage games" role
     And logged in
-    And examining scenario
     When creating a game
     Then MC accepts the creation of the game
-    And the game indicates that the game is recruiting players
-    And the game indicates that the game has no players
+    And the game indicates that it is recruiting players
+    And the game indicates that it has no players
+    And the game indicates that it is not running
     And can get the list of games
     And the list of games includes the new game
     
@@ -71,25 +73,26 @@ Feature: Game
     Given user does not have the "manage games" role
     And logged in
     And examining scenario
-    Then MC does not allow creating a game
+    Then the scenario does not allow creating a game
     
   @integration
   @back-end
   Scenario: End game recruitment
     Given user has the "manage games" role
     And logged in
-    And viewing a game that is recruiting players
+    And a game is recruiting players
     When user ends recruitment for the game
-    Then MC accepts ending recruitment for the game
-    And the game indicates that the game is not recruiting players
+    Then the game accepts ending recruitment
+    And the game indicates that it is not recruiting players
     
   @integration
   @back-end
   Scenario: Only a game manager may end recruitment for a game
     Given user has the "player" role but not the "manage games" role
     And logged in
-    And viewing a game that is recruiting players
-    Then MC does not allow ending recruitment for the game
+    And a game is recruiting players
+    When examining the game
+    Then the game does not allow ending recruitment
     
   @integration
   @back-end
@@ -97,7 +100,8 @@ Feature: Game
     Given user has the "player" role
     And logged in
     And user is not playing any games
-    When examining a game recruiting players
+    And a game is recruiting players
+    When examining the game
     And the game indicates that the user may join the game
     And the game indicates that the user is not playing the game
     
@@ -107,9 +111,9 @@ Feature: Game
     Given user has the "player" role
     And logged in
     And user is not playing any games
-    And examining a game recruiting players
+    And a game is recruiting players
     When the user joins the game
-    Then MC accepts joining the game
+    Then the game accepts joining
     
   @integration
   @back-end
@@ -117,5 +121,44 @@ Feature: Game
     Given user has the "manage games" role but not the "player" role
     And logged in
     And user is not playing any games
-    And examining a game recruiting players
-    And the game indicates that the user may not join the game
+    And a game is recruiting players
+    When examining the game
+    Then the game indicates that the user may not join the game
+    
+  @integration
+  @back-end
+  Scenario: Start game
+    Given user has the "manage games" role
+    And logged in
+    And a game is waiting to start
+    When user starts the game
+    Then the game accepts starting
+    And the game indicates that it is running
+    
+  @integration
+  @back-end
+  Scenario: Only a game manager may start a game
+    Given user has the "player" role but not the "manage games" role
+    And logged in
+    And a game is waiting to start
+    When examining the game
+    Then the game does not allow starting
+    
+  @integration
+  @back-end
+  Scenario: Stop game
+    Given user has the "manage games" role
+    And logged in
+    And a game is running
+    When user stops the game
+    Then the game accepts stopping
+    And the game indicates that it is not running
+    
+  @integration
+  @back-end
+  Scenario: Only a game manager may stop a game
+    Given user has the "player" role but not the "manage games" role
+    And logged in
+    And a game is running
+    When examining the game
+    Then the game does not allow stopping

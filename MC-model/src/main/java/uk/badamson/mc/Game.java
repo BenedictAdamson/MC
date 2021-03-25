@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -144,9 +144,15 @@ public class Game {
 
    }// class
 
+   public enum RunState {
+      WAITING_TO_START, RUNNING, STOPPED
+   }// class
+
    @Id
    @org.springframework.data.annotation.Id
    private final Identifier identifier;
+
+   private RunState runState;
 
    /**
     * <p>
@@ -169,6 +175,7 @@ public class Game {
    public Game(final Game that) {
       Objects.requireNonNull(that, "that");
       identifier = that.identifier;
+      runState = that.runState;
    }
 
    /**
@@ -189,9 +196,10 @@ public class Game {
     */
    @JsonCreator
    @PersistenceConstructor
-   public Game(
-            @Nonnull @JsonProperty("identifier") final Identifier identifier) {
+   public Game(@Nonnull @JsonProperty("identifier") final Identifier identifier,
+            @Nonnull @JsonProperty("runState") final RunState runState) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
+      this.runState = Objects.requireNonNull(runState, "runState");
    }
 
    /**
@@ -239,9 +247,19 @@ public class Game {
       return identifier;
    }
 
+   @NonNull
+   @JsonProperty("runState")
+   public RunState getRunState() {
+      return runState;
+   }
+
    @Override
    public final int hashCode() {
       return identifier.hashCode();
+   }
+
+   public void setRunState(@NonNull final RunState runState) {
+      this.runState = runState;
    }
 
 }
