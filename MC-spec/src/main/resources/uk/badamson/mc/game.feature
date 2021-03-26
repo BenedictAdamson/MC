@@ -102,7 +102,7 @@ Feature: Game
     And user is not playing any games
     And a game is recruiting players
     When examining the game
-    And the game indicates that the user may join the game
+    Then the game indicates that the user may join the game
     And the game indicates that the user is not playing the game
     
   @integration
@@ -114,6 +114,8 @@ Feature: Game
     And a game is recruiting players
     When the user joins the game
     Then the game accepts joining
+    And the game indicates whether the user is playing the game
+    And the game indicates which character the user is playing
     
   @integration
   @back-end
