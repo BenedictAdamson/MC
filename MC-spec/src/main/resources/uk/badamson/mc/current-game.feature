@@ -35,6 +35,6 @@ Feature: Current Game
     And logged in
     And user is playing a game
     When examine the current-game
-    Then the game indicates whether the user is playing the game
+    And the game indicates that the user is playing the game
     And the game indicates which character the user is playing
  

@@ -114,7 +114,7 @@ Feature: Game
     And a game is recruiting players
     When the user joins the game
     Then the game accepts joining
-    And the game indicates whether the user is playing the game
+    And the game indicates that the user is playing the game
     And the game indicates which character the user is playing
     
   @integration
