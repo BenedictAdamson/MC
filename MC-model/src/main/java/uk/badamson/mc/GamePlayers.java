@@ -50,19 +50,6 @@ public class GamePlayers {
     * <p>
     * Whether a given map is a valid {@linkplain #getUsers() users} map.
     * </p>
-    * <p>
-    * A valid map conforms to all the following constraints.
-    * </p>
-    * <ul>
-    * <li>non null</li>
-    * <li>does not include a null key.</li>
-    * <li>does not include any null values.</li>
-    * <li>does not include any duplicate values.</li>
-    * </ul>
-    *
-    * @param users
-    *           The map to examine
-    * @return whether valid
     */
    public static final boolean isValidUsers(final Map<UUID, UUID> users) {
       return users != null
@@ -88,17 +75,6 @@ public class GamePlayers {
     * <p>
     * Construct a set of players with given values.
     * </p>
-    *
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>The {@linkplain #getGame() game} of this set of players is the given
-    * {@code identifier}.</li>
-    * <li>Whether this set of players {@linkplain #isRecruiting() is recruiting}
-    * is the given {@code recruiting} flag.</li>
-    * <li>The {@linkplain #getUsers() set of users} of this set of players is
-    * {@linkplain Set#equals(Object) equal to}, but not the same, as the given
-    * set of {@code users}.</li>
-    * </ul>
     *
     * @param game
     *           The unique identifier for the game for which this is the set of
@@ -137,25 +113,10 @@ public class GamePlayers {
     * Construct a copy of a set of players.
     * </p>
     *
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>This set of players is {@linkplain #equals(Object) equivalent to} the
-    * given set of players.</li>
-    * <li>The {@linkplain #getGame() game} of this set of players is the same as
-    * the identifier of the given set of players.</li>
-    * <li>Whether this set of players {@linkplain #isRecruiting() is recruiting}
-    * is equal to whether the given set of players is recruiting.</li>
-    * <li>The {@linkplain #getUsers() set of users} of this set of players is
-    * {@linkplain Set#equals(Object) equal to}, but not the same, as the set of
-    * users of the given set of players.</li>
-    * </ul>
-    *
-    * @param that
-    *           The set of players to copy.
     * @throws NullPointerException
     *            If {@code that} is null
     */
-   public GamePlayers(final GamePlayers that) {
+   public GamePlayers(@Nonnull final GamePlayers that) {
       Objects.requireNonNull(that, "that");
       game = that.game;
       recruiting = that.recruiting;
@@ -167,12 +128,6 @@ public class GamePlayers {
     * Add a {@linkplain User#getId() user ID} to the {@linkplain #getUsers() set
     * of users who played, or are playing}, the {@linkplain #getGame() game}.
     * </p>
-    * <ul>
-    * <li>The {@linkplain #getUsers() map of users} contains an entry that maps
-    * the given character ID to the given user ID.</li>
-    * <li>The method does not alter any other entries of the map of users.</li>
-    * <li>The method adds at most one entry to the map of users.</li>
-    * </ul>
     *
     * @param character
     *           The ID of the character that the user played.
@@ -215,10 +170,8 @@ public class GamePlayers {
     * This mutator is idempotent: the mutator does not have the precondition
     * that it is recruiting.
     * </p>
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>This game is not {@linkplain #isRecruiting() recruiting}.</li>
-    * </ul>
+    *
+    * @see #isRecruiting()
     */
    public final void endRecruitment() {
       recruiting = false;
@@ -299,15 +252,7 @@ public class GamePlayers {
    }
 
    /**
-    * <p>
-    * Whether the {@linkplain #getGame() game} is <i>recruiting</i> new players.
-    * </p>
-    * <p>
-    * That is, whether users may be {@linkplain #addUser(UUID, UUID) added} to
-    * this set of players.
-    * </p>
-    *
-    * @return whether recruiting
+    * @see #endRecruitment()
     */
    @JsonProperty("recruiting")
    public final boolean isRecruiting() {

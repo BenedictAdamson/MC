@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -33,6 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.annotation.Nonnull;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -138,18 +140,7 @@ public class GamePlayersTest {
                final Map<UUID, UUID> users) {
          final var players0 = new GamePlayers(game, recruiting, users);
 
-         final var copy = new GamePlayers(players0);
-
-         assertInvariants(copy);
-         assertInvariants(players0, copy);
-         assertAll("Copied", () -> assertEquals(players0, copy),
-                  () -> assertSame(players0.getGame(), copy.getGame(), "game"),
-                  () -> assertEquals(players0.isRecruiting(),
-                           copy.isRecruiting(), "recruiting"),
-                  () -> assertEquals(players0.getUsers(), copy.getUsers(),
-                           "users"),
-                  () -> assertNotSame(players0.getUsers(), copy.getUsers(),
-                           "users (not same)"));
+         constructor(players0);
       }
    }// class
 
@@ -158,25 +149,12 @@ public class GamePlayersTest {
 
       @Test
       public void a() {
-         test(GAME_A, false, USERS_A);
+         constructor(GAME_A, false, USERS_A);
       }
 
       @Test
       public void b() {
-         test(GAME_B, true, USERS_B);
-      }
-
-      private void test(final Game.Identifier game, final boolean recruiting,
-               final Map<UUID, UUID> users) {
-         final var players = new GamePlayers(game, recruiting, users);
-
-         assertInvariants(players);
-         assertAll("Has the given attribute values",
-                  () -> assertSame(game, players.getGame(), "game"),
-                  () -> assertEquals(recruiting, players.isRecruiting(),
-                           "recruiting"),
-                  () -> assertEquals(users, players.getUsers(), "users"));
-         assertNotSame(users, players.getUsers(), "users not same");
+         constructor(GAME_B, true, USERS_B);
       }
    }// class
 
@@ -285,29 +263,6 @@ public class GamePlayersTest {
                         "The method adds at most one entry to the map of users."));
    }
 
-   public static void assertInvariants(final Game.Identifier identifier) {
-      ObjectTest.assertInvariants(identifier);// inherited
-
-      final var scenario = identifier.getScenario();
-      final var created = identifier.getCreated();
-      assertAll("Not null", () -> assertNotNull(scenario, "scenario"),
-               () -> assertNotNull(created, "created"));
-   }
-
-   public static void assertInvariants(final Game.Identifier identifierA,
-            final Game.Identifier identifierB) {
-      ObjectTest.assertInvariants(identifierA, identifierB);// inherited
-
-      final var equals = identifierA.equals(identifierB);
-      assertAll("Equality requires equal attributes", () -> assertTrue(!(equals
-               && !identifierA.getScenario().equals(identifierB.getScenario())),
-               "scenario identifier"),
-               () -> assertTrue(
-                        !(equals && !identifierA.getCreated()
-                                 .equals(identifierB.getCreated())),
-                        "creation time"));
-   }
-
    public static void assertInvariants(final GamePlayers players) {
       ObjectTest.assertInvariants(players);// inherited
 
@@ -323,6 +278,39 @@ public class GamePlayersTest {
       assertEquals(playersA.equals(playersB),
                playersA.getGame().equals(playersB.getGame()),
                "Entity semantics, with the game serving as a unique identifier");
+   }
+
+   private static GamePlayers constructor(@Nonnull final Game.Identifier game,
+            final boolean recruiting, @Nonnull final Map<UUID, UUID> users) {
+      final var players = new GamePlayers(game, recruiting, users);
+
+      assertInvariants(players);
+      assertAll("Has the given attribute values",
+               () -> assertSame(game, players.getGame(), "game"),
+               () -> assertEquals(recruiting, players.isRecruiting(),
+                        "recruiting"),
+               () -> assertEquals(users, players.getUsers(), "users"));
+      assertNotSame(users, players.getUsers(),
+               "users not same (made defensive copy)");
+
+      return players;
+   }
+
+   private static GamePlayers constructor(@Nonnull final GamePlayers players0) {
+      final var copy = new GamePlayers(players0);
+
+      assertInvariants(copy);
+      assertInvariants(players0, copy);
+      assertAll("Copied", () -> assertEquals(players0, copy),
+               () -> assertSame(players0.getGame(), copy.getGame(), "game"),
+               () -> assertEquals(players0.isRecruiting(), copy.isRecruiting(),
+                        "recruiting"),
+               () -> assertEquals(players0.getUsers(), copy.getUsers(),
+                        "users"),
+               () -> assertNotSame(players0.getUsers(), copy.getUsers(),
+                        "users not same (created defensive copy)"));
+
+      return copy;
    }
 
    public static void endRecruitment(final GamePlayers players) {
