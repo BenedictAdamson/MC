@@ -131,8 +131,7 @@ public class GameTest {
     * Unit tests for the {@link Game.Identifier} class.
     * </p>
     */
-   @Nested
-   public class IdentifierTest {
+   public static class IdentifierTest {
 
       @Nested
       public class Construct2 {
@@ -172,23 +171,12 @@ public class GameTest {
 
          @Test
          public void a() {
-            test(SCENARIO_ID_A, CREATED_A);
+            constructor(SCENARIO_ID_A, CREATED_A);
          }
 
          @Test
          public void b() {
-            test(SCENARIO_ID_B, CREATED_B);
-         }
-
-         private void test(final UUID scenario, final Instant created) {
-            final var identifier = new Game.Identifier(scenario, created);
-
-            assertInvariants(identifier);
-            assertAll("Attributes have the given values",
-                     () -> assertSame(scenario, identifier.getScenario(),
-                              "scenario"),
-                     () -> assertSame(created, identifier.getCreated(),
-                              "created"));
+            constructor(SCENARIO_ID_B, CREATED_B);
          }
       }// class
 
@@ -210,7 +198,7 @@ public class GameTest {
             final var deserialized = JsonTest
                      .serializeAndDeserialize(identifier);
 
-            assertInvariants(deserialized);
+            IdentifierTest.assertInvariants(deserialized);
             assertInvariants(identifier, deserialized);
             assertAll("Deserialised attributes",
                      () -> assertEquals(scenario, identifier.getScenario(),
@@ -249,6 +237,44 @@ public class GameTest {
          }
 
       }// class
+
+      public static void assertInvariants(final Game.Identifier identifier) {
+         ObjectTest.assertInvariants(identifier);// inherited
+
+         final var scenario = identifier.getScenario();
+         final var created = identifier.getCreated();
+         assertAll("Not null", () -> assertNotNull(scenario, "scenario"),
+                  () -> assertNotNull(created, "created"));
+      }
+
+      public static void assertInvariants(final Game.Identifier identifierA,
+               final Game.Identifier identifierB) {
+         ObjectTest.assertInvariants(identifierA, identifierB);// inherited
+
+         final var equals = identifierA.equals(identifierB);
+         assertAll("Equality requires equal attributes",
+                  () -> assertTrue(
+                           !(equals && !identifierA.getScenario()
+                                    .equals(identifierB.getScenario())),
+                           "scenario identifier"),
+                  () -> assertTrue(
+                           !(equals && !identifierA.getCreated()
+                                    .equals(identifierB.getCreated())),
+                           "creation time"));
+      }
+
+      private static Game.Identifier constructor(final UUID scenario,
+               final Instant created) {
+         final var identifier = new Game.Identifier(scenario, created);
+
+         IdentifierTest.assertInvariants(identifier);
+         assertAll("Attributes have the given values",
+                  () -> assertSame(scenario, identifier.getScenario(),
+                           "scenario"),
+                  () -> assertSame(created, identifier.getCreated(),
+                           "created"));
+         return identifier;
+      }
    }// class
 
    @Nested
@@ -299,28 +325,5 @@ public class GameTest {
       assertEquals(gameA.equals(gameB),
                gameA.getIdentifier().equals(gameB.getIdentifier()),
                "Entity semantics, with the identifier serving as a unique identifier");
-   }
-
-   public static void assertInvariants(final Game.Identifier identifier) {
-      ObjectTest.assertInvariants(identifier);// inherited
-
-      final var scenario = identifier.getScenario();
-      final var created = identifier.getCreated();
-      assertAll("Not null", () -> assertNotNull(scenario, "scenario"),
-               () -> assertNotNull(created, "created"));
-   }
-
-   public static void assertInvariants(final Game.Identifier identifierA,
-            final Game.Identifier identifierB) {
-      ObjectTest.assertInvariants(identifierA, identifierB);// inherited
-
-      final var equals = identifierA.equals(identifierB);
-      assertAll("Equality requires equal attributes", () -> assertTrue(!(equals
-               && !identifierA.getScenario().equals(identifierB.getScenario())),
-               "scenario identifier"),
-               () -> assertTrue(
-                        !(equals && !identifierA.getCreated()
-                                 .equals(identifierB.getCreated())),
-                        "creation time"));
    }
 }

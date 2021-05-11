@@ -31,6 +31,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import uk.badamson.mc.GameTest.IdentifierTest;
+
 /**
  * <p>
  * Unit tests and auxiliary test code for the {@link UserGameAssociation} class
@@ -158,7 +160,7 @@ public class UserGameAssociationTest {
       final var game = association.getGame();
       assertAll("Not null", () -> assertNotNull(association.getUser(), "user"),
                () -> assertNotNull(game, "game"));
-      GameTest.assertInvariants(game);
+      IdentifierTest.assertInvariants(game);
    }
 
    public static void assertInvariants(final UserGameAssociation association1,

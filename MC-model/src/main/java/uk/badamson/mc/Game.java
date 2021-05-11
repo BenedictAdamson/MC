@@ -102,12 +102,6 @@ public class Game {
        * start time, so it can represent games that have not yet been started,
        * but are in the process of being set up.
        * </p>
-       *
-       * <ul>
-       * <li>Not null.</li>
-       * </ul>
-       *
-       * @return the creation time
        */
       @Nonnull
       @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -120,11 +114,6 @@ public class Game {
        * The unique identifier for the {@linkplain Scenario scenario} that the
        * game is an instance of.
        * </p>
-       * <ul>
-       * <li>Not null.</li>
-       * </ul>
-       *
-       * @return the scenario identifier
        */
       @Nonnull
       public UUID getScenario() {
