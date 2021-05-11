@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2019-20.
+ * © Copyright Benedict Adamson 2019-21.
  *
  * This file is part of MC.
  *
@@ -27,7 +27,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -135,8 +134,8 @@ public final class User extends BasicUserDetails {
     *            <li>If {@code userDetails} is null</li>
     *            </ul>
     */
-   public User(@NonNull final UUID id,
-            @NonNull final BasicUserDetails userDetails) {
+   public User(@Nonnull final UUID id,
+            @Nonnull final BasicUserDetails userDetails) {
       super(userDetails);
       this.id = Objects.requireNonNull(id, "id");
    }
@@ -195,10 +194,10 @@ public final class User extends BasicUserDetails {
     */
    @JsonCreator
    @PersistenceConstructor
-   public User(@NonNull @JsonProperty("id") final UUID id,
-            @NonNull @JsonProperty("username") final String username,
+   public User(@Nonnull @JsonProperty("id") final UUID id,
+            @Nonnull @JsonProperty("username") final String username,
             @Nullable @JsonProperty("password") final String password,
-            @NonNull @JsonProperty("authorities") final Set<Authority> authorities,
+            @Nonnull @JsonProperty("authorities") final Set<Authority> authorities,
             @JsonProperty("accountNonExpired") final boolean accountNonExpired,
             @JsonProperty("accountNonLocked") final boolean accountNonLocked,
             @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
@@ -254,7 +253,7 @@ public final class User extends BasicUserDetails {
     *
     * @return the unique ID.
     */
-   @NonNull
+   @Nonnull
    public UUID getId() {
       return id;
    }

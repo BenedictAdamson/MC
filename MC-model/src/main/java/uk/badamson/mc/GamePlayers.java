@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -30,7 +30,6 @@ import javax.annotation.Nonnull;
 import javax.persistence.Id;
 
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -265,7 +264,7 @@ public class GamePlayers {
     *
     * @return the identifier.
     */
-   @NonNull
+   @Nonnull
    @JsonProperty("game")
    public final Game.Identifier getGame() {
       return game;
@@ -288,7 +287,7 @@ public class GamePlayers {
     *
     * @return the users
     */
-   @NonNull
+   @Nonnull
    @JsonProperty("users")
    public final Map<UUID, UUID> getUsers() {
       return Collections.unmodifiableMap(users);

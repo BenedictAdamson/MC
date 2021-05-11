@@ -27,9 +27,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.persistence.Id;
-
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,8 +41,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Scenario {
 
-   private static boolean hasDuplicateIds(
-            final List<NamedUUID> characters) {
+   private static boolean hasDuplicateIds(final List<NamedUUID> characters) {
       final var ids = characters.stream().map(c -> c.getId())
                .collect(toUnmodifiableSet());
       return ids.size() != Set.copyOf(ids).size();
@@ -122,10 +120,10 @@ public class Scenario {
     *            </ul>
     */
    @JsonCreator
-   public Scenario(@JsonProperty("identifier") @NonNull final UUID identifier,
-            @NonNull @JsonProperty("title") final String title,
-            @NonNull @JsonProperty("description") final String description,
-            @NonNull @JsonProperty("characters") final List<NamedUUID> characters) {
+   public Scenario(@JsonProperty("identifier") @Nonnull final UUID identifier,
+            @Nonnull @JsonProperty("title") final String title,
+            @Nonnull @JsonProperty("description") final String description,
+            @Nonnull @JsonProperty("characters") final List<NamedUUID> characters) {
       this.identifier = Objects.requireNonNull(identifier, "identifier");
       this.title = Objects.requireNonNull(title, "title");
       this.description = Objects.requireNonNull(description, "description");
@@ -189,7 +187,7 @@ public class Scenario {
     *
     * @return the title.
     */
-   @NonNull
+   @Nonnull
    @JsonProperty("characters")
    public final List<NamedUUID> getCharacters() {
       return characters;
@@ -211,7 +209,7 @@ public class Scenario {
     *
     * @see NamedUUID#getTitle()
     */
-   @NonNull
+   @Nonnull
    @JsonProperty("description")
    public final String getDescription() {
       return description;
@@ -227,7 +225,7 @@ public class Scenario {
     *
     * @return the identifier.
     */
-   @NonNull
+   @Nonnull
    @JsonProperty("identifier")
    public final UUID getIdentifier() {
       return identifier;
@@ -249,7 +247,7 @@ public class Scenario {
     *
     * @return the identifier.
     */
-   @NonNull
+   @Nonnull
    @JsonIgnore
    public final NamedUUID getNamedUUID() {
       return new NamedUUID(identifier, title);
@@ -269,7 +267,7 @@ public class Scenario {
     *
     * @return the title.
     */
-   @NonNull
+   @Nonnull
    @JsonProperty("title")
    public final String getTitle() {
       return title;

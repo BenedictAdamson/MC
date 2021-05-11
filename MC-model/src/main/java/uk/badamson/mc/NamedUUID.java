@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -21,10 +21,9 @@ package uk.badamson.mc;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.persistence.Id;
-
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -100,8 +99,8 @@ public final class NamedUUID {
     *            valid}.
     */
    @JsonCreator
-   public NamedUUID(@NonNull @JsonProperty("id") final UUID id,
-            @NonNull @JsonProperty("title") final String title) {
+   public NamedUUID(@Nonnull @JsonProperty("id") final UUID id,
+            @Nonnull @JsonProperty("title") final String title) {
       this.id = Objects.requireNonNull(id, "id");
       this.title = Objects.requireNonNull(title, "title");
       if (!isValidTitle(title)) {
@@ -148,7 +147,7 @@ public final class NamedUUID {
     * @return the identifier
     * @see #getTitle()
     */
-   @NonNull
+   @Nonnull
    public UUID getId() {
       return id;
    }
@@ -167,7 +166,7 @@ public final class NamedUUID {
     *
     * @return the title.
     */
-   @NonNull
+   @Nonnull
    public String getTitle() {
       return title;
    }

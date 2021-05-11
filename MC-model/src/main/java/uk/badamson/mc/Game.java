@@ -27,7 +27,6 @@ import javax.annotation.concurrent.Immutable;
 import javax.persistence.Id;
 
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -241,13 +240,13 @@ public class Game {
     *
     * @return the identifier.
     */
-   @NonNull
+   @Nonnull
    @JsonProperty("identifier")
    public final Identifier getIdentifier() {
       return identifier;
    }
 
-   @NonNull
+   @Nonnull
    @JsonProperty("runState")
    public RunState getRunState() {
       return runState;
@@ -258,7 +257,7 @@ public class Game {
       return identifier.hashCode();
    }
 
-   public void setRunState(@NonNull final RunState runState) {
+   public void setRunState(@Nonnull final RunState runState) {
       this.runState = runState;
    }
 
