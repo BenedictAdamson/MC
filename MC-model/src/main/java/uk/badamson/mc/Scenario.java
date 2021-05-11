@@ -60,8 +60,6 @@ public class Scenario {
     * <li>has no elements with duplicate {@linkplain NamedUUID#getId()
     * IDs}.</li>
     * </ul>
-    *
-    * @return whether valid.
     */
    public static final boolean isValidCharacters(
             final List<NamedUUID> characters) {
@@ -80,19 +78,6 @@ public class Scenario {
     * <p>
     * Construct a game scenario with given attributes and aggregates.
     * </p>
-    *
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>The {@linkplain #getIdentifier() identifier} of this object is the
-    * given {@code identifier}.</li>
-    * <li>The {@linkplain #getTitle() title} of this object is the given
-    * {@code title}.</li>
-    * <li>The {@linkplain #getDescription() description} of this object is the
-    * given {@code description}.</li>
-    * <li>The {@linkplain #getCharacters() characters} of this object is
-    * {@linkplain List#equals(Object) equal to} but not the same as the given
-    * {@code characters}.</li>
-    * </ul>
     *
     * @param identifier
     *           The identifier for this scenario.
@@ -152,10 +137,6 @@ public class Scenario {
     * {@linkplain UUID#equals(Object) equivalent} {@linkplain #getIdentifier()
     * identifiers}.</li>
     * </ul>
-    *
-    * @param that
-    *           The object to compare with this.
-    * @return Whether this object is equivalent to {@code that} object.
     */
    @Override
    public final boolean equals(final Object that) {
@@ -175,17 +156,10 @@ public class Scenario {
     * {@linkplain GamePlayers players} can play.
     * </p>
     * <ul>
-    * <li>Always a {@linkplain #isValidCharacters(List) valid list of
-    * characters}.</li>
-    * </ul>
-    * <ul>
     * <li>The list of characters is in descending order of selection priority:
     * with all else equal, players should be allocated characters near the start
     * of the list.</li>
-    * <li>The returned list is not modifiable.</li>
     * </ul>
-    *
-    * @return the title.
     */
    @Nonnull
    @JsonProperty("characters")
@@ -201,11 +175,6 @@ public class Scenario {
     * Although different scenarios should have different descriptions,
     * descriptions are not guaranteed to be unique.
     * </p>
-    * <ul>
-    * <li>Not null</li>
-    * </ul>
-    *
-    * @return the description.
     *
     * @see NamedUUID#getTitle()
     */
@@ -235,17 +204,6 @@ public class Scenario {
     * <p>
     * A unique ID with a human readable title, for this scenario.
     * </p>
-    * <ul>
-    * <li>Not null.</li>
-    * <li>The {@linkplain NamedUUID#getId() ID} of the named ID
-    * {@linkplain UUID#equals(Object) equals} the {@linkplain #getIdentifier()
-    * identifier} of this scenario.</li>
-    * <li>The {@linkplain NamedUUID#getTitle() title} of the named ID
-    * {@linkplain String#equals(Object) equals} the {@linkplain #getTitle()
-    * title} of this scenario.</li>
-    * </ul>
-    *
-    * @return the identifier.
     */
    @Nonnull
    @JsonIgnore
@@ -261,11 +219,6 @@ public class Scenario {
     * Although the title is an identifier, it is not guaranteed to be a unique
     * identifier.
     * </p>
-    * <ul>
-    * <li>{@linkplain NamedUUID#isValidTitle(String) is a valid title}</li>
-    * </ul>
-    *
-    * @return the title.
     */
    @Nonnull
    @JsonProperty("title")
