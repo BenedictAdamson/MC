@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -100,23 +100,12 @@ public class UserGameAssociationTest {
 
       @Test
       public void a() {
-         test(USER_A, GAME_A);
+         constructor(USER_A, GAME_A);
       }
 
       @Test
       public void b() {
-         test(USER_B, GAME_B);
-      }
-
-      private UserGameAssociation test(final UUID user,
-               final Game.Identifier game) {
-         final var association = new UserGameAssociation(user, game);
-
-         assertInvariants(association);
-         assertAll("Attribute values",
-                  () -> assertSame(user, association.getUser(), "user"),
-                  () -> assertSame(game, association.getGame(), "game"));
-         return association;
+         constructor(USER_B, GAME_B);
       }
 
    }// class
@@ -172,6 +161,17 @@ public class UserGameAssociationTest {
                         .equals(association2.getUser()), "user"),
                () -> assertFalse(equals && !association1.getGame()
                         .equals(association2.getGame()), "game"));
+   }
+
+   private static UserGameAssociation constructor(final UUID user,
+            final Game.Identifier game) {
+      final var association = new UserGameAssociation(user, game);
+
+      assertInvariants(association);
+      assertAll("Attribute values",
+               () -> assertSame(user, association.getUser(), "user"),
+               () -> assertSame(game, association.getGame(), "game"));
+      return association;
    }
 
    private static Game.Identifier copy(final Game.Identifier id) {

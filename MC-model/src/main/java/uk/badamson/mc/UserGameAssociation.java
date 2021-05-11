@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -50,12 +50,6 @@ public final class UserGameAssociation {
     * <p>
     * Construct an object with given attribute values.
     * </p>
-    * <ul>
-    * <li>The {@linkplain #getUser() user ID} of this object is the same as the
-    * given user ID.</li>
-    * <li>The {@linkplain #getGame() game ID} of this object is the same as the
-    * given game ID.</li>
-    * </ul>
     *
     * @param user
     *           The {@linkplain User#getId() unique ID} of the {@linkplain User
@@ -102,11 +96,6 @@ public final class UserGameAssociation {
     * The {@linkplain Game#getIdentifier() unique ID} of the {@linkplain Game
     * game} associated with the user.
     * </p>
-    * <ul>
-    * <li>Non null</li>
-    * </ul>
-    *
-    * @return the user ID
     */
    @Nonnull
    public Game.Identifier getGame() {
@@ -118,11 +107,6 @@ public final class UserGameAssociation {
     * The {@linkplain User#getId() unique ID} of the {@linkplain User user}
     * associated with the game.
     * </p>
-    * <ul>
-    * <li>Non null</li>
-    * </ul>
-    *
-    * @return the user ID
     */
    @Nonnull
    public UUID getUser() {
