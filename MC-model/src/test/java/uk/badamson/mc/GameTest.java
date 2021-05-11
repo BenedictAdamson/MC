@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Instant;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
@@ -87,15 +89,7 @@ public class GameTest {
                final Game.RunState runState) {
          final var game0 = new Game(identifier, runState);
 
-         final var copy = new Game(game0);
-
-         assertInvariants(copy);
-         assertInvariants(game0, copy);
-         assertAll("Copied", () -> assertEquals(game0, copy),
-                  () -> assertSame(game0.getIdentifier(), copy.getIdentifier(),
-                           "identifier"),
-                  () -> assertSame(game0.getRunState(), copy.getRunState(),
-                           "runState"));
+         constructor(game0);
       }
    }// class
 
@@ -105,24 +99,13 @@ public class GameTest {
       @Test
       public void a() {
          final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-         test(identifier, Game.RunState.WAITING_TO_START);
+         constructor(identifier, Game.RunState.WAITING_TO_START);
       }
 
       @Test
       public void b() {
          final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-         test(identifier, Game.RunState.RUNNING);
-      }
-
-      private void test(final Game.Identifier identifier,
-               final Game.RunState runState) {
-         final var game = new Game(identifier, runState);
-
-         assertInvariants(game);
-         assertAll("Has the given attribute values",
-                  () -> assertSame(identifier, game.getIdentifier(),
-                           "identifier"),
-                  () -> assertSame(runState, game.getRunState(), "runState"));
+         constructor(identifier, Game.RunState.RUNNING);
       }
    }// class
 
@@ -325,5 +308,30 @@ public class GameTest {
       assertEquals(gameA.equals(gameB),
                gameA.getIdentifier().equals(gameB.getIdentifier()),
                "Entity semantics, with the identifier serving as a unique identifier");
+   }
+
+   private static Game constructor(@Nonnull final Game that) {
+      final var copy = new Game(that);
+
+      assertInvariants(copy);
+      assertInvariants(that, copy);
+      assertAll("Copied", () -> assertEquals(that, copy),
+               () -> assertSame(that.getIdentifier(), copy.getIdentifier(),
+                        "identifier"),
+               () -> assertSame(that.getRunState(), copy.getRunState(),
+                        "runState"));
+
+      return copy;
+   }
+
+   private static Game constructor(@Nonnull final Game.Identifier identifier,
+            @Nonnull final Game.RunState runState) {
+      final var game = new Game(identifier, runState);
+
+      assertInvariants(game);
+      assertAll("Has the given attribute values",
+               () -> assertSame(identifier, game.getIdentifier(), "identifier"),
+               () -> assertSame(runState, game.getRunState(), "runState"));
+      return game;
    }
 }
