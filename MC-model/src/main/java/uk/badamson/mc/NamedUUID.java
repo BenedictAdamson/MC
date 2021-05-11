@@ -77,14 +77,6 @@ public final class NamedUUID {
     * Construct an identifier with given attribute values.
     * </p>
     *
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>The {@linkplain #getId() ID} of this object is the given
-    * {@code id}.</li>
-    * <li>The {@linkplain #getTitle() title} of this object is the given
-    * {@code title}.</li>
-    * </ul>
-    *
     * @param id
     *           The unique identifier.
     * @param title
@@ -119,10 +111,6 @@ public final class NamedUUID {
     * {@link NamedUUID} and the two have {@linkplain String#equals(Object)
     * equivalent} {@linkplain #getId() IDs}.</li>
     * </ul>
-    *
-    * @param that
-    *           The object to compare with this.
-    * @return Whether this object is equivalent to {@code that} object.
     */
    @Override
    public boolean equals(final Object that) {
@@ -140,9 +128,6 @@ public final class NamedUUID {
     * <p>
     * The unique identifier.
     * </p>
-    * <ul>
-    * <li>Not null</li>
-    * </ul>
     *
     * @return the identifier
     * @see #getTitle()
@@ -160,11 +145,6 @@ public final class NamedUUID {
     * Although the title is an identifier, it is not guaranteed to be a unique
     * identifier.
     * </p>
-    * <ul>
-    * <li>{@linkplain #isValidTitle(String) is a valid title}</li>
-    * </ul>
-    *
-    * @return the title.
     */
    @Nonnull
    public String getTitle() {
