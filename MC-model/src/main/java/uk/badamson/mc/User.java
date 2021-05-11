@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.springframework.data.annotation.PersistenceConstructor;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -52,32 +53,11 @@ public final class User extends BasicUserDetails {
     * <p>
     * Create a {@link User} that is a valid administrator user.
     * </p>
-    * <ul>
-    * <li>Returns a (non null) {@link User}.</li>
-    * <li>The {@linkplain #getId() ID} of the administrator is the same as the
-    * special {@linkplain #ADMINISTRATOR_ID administrator ID}.</li>
-    * <li>The {@linkplain #getUsername() username} of the administrator is the
-    * same as the special {@linkplain #ADMINISTRATOR_USERNAME administrator
-    * username}.</li>
-    * <li>The {@linkplain #getPassword() password} of the administrator is the
-    * given password.</li>
-    * <li>The {@linkplain #getAuthorities() authorities} granted to the
-    * administrator is the same as the {@linkplain Authority#ALL full set of
-    * authorities}.</li>
-    * <li>The administrator's {@linkplain #isAccountNonExpired() account has not
-    * expired}.</li>
-    * <li>The administrator's {@linkplain #isAccountNonLocked() account is not
-    * locked}.</li>
-    * <li>The administrator's {@linkplain #isCredentialsNonExpired() credentials
-    * have not expired}.</li>
-    * <li>The administrator's {@linkplain #isEnabled() account is enabled}.</li>
-    * </ul>
     *
     * @param password
     *           the password used to authenticate the user, or null if the
     *           password is being hidden or is unknown. This might be the
     *           password in an encrypted form.
-    * @return the administrator user
     */
    @Nonnull
    public static User createAdministrator(@Nullable final String password) {
@@ -97,31 +77,6 @@ public final class User extends BasicUserDetails {
     * <p>
     * Construct a user of the Mission Command game, with given user details.
     * </p>
-    * <ul>
-    * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
-    * <li>The {@linkplain #getUsername() username} of this user is the same as
-    * the {@linkplain BasicUserDetails#getUsername() username} of the given user
-    * details.</li>
-    * <li>The {@linkplain #getPassword() password} of this user is the same as
-    * the {@linkplain BasicUserDetails#getPassword() password} of the given user
-    * details.</li>
-    * <li>The {@linkplain #getAuthorities() authorities} granted to this user
-    * are the same as the {@linkplain BasicUserDetails#getAuthorities()
-    * authorities} of the given user details.</li>
-    * <li>Whether this user's {@linkplain #isAccountNonExpired() account has not
-    * expired} is equal to the {@linkplain BasicUserDetails#isAccountNonExpired
-    * value} for the given user details.</li>
-    * <li>Whether this user's {@linkplain #isAccountNonLocked() account is not
-    * locked} is equal to the {@linkplain BasicUserDetails#isAccountNonLocked()
-    * value} for the given user details.</li>
-    * <li>Whether this user's {@linkplain #isCredentialsNonExpired() credentials
-    * have not expired} is equal to the
-    * {@linkplain BasicUserDetails#isCredentialsNonExpired() value} for the
-    * given user details.</li>
-    * <li>Whether this user's {@linkplain #isEnabled() account is enabled} is
-    * equal to the {@linkplain BasicUserDetails#isEnabled() value} for the given
-    * user details.</li>
-    * </ul>
     *
     * @param id
     *           The unique ID of this user.
@@ -143,23 +98,6 @@ public final class User extends BasicUserDetails {
     * <p>
     * Construct a user of the Mission Command game, with given attribute values.
     * </p>
-    * <ul>
-    * <li>The {@linkplain #getId() ID} of this user is the given id.</li>
-    * <li>The {@linkplain #getUsername() username} of this user is the given
-    * username.</li>
-    * <li>The {@linkplain #getPassword() password} of this user is the given
-    * password.</li>
-    * <li>The {@linkplain #getAuthorities() authorities} granted to this user
-    * are {@linkplain Set#equals(Object) equal to} the given authorities.</li>
-    * <li>Whether this user's {@linkplain #isAccountNonExpired() account has not
-    * expired} is equal to the given value.</li>
-    * <li>Whether this user's {@linkplain #isAccountNonLocked() account is not
-    * locked} is equal to the given value.</li>
-    * <li>Whether this user's {@linkplain #isCredentialsNonExpired() credentials
-    * have not expired} is equal to the given value.</li>
-    * <li>Whether this user's {@linkplain #isEnabled() account is enabled} is
-    * equal to the given value.</li>
-    * </ul>
     *
     * @param id
     *           The unique ID of this user.
@@ -208,7 +146,7 @@ public final class User extends BasicUserDetails {
 
    /**
     * <p>
-    * With this object is <dfn>equivalent</dfn> to another object.
+    * Whether this object is <dfn>equivalent</dfn> to another object.
     * </p>
     * <ul>
     * <li>The {@link User} class has <i>entity semantics</i>, with the
@@ -241,16 +179,11 @@ public final class User extends BasicUserDetails {
     * <p>
     * The unique ID of this user.
     * </p>
-    * <ul>
-    * <li>Not null</li>
-    * </ul>
     * <p>
     * Note that the {@linkplain #getUsername() username} need not be unique.
     * However, in practice it will be enforced to be unique, with the username
     * used as the human readable ID.
     * </p>
-    *
-    * @return the unique ID.
     */
    @Nonnull
    public UUID getId() {
