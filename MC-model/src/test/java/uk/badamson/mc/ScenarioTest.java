@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.UUID;
+
+import javax.annotation.Nonnull;
 
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Matcher;
@@ -74,30 +76,12 @@ public class ScenarioTest {
 
       @Test
       public void a() {
-         test(ID_A, TITLE_A, DESCRIPTION_A, CHARACTERS_A);
+         constructor(ID_A, TITLE_A, DESCRIPTION_A, CHARACTERS_A);
       }
 
       @Test
       public void b() {
-         test(ID_B, TITLE_B, DESCRIPTION_B, CHARACTERS_B);
-      }
-
-      private void test(final UUID identifier, final String title,
-               final String description, final List<NamedUUID> characters) {
-         final var scenario = new Scenario(identifier, title, description,
-                  characters);
-
-         assertInvariants(scenario);
-         assertAll(
-                  () -> assertSame(identifier, scenario.getIdentifier(),
-                           "identifier"),
-                  () -> assertSame(title, scenario.getTitle(), "title"),
-                  () -> assertSame(description, scenario.getDescription(),
-                           "description"),
-                  () -> assertNotSame(characters, scenario.getCharacters(),
-                           "characters not the same"),
-                  () -> assertEquals(characters, scenario.getCharacters(),
-                           "characters equal"));
+         constructor(ID_B, TITLE_B, DESCRIPTION_B, CHARACTERS_B);
       }
    }// class
 
@@ -192,5 +176,26 @@ public class ScenarioTest {
       assertEquals(scenarioA.equals(scenarioB),
                scenarioA.getIdentifier().equals(scenarioB.getIdentifier()),
                "Entity semantics, with the identifier serving as a unique identifier");
+   }
+
+   private static Scenario constructor(@Nonnull final UUID identifier,
+            @Nonnull final String title, @Nonnull final String description,
+            @Nonnull final List<NamedUUID> characters) {
+      final var scenario = new Scenario(identifier, title, description,
+               characters);
+
+      assertInvariants(scenario);
+      assertAll(
+               () -> assertSame(identifier, scenario.getIdentifier(),
+                        "identifier"),
+               () -> assertSame(title, scenario.getTitle(), "title"),
+               () -> assertSame(description, scenario.getDescription(),
+                        "description"),
+               () -> assertNotSame(characters, scenario.getCharacters(),
+                        "characters not the same"),
+               () -> assertEquals(characters, scenario.getCharacters(),
+                        "characters equal"));
+
+      return scenario;
    }
 }

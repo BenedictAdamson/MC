@@ -27,7 +27,6 @@ import javax.annotation.concurrent.Immutable;
 import javax.persistence.Id;
 
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -103,12 +102,6 @@ public class Game {
        * start time, so it can represent games that have not yet been started,
        * but are in the process of being set up.
        * </p>
-       *
-       * <ul>
-       * <li>Not null.</li>
-       * </ul>
-       *
-       * @return the creation time
        */
       @Nonnull
       @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -121,11 +114,6 @@ public class Game {
        * The unique identifier for the {@linkplain Scenario scenario} that the
        * game is an instance of.
        * </p>
-       * <ul>
-       * <li>Not null.</li>
-       * </ul>
-       *
-       * @return the scenario identifier
        */
       @Nonnull
       public UUID getScenario() {
@@ -159,20 +147,10 @@ public class Game {
     * Construct a copy of a game.
     * </p>
     *
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>This game is {@linkplain #equals(Object) equivalent to} the given
-    * game.</li>
-    * <li>The {@linkplain #getIdentifier() identifier} of this game is the same
-    * as the identifier of the given game.</li>
-    * </ul>
-    *
-    * @param that
-    *           The game to copy.
     * @throws NullPointerException
     *            If {@code that} is null
     */
-   public Game(final Game that) {
+   public Game(@Nonnull final Game that) {
       Objects.requireNonNull(that, "that");
       identifier = that.identifier;
       runState = that.runState;
@@ -183,16 +161,11 @@ public class Game {
     * Construct a game with given attribute values.
     * </p>
     *
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>The {@linkplain #getIdentifier() identifier} of this game is the given
-    * {@code identifier}.</li>
-    * </ul>
-    *
-    * @param identifier
-    *           The unique identifier for this game.
     * @throws NullPointerException
-    *            If {@code identifier} is null.
+    *            <ul>
+    *            <li>If {@code identifier} is null.</li>
+    *            <li>If {@code runState} is null.</li>
+    *            </ul>
     */
    @JsonCreator
    @PersistenceConstructor
@@ -214,10 +187,6 @@ public class Game {
     * {@linkplain Identifier#equals(Object) equivalent}
     * {@linkplain #getIdentifier() identifiers}.</li>
     * </ul>
-    *
-    * @param that
-    *           The object to compare with this.
-    * @return Whether this object is equivalent to {@code that} object.
     */
    @Override
    public final boolean equals(final Object that) {
@@ -235,19 +204,14 @@ public class Game {
     * <p>
     * The unique identifier for this game.
     * </p>
-    * <ul>
-    * <li>Not null.</li>
-    * </ul>
-    *
-    * @return the identifier.
     */
-   @NonNull
+   @Nonnull
    @JsonProperty("identifier")
    public final Identifier getIdentifier() {
       return identifier;
    }
 
-   @NonNull
+   @Nonnull
    @JsonProperty("runState")
    public RunState getRunState() {
       return runState;
@@ -258,8 +222,8 @@ public class Game {
       return identifier.hashCode();
    }
 
-   public void setRunState(@NonNull final RunState runState) {
-      this.runState = runState;
+   public void setRunState(@Nonnull final RunState runState) {
+      this.runState = Objects.requireNonNull(runState, "runState");
    }
 
 }

@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020-21.
  *
  * This file is part of MC.
  *
@@ -21,10 +21,9 @@ package uk.badamson.mc;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.persistence.Id;
-
-import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -78,14 +77,6 @@ public final class NamedUUID {
     * Construct an identifier with given attribute values.
     * </p>
     *
-    * <h2>Post Conditions</h2>
-    * <ul>
-    * <li>The {@linkplain #getId() ID} of this object is the given
-    * {@code id}.</li>
-    * <li>The {@linkplain #getTitle() title} of this object is the given
-    * {@code title}.</li>
-    * </ul>
-    *
     * @param id
     *           The unique identifier.
     * @param title
@@ -100,8 +91,8 @@ public final class NamedUUID {
     *            valid}.
     */
    @JsonCreator
-   public NamedUUID(@NonNull @JsonProperty("id") final UUID id,
-            @NonNull @JsonProperty("title") final String title) {
+   public NamedUUID(@Nonnull @JsonProperty("id") final UUID id,
+            @Nonnull @JsonProperty("title") final String title) {
       this.id = Objects.requireNonNull(id, "id");
       this.title = Objects.requireNonNull(title, "title");
       if (!isValidTitle(title)) {
@@ -120,10 +111,6 @@ public final class NamedUUID {
     * {@link NamedUUID} and the two have {@linkplain String#equals(Object)
     * equivalent} {@linkplain #getId() IDs}.</li>
     * </ul>
-    *
-    * @param that
-    *           The object to compare with this.
-    * @return Whether this object is equivalent to {@code that} object.
     */
    @Override
    public boolean equals(final Object that) {
@@ -141,14 +128,11 @@ public final class NamedUUID {
     * <p>
     * The unique identifier.
     * </p>
-    * <ul>
-    * <li>Not null</li>
-    * </ul>
     *
     * @return the identifier
     * @see #getTitle()
     */
-   @NonNull
+   @Nonnull
    public UUID getId() {
       return id;
    }
@@ -161,13 +145,8 @@ public final class NamedUUID {
     * Although the title is an identifier, it is not guaranteed to be a unique
     * identifier.
     * </p>
-    * <ul>
-    * <li>{@linkplain #isValidTitle(String) is a valid title}</li>
-    * </ul>
-    *
-    * @return the title.
     */
-   @NonNull
+   @Nonnull
    public String getTitle() {
       return title;
    }

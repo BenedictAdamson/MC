@@ -27,6 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -96,25 +99,7 @@ public class BasicUserDetailsTest {
             final var original = new BasicUserDetails(username, password,
                      authorities, accountNonExpired, accountNonLocked,
                      credentialsNonExpired, enabled);
-            final var copy = new BasicUserDetails(original);
-
-            assertInvariants(copy);
-            assertInvariants(original, copy);
-            assertAll("Same attribute values",
-                     () -> assertSame(original.getUsername(),
-                              copy.getUsername(), "username"),
-                     () -> assertSame(original.getPassword(),
-                              copy.getPassword(), "password"),
-                     () -> assertSame(original.getAuthorities(),
-                              copy.getAuthorities(), "authorities"),
-                     () -> assertEquals(accountNonExpired,
-                              copy.isAccountNonExpired(), "accountNonExpired"),
-                     () -> assertEquals(accountNonLocked,
-                              copy.isAccountNonLocked(), "accountNonLocked"),
-                     () -> assertEquals(credentialsNonExpired,
-                              copy.isCredentialsNonExpired(),
-                              "credentialsNonExpired"),
-                     () -> assertEquals(enabled, copy.isEnabled(), "enabled"));
+            constructor(original);
          }
 
          @Test
@@ -270,74 +255,56 @@ public class BasicUserDetailsTest {
 
       @Test
       public void authorities() {
-         test(USERNAME_A, PASSWORD_A, Set.of(), true, true, true, true);
+         constructor(USERNAME_A, PASSWORD_A, Set.of(), true, true, true, true);
       }
 
       @Test
       public void basic() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, true);
+         constructor(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                  true);
       }
 
       @Test
       public void notAccountNonExpired() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true, true);
+         constructor(USERNAME_A, PASSWORD_A, Authority.ALL, false, true, true,
+                  true);
       }
 
       @Test
       public void notAccountNonLocked() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true, true);
+         constructor(USERNAME_A, PASSWORD_A, Authority.ALL, true, false, true,
+                  true);
       }
 
       @Test
       public void notCredentialsNonExpired() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false, true);
+         constructor(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, false,
+                  true);
       }
 
       @Test
       public void notEnabled() {
-         test(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true, false);
+         constructor(USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
+                  false);
       }
 
       @Test
       public void nullPassword() {
          final String password = null;
-         test(USERNAME_A, password, Authority.ALL, true, true, true, true);
+         constructor(USERNAME_A, password, Authority.ALL, true, true, true,
+                  true);
       }
 
       @Test
       public void password() {
-         test(USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true, true);
-      }
-
-      private BasicUserDetails test(final String username,
-               final String password, final Set<Authority> authorities,
-               final boolean accountNonExpired, final boolean accountNonLocked,
-               final boolean credentialsNonExpired, final boolean enabled) {
-         final var user = new BasicUserDetails(username, password, authorities,
-                  accountNonExpired, accountNonLocked, credentialsNonExpired,
-                  enabled);
-
-         assertInvariants(user);
-         assertAll("Has the given attribute values",
-                  () -> assertSame(username, user.getUsername(), "username"),
-                  () -> assertSame(password, user.getPassword(), "password"),
-                  () -> assertEquals(authorities, user.getAuthorities(),
-                           "authorities"),
-                  () -> assertEquals(accountNonExpired,
-                           user.isAccountNonExpired(), "accountNonExpired"),
-                  () -> assertEquals(accountNonLocked,
-                           user.isAccountNonLocked(), "accountNonLocked"),
-                  () -> assertEquals(credentialsNonExpired,
-                           user.isCredentialsNonExpired(),
-                           "credentialsNonExpired"),
-                  () -> assertEquals(enabled, user.isEnabled(), "enabled"));
-
-         return user;
+         constructor(USERNAME_A, PASSWORD_B, Authority.ALL, true, true, true,
+                  true);
       }
 
       @Test
       public void username() {
-         test(USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true, true);
+         constructor(USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true,
+                  true);
       }
 
    }// class
@@ -347,39 +314,17 @@ public class BasicUserDetailsTest {
 
       @Test
       public void a() {
-         test(PASSWORD_A);
+         createAdministrator(PASSWORD_A);
       }
 
       @Test
       public void b() {
-         test(PASSWORD_B);
+         createAdministrator(PASSWORD_B);
       }
 
       @Test
       public void nullPassword() {
-         test(null);
-      }
-
-      private void test(final String password) {
-         final var administrator = BasicUserDetails
-                  .createAdministrator(password);
-
-         assertNotNull(administrator, "Not null, returned");// guard
-         assertInvariants(administrator);
-         assertAll("Attributes",
-                  () -> assertSame(BasicUserDetails.ADMINISTRATOR_USERNAME,
-                           administrator.getUsername(), "username"),
-                  () -> assertSame(password, administrator.getPassword(),
-                           "password"),
-                  () -> assertSame(Authority.ALL,
-                           administrator.getAuthorities(), "authorities"),
-                  () -> assertTrue(administrator.isAccountNonExpired(),
-                           "accountNonExpired"),
-                  () -> assertTrue(administrator.isAccountNonLocked(),
-                           "accountNonLocked"),
-                  () -> assertTrue(administrator.isCredentialsNonExpired(),
-                           "credentialsNonExpired"),
-                  () -> assertTrue(administrator.isEnabled(), "enabled"));
+         createAdministrator(null);
       }
    }// class
 
@@ -531,7 +476,7 @@ public class BasicUserDetailsTest {
       userDetails.setPassword(password);
 
       assertInvariants(userDetails);
-      assertAll("Not other attributes of these details change",
+      assertAll("No other attributes of these details change",
                () -> assertSame(username0, userDetails.getUsername(),
                         "username"),
                () -> assertSame(authorities0, userDetails.getAuthorities(),
@@ -546,5 +491,82 @@ public class BasicUserDetailsTest {
                () -> assertEquals(enabled0, userDetails.isEnabled(),
                         "enabled"));
       assertSame(password, userDetails.getPassword(), "Changed password");
+   }
+
+   private static BasicUserDetails createAdministrator(
+            @Nullable final String password) {
+      final var administrator = BasicUserDetails.createAdministrator(password);
+
+      assertNotNull(administrator, "Not null, returned");// guard
+      assertInvariants(administrator);
+      assertAll("Attributes",
+               () -> assertSame(BasicUserDetails.ADMINISTRATOR_USERNAME,
+                        administrator.getUsername(), "username"),
+               () -> assertSame(password, administrator.getPassword(),
+                        "password"),
+               () -> assertSame(Authority.ALL, administrator.getAuthorities(),
+                        "authorities"),
+               () -> assertTrue(administrator.isAccountNonExpired(),
+                        "accountNonExpired"),
+               () -> assertTrue(administrator.isAccountNonLocked(),
+                        "accountNonLocked"),
+               () -> assertTrue(administrator.isCredentialsNonExpired(),
+                        "credentialsNonExpired"),
+               () -> assertTrue(administrator.isEnabled(), "enabled"));
+
+      return administrator;
+   }
+
+   private static BasicUserDetails constructor(
+            @Nonnull final BasicUserDetails that) {
+      final var copy = new BasicUserDetails(that);
+
+      assertInvariants(copy);
+      assertInvariants(that, copy);
+      assertAll("Same attribute values",
+               () -> assertSame(that.getUsername(), copy.getUsername(),
+                        "username"),
+               () -> assertSame(that.getPassword(), copy.getPassword(),
+                        "password"),
+               () -> assertSame(that.getAuthorities(), copy.getAuthorities(),
+                        "authorities"),
+               () -> assertEquals(that.isAccountNonExpired(),
+                        copy.isAccountNonExpired(), "accountNonExpired"),
+               () -> assertEquals(that.isAccountNonLocked(),
+                        copy.isAccountNonLocked(), "accountNonLocked"),
+               () -> assertEquals(that.isCredentialsNonExpired(),
+                        copy.isCredentialsNonExpired(),
+                        "credentialsNonExpired"),
+               () -> assertEquals(that.isEnabled(), copy.isEnabled(),
+                        "enabled"));
+
+      return copy;
+   }
+
+   private static BasicUserDetails constructor(@Nonnull final String username,
+            @Nullable final String password,
+            @Nonnull final Set<Authority> authorities,
+            final boolean accountNonExpired, final boolean accountNonLocked,
+            final boolean credentialsNonExpired, final boolean enabled) {
+      final var user = new BasicUserDetails(username, password, authorities,
+               accountNonExpired, accountNonLocked, credentialsNonExpired,
+               enabled);
+
+      assertInvariants(user);
+      assertAll("Has the given attribute values",
+               () -> assertSame(username, user.getUsername(), "username"),
+               () -> assertSame(password, user.getPassword(), "password"),
+               () -> assertEquals(authorities, user.getAuthorities(),
+                        "authorities"),
+               () -> assertEquals(accountNonExpired, user.isAccountNonExpired(),
+                        "accountNonExpired"),
+               () -> assertEquals(accountNonLocked, user.isAccountNonLocked(),
+                        "accountNonLocked"),
+               () -> assertEquals(credentialsNonExpired,
+                        user.isCredentialsNonExpired(),
+                        "credentialsNonExpired"),
+               () -> assertEquals(enabled, user.isEnabled(), "enabled"));
+
+      return user;
    }
 }

@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2019-20.
+ * © Copyright Benedict Adamson 2019-21.
  *
  * This file is part of MC.
  *
@@ -44,6 +44,8 @@ public class BasicUserDetails implements UserDetails {
     * <p>
     * The {@linkplain #getUsername() username} of an administrator user.
     * </p>
+    * 
+    * @see #createAdministrator(String)
     */
    public static final String ADMINISTRATOR_USERNAME = "Administrator";
 
@@ -51,30 +53,12 @@ public class BasicUserDetails implements UserDetails {
     * <p>
     * Create {@link BasicUserDetails} for a a valid administrator user.
     * </p>
-    * <ul>
-    * <li>Returns a (non null) {@link BasicUserDetails}.</li>
-    * <li>The {@linkplain #getUsername() username} of the administrator is the
-    * same as the special {@linkplain #ADMINISTRATOR_USERNAME administrator
-    * username}.</li>
-    * <li>The {@linkplain #getPassword() password} of the administrator is the
-    * given password.</li>
-    * <li>The {@linkplain #getAuthorities() authorities} granted to the
-    * administrator is the same as the {@linkplain Authority#ALL full set of
-    * authorities}.</li>
-    * <li>The administrator's {@linkplain #isAccountNonExpired() account has not
-    * expired}.</li>
-    * <li>The administrator's {@linkplain #isAccountNonLocked() account is not
-    * locked}.</li>
-    * <li>The administrator's {@linkplain #isCredentialsNonExpired() credentials
-    * have not expired}.</li>
-    * <li>The administrator's {@linkplain #isEnabled() account is enabled}.</li>
-    * </ul>
     *
     * @param password
     *           the password used to authenticate the user, or null if the
     *           password is being hidden or is unknown. This might be the
     *           password in an encrypted form.
-    * @return the administrator user
+    * @see #ADMINISTRATOR_USERNAME
     */
    @Nonnull
    public static BasicUserDetails createAdministrator(
@@ -94,24 +78,6 @@ public class BasicUserDetails implements UserDetails {
     * <p>
     * Copy a specification for a new {@linkplain User user}.
     * </p>
-    * <ul>
-    * <li>The {@linkplain #getUsername() username} of this specification is the
-    * same as the username of the given specification.</li>
-    * <li>The {@linkplain #getPassword() password} of this specification is the
-    * same as the username of the given password.</li>
-    * <li>The {@linkplain #getAuthorities() authorities} of this specification
-    * are the same as the authorities of the given specification.</li>
-    * <li>Whether this specifies that the {@linkplain #isAccountNonExpired()
-    * account has not expired} is equal to the value for the given
-    * specification.</li>
-    * <li>Whether this specifies that the {@linkplain #isAccountNonLocked()
-    * account is not locked} is equal to the value for the given
-    * specification.</li>
-    * <li>Whether this specifies that the {@linkplain #isCredentialsNonExpired()
-    * credentials have not expired} is equal to the given value.</li>
-    * <li>Whether this specifies that the {@linkplain #isEnabled() account is
-    * enabled} is equal to the value for the given specification.</li>
-    * </ul>
     *
     * @param that
     *           the specification to copy
@@ -145,22 +111,6 @@ public class BasicUserDetails implements UserDetails {
     * Construct a specification for a new {@linkplain User user}, with given
     * attribute values.
     * </p>
-    * <ul>
-    * <li>The {@linkplain #getUsername() username} of this user is the given
-    * username.</li>
-    * <li>The {@linkplain #getPassword() password} of this user is the given
-    * password.</li>
-    * <li>The {@linkplain #getAuthorities() authorities} granted to this user
-    * are {@linkplain Set#equals(Object) equal to} the given authorities.</li>
-    * <li>Whether this user's {@linkplain #isAccountNonExpired() account has not
-    * expired} is equal to the given value.</li>
-    * <li>Whether this user's {@linkplain #isAccountNonLocked() account is not
-    * locked} is equal to the given value.</li>
-    * <li>Whether this user's {@linkplain #isCredentialsNonExpired() credentials
-    * have not expired} is equal to the given value.</li>
-    * <li>Whether this user's {@linkplain #isEnabled() account is enabled} is
-    * equal to the given value.</li>
-    * </ul>
     *
     * @param username
     *           the username used to authenticate the user
@@ -245,19 +195,6 @@ public class BasicUserDetails implements UserDetails {
       return enabled;
    }
 
-   /**
-    * <p>
-    * Change the {@link #getPassword() password} of these details.
-    * </p>
-    * <ul>
-    * <li>The password of these details becomes the same as the given
-    * password.</li>
-    * <li>Not other attributes of these details change.</li>
-    * </ul>
-    *
-    * @param password
-    *           the new password
-    */
    public final void setPassword(@Nullable final String password) {
       this.password = password;
    }
