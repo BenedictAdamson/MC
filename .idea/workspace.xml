@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Update jdeb to 1.10">
-      <change beforePath="$PROJECT_DIR$/MC-integration/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/pom.xml" afterDir="false" />
+    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Update maven-surefire-plugin to 3.0.0-M6">
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -395,21 +395,7 @@
       <option name="project" value="LOCAL" />
       <updated>1653346587415</updated>
     </task>
-    <task id="LOCAL-00035" summary="Remove org.eclipse.m2e lifecycle-mapping plugin">
-      <created>1653346654284</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1653346654284</updated>
-    </task>
-    <task id="LOCAL-00036" summary="Update jdeb to 1.10">
-      <created>1653346980700</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1653346980700</updated>
-    </task>
-    <option name="localTasksCounter" value="37" />
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -483,6 +469,8 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add Spock &quot;List users&quot; feature" />
+    <MESSAGE value="Add Spock &quot;Examine user&quot; feature" />
     <MESSAGE value="Add Spock &quot;Logout&quot; feature" />
     <MESSAGE value="Convert &quot;Add user&quot; to a BE Spock feature&#10;&#10;Some requirements in Spock feature&#10;&quot;Examine user list after adding user&quot;" />
     <MESSAGE value="Convert &quot;Only administrator may add user&quot;&#10; &#10;to a BE Spock feature" />
@@ -506,9 +494,7 @@
     <MESSAGE value="Update maven-jxr-plugin to 3.2.0" />
     <MESSAGE value="Update maven-pmd-plugin to 3.16.0" />
     <MESSAGE value="Update maven-surefire-plugin to 3.0.0-M6" />
-    <MESSAGE value="Remove org.eclipse.m2e lifecycle-mapping plugin" />
-    <MESSAGE value="Update jdeb to 1.10" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update jdeb to 1.10" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update maven-surefire-plugin to 3.0.0-M6" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
