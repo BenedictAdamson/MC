@@ -4,27 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Fix pedantry">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-back-end/MC-back-end.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-back-end/MC-back-end.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-back-end/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-back-end/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-database/MC-database.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-database/MC-database.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-database/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-database/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-front-end/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-integration/MC-integration.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/MC-integration.iml" afterDir="false" />
+    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Update jdeb to 1.10">
       <change beforePath="$PROJECT_DIR$/MC-integration/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-integration/src/main/helm/mc/Chart.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/src/main/helm/mc/Chart.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-model/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-model/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-spec/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-spec/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Rebase.Settings">
+    <option name="NEW_BASE" value="master" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -71,6 +60,7 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "last_opened_file_path": "/home/benedict/git/MC/MC-spec/pom.xml"
   }
 }]]></component>
@@ -321,7 +311,105 @@
       <option name="project" value="LOCAL" />
       <updated>1653342183335</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Start work towards version 2.22.3">
+      <created>1653343282631</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1653343282631</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Remove Eclipse files">
+      <created>1653343399314</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1653343399314</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Remove Eclipse files">
+      <created>1653343464536</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1653343464536</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Update helm-maven-plugin to version 6.3.0">
+      <created>1653344861696</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1653344861696</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Update frontend-maven-plugin to 1.12.1">
+      <created>1653345348634</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1653345348634</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Update maven-antrun-plugin to 3.1.0">
+      <created>1653345582876</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1653345582876</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Update maven-compiler-plugin to 3.10.1">
+      <created>1653345832578</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1653345832578</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Update maven-failsafe-plugin to 3.0.0-M6">
+      <created>1653346069843</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1653346069843</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Update maven-javadoc-plugin to 3.4.0">
+      <created>1653346199119</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1653346199119</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Update maven-jxr-plugin to 3.2.0">
+      <created>1653346301998</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1653346301998</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Update maven-pmd-plugin to 3.16.0">
+      <created>1653346425874</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1653346425874</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Update maven-surefire-plugin to 3.0.0-M6">
+      <created>1653346587415</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1653346587415</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Remove org.eclipse.m2e lifecycle-mapping plugin">
+      <created>1653346654284</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1653346654284</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Update jdeb to 1.10">
+      <created>1653346980700</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1653346980700</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -395,12 +483,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Intial changes for use of Spock with IntelliJ IDEA" />
-    <MESSAGE value="Force use of correct Groovy version&#10;&#10;Add dummy test for checking it" />
-    <MESSAGE value="Add skeleton for Spock &quot;List users&quot; test" />
-    <MESSAGE value="Spock &quot;List users&quot; test sets up Spring&#10;&#10;Remove dummy test: no longer needed." />
-    <MESSAGE value="Add Spock &quot;List users&quot; feature" />
-    <MESSAGE value="Add Spock &quot;Examine user&quot; feature" />
     <MESSAGE value="Add Spock &quot;Logout&quot; feature" />
     <MESSAGE value="Convert &quot;Add user&quot; to a BE Spock feature&#10;&#10;Some requirements in Spock feature&#10;&quot;Examine user list after adding user&quot;" />
     <MESSAGE value="Convert &quot;Only administrator may add user&quot;&#10; &#10;to a BE Spock feature" />
@@ -412,9 +494,21 @@
     <MESSAGE value="Convert &quot;Examine scenario with authorization&quot;&#10; &#10;to a BE Spock feature" />
     <MESSAGE value="Add Idea configuration files." />
     <MESSAGE value="Add Maven modules as IDEA modules" />
-    <MESSAGE value="Remove Eclipse files" />
     <MESSAGE value="Fix pedantry" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix pedantry" />
+    <MESSAGE value="Start work towards version 2.22.3" />
+    <MESSAGE value="Remove Eclipse files" />
+    <MESSAGE value="Update helm-maven-plugin to version 6.3.0" />
+    <MESSAGE value="Update frontend-maven-plugin to 1.12.1" />
+    <MESSAGE value="Update maven-antrun-plugin to 3.1.0" />
+    <MESSAGE value="Update maven-compiler-plugin to 3.10.1" />
+    <MESSAGE value="Update maven-failsafe-plugin to 3.0.0-M6" />
+    <MESSAGE value="Update maven-javadoc-plugin to 3.4.0" />
+    <MESSAGE value="Update maven-jxr-plugin to 3.2.0" />
+    <MESSAGE value="Update maven-pmd-plugin to 3.16.0" />
+    <MESSAGE value="Update maven-surefire-plugin to 3.0.0-M6" />
+    <MESSAGE value="Remove org.eclipse.m2e lifecycle-mapping plugin" />
+    <MESSAGE value="Update jdeb to 1.10" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update jdeb to 1.10" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -16,8 +16,8 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="MC" target="1.5" />
-      <module name="MC-back-end" target="1.5" />
-      <module name="MC-database" target="1.5" />
+      <module name="MC-back-end" target="11" />
+      <module name="MC-database" target="11" />
       <module name="MC-front-end" target="11" />
       <module name="MC-integration" target="11" />
       <module name="MC-model" target="11" />
