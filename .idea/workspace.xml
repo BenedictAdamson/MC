@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Add Maven modules as IDEA modules" />
+    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Add Maven modules as IDEA modules">
+      <change beforePath="$PROJECT_DIR$/MC-back-end/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-back-end/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-database/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-database/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-front-end/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-integration/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-integration/src/main/helm/mc/Chart.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/src/main/helm/mc/Chart.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-model/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-model/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-spec/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-spec/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
