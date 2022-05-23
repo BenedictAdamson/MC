@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/MC-back-end/pom.xml" />
+        <option value="$PROJECT_DIR$/MC-database/pom.xml" />
+        <option value="$PROJECT_DIR$/MC-front-end/pom.xml" />
+        <option value="$PROJECT_DIR$/MC-integration/pom.xml" />
+        <option value="$PROJECT_DIR$/MC-model/pom.xml" />
+        <option value="$PROJECT_DIR$/MC-spec/pom.xml" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
+</project>
