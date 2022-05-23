@@ -3,6 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MC.iml" filepath="$PROJECT_DIR$/MC.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MC-back-end/MC-back-end.iml" filepath="$PROJECT_DIR$/MC-back-end/MC-back-end.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MC-database/MC-database.iml" filepath="$PROJECT_DIR$/MC-database/MC-database.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MC-front-end/MC-front-end.iml" filepath="$PROJECT_DIR$/MC-front-end/MC-front-end.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MC-integration/MC-integration.iml" filepath="$PROJECT_DIR$/MC-integration/MC-integration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MC-model/MC-model.iml" filepath="$PROJECT_DIR$/MC-model/MC-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MC-spec/MC-spec.iml" filepath="$PROJECT_DIR$/MC-spec/MC-spec.iml" />
     </modules>
   </component>
 </project>
