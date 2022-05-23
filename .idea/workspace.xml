@@ -4,15 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Remove Eclipse files">
+    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Fix pedantry">
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MC-back-end/MC-back-end.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-back-end/MC-back-end.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-back-end/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-back-end/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MC-database/MC-database.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-database/MC-database.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-front-end/MC-front-end.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/MC-front-end.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-database/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-database/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-front-end/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/MC-front-end/src/main/web/mc-front-end/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MC-integration/MC-integration.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/MC-integration.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-model/MC-model.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-model/MC-model.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC-spec/MC-spec.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-spec/MC-spec.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-integration/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-integration/src/main/helm/mc/Chart.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-integration/src/main/helm/mc/Chart.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-model/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-model/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC-spec/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/MC-spec/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,15 +66,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/benedict/git/MC/MC-spec/pom.xml&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "/home/benedict/git/MC/MC-spec/pom.xml"
   }
-}</component>
+}]]></component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="mvn verify" />
@@ -309,7 +314,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653342071198</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Fix pedantry">
+      <created>1653342183335</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1653342183335</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -401,7 +413,8 @@
     <MESSAGE value="Add Idea configuration files." />
     <MESSAGE value="Add Maven modules as IDEA modules" />
     <MESSAGE value="Remove Eclipse files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove Eclipse files" />
+    <MESSAGE value="Fix pedantry" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix pedantry" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
