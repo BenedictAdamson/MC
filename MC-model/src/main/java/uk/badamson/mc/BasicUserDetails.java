@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2019-21.
+ * © Copyright Benedict Adamson 2019-22.
  *
  * This file is part of MC.
  *
@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -159,6 +160,7 @@ public class BasicUserDetails implements UserDetails {
       this.enabled = enabled;
    }
 
+   @SuppressFBWarnings(value="EI_EXPOSE_REP", justification="authorities is unmodifiable")
    @Override
    public final Set<Authority> getAuthorities() {
       return authorities;

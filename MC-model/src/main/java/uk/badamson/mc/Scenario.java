@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2021.
+ * © Copyright Benedict Adamson 2021-22.
  *
  * This file is part of MC.
  *
@@ -33,6 +33,7 @@ import javax.persistence.Id;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * <p>
@@ -161,6 +162,7 @@ public class Scenario {
     * of the list.</li>
     * </ul>
     */
+   @SuppressFBWarnings(value="EI_EXPOSE_REP", justification="authorities is unmodifiable")
    @Nonnull
    @JsonProperty("characters")
    public final List<NamedUUID> getCharacters() {
