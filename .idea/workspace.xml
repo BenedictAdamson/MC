@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Update maven-pmd-plugin to 3.16.0: update ruleset">
+    <list default="true" id="d6878ca4-cc87-4f92-afb9-b92c7fc94c76" name="Default Changelist" comment="Update logback-classic to 1.2.11">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
@@ -56,15 +56,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "/home/benedict/git/MC/MC-spec/pom.xml"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/benedict/git/MC/MC-spec/pom.xml&quot;
   }
-}]]></component>
+}</component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="mvn verify" />
@@ -424,7 +424,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653348563889</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Update logback-classic to 1.2.11">
+      <created>1653349924068</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1653349924068</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -498,7 +505,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Convert &quot;Add user&quot; to a BE Spock feature&#10;&#10;Some requirements in Spock feature&#10;&quot;Examine user list after adding user&quot;" />
     <MESSAGE value="Convert &quot;Only administrator may add user&quot;&#10; &#10;to a BE Spock feature" />
     <MESSAGE value="Convert &quot;Only administrator my examine user&quot;&#10; &#10;to a BE Spock feature" />
     <MESSAGE value="Convert &quot;Get unknown resource&quot;&#10; &#10;to a BE Spock feature" />
@@ -523,7 +529,8 @@
     <MESSAGE value="Update jdeb to 1.10" />
     <MESSAGE value="Update helm-maven-plugin to version 6.3.0" />
     <MESSAGE value="Update maven-pmd-plugin to 3.16.0: update ruleset" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update maven-pmd-plugin to 3.16.0: update ruleset" />
+    <MESSAGE value="Update logback-classic to 1.2.11" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update logback-classic to 1.2.11" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
