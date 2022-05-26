@@ -12,10 +12,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="MC-spec" scope="TEST" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.12.6.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.6" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.6" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: uk.badamson.mc:MC-spec:2.22.4-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3" level="project" />
     <orderEntry type="library" name="Maven: com.github.spotbugs:spotbugs-annotations:4.7.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.persistence:javax.persistence-api:2.2" level="project" />
@@ -29,14 +29,14 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-launcher:1.8.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest:2.2" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-commons:2.5.11" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.13.3" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-commons:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-core:5.3.20" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.3.20" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.3.20" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.36" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:5.5.8" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-crypto:5.5.8" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:5.7.1" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-crypto:5.7.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.3.20" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.20" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.3.20" level="project" />
