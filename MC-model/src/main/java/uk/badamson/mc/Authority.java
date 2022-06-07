@@ -18,11 +18,11 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import org.springframework.security.core.GrantedAuthority;
+
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
-
-import org.springframework.security.core.GrantedAuthority;
 
 /**
  * <p>
@@ -31,36 +31,36 @@ import org.springframework.security.core.GrantedAuthority;
  * </p>
  */
 public enum Authority implements GrantedAuthority {
-   /**
-    * <p>
-    * May play games.
-    * </p>
-    */
-   ROLE_PLAYER,
-   /**
-    * <p>
-    * May add a user.
-    * </p>
-    */
-   ROLE_MANAGE_USERS,
-   /**
-    * <p>
-    * May create a game.
-    * </p>
-    */
-   ROLE_MANAGE_GAMES;
+    /**
+     * <p>
+     * May play games.
+     * </p>
+     */
+    ROLE_PLAYER,
+    /**
+     * <p>
+     * May add a user.
+     * </p>
+     */
+    ROLE_MANAGE_USERS,
+    /**
+     * <p>
+     * May create a game.
+     * </p>
+     */
+    ROLE_MANAGE_GAMES;
 
-   /**
-    * <p>
-    * The complete set of authorities.
-    * </p>
-    */
-   public static final Set<Authority> ALL = Collections
+    /**
+     * <p>
+     * The complete set of authorities.
+     * </p>
+     */
+    public static final Set<Authority> ALL = Collections
             .unmodifiableSet(EnumSet.allOf(Authority.class));
 
-   @Override
-   public String getAuthority() {
-      return name();
-   }
+    @Override
+    public String getAuthority() {
+        return name();
+    }
 
 }

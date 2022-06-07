@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2019-20.
+ * © Copyright Benedict Adamson 2019-20,22.
  *
  * This file is part of MC.
  *
@@ -18,25 +18,25 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.springframework.security.core.userdetails.UserDetails;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * <p>
- * Auxiliary test code for classes implementing the{@link UserDetails}
+ * Auxiliary test code for classes implementing the {@link UserDetails}
  * interface.
  * </p>
  */
 public class UserDetailsTest {
 
-   public static void assertInvariants(final UserDetails userDetails) {
-      assertNotNull(userDetails.getAuthorities(), "Non null, authorities");
-      assertNotNull(userDetails.getUsername(), "Non null, username");
-   }
+    public static void assertInvariants(final UserDetails userDetails) {
+        assertNotNull(userDetails.getAuthorities(), "Non null, authorities");
+        assertNotNull(userDetails.getUsername(), "Non null, username");
+    }
 
-   public static void assertInvariants(final UserDetails userDetails1,
-            final UserDetails userDetails2) {
-      // Do nothing
-   }
+    public static void assertInvariants(final UserDetails userDetails1,
+                                        final UserDetails userDetails2) {
+        // Do nothing
+    }
 }

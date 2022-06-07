@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020.
+ * © Copyright Benedict Adamson 2020,22.
  *
  * This file is part of MC.
  *
@@ -19,7 +19,7 @@ package uk.badamson.mc;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * <p>
@@ -29,17 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class ObjectTest {
 
-   public static void assertInvariants(final Object object) {
-      assertEquals(object, object, "An object is always equivalent to itself.");
-   }
+    public static void assertInvariants(final Object object) {
+        assertEquals(object, object, "An object is always equivalent to itself.");
+    }
 
-   public static void assertInvariants(final Object objectA,
-            final Object objectB) {
-      final var equals = objectA.equals(objectB);
-      assertTrue(!(equals && !objectB.equals(objectA)),
-               "Equality is symmetric");
-      assertTrue(!(equals && objectA.hashCode() != objectB.hashCode()),
-               "Equality implies equal hashCode");
-   }
+    public static void assertInvariants(final Object objectA,
+                                        final Object objectB) {
+        final var equals = objectA.equals(objectB);
+        assertFalse(equals && !objectB.equals(objectA), "Equality is symmetric");
+        assertFalse(equals && objectA.hashCode() != objectB.hashCode(), "Equality implies equal hashCode");
+    }
 
 }
