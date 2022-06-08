@@ -4,7 +4,9 @@
     <facet type="jpa" name="JPA">
       <configuration>
         <setting name="validation-enabled" value="true" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="MC-model" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -52,5 +54,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.3.20" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.20" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.3.20" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: uk.badamson:DBC-assertions:3.0.1" level="project" />
   </component>
 </module>

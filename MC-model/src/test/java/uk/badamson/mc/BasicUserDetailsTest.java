@@ -20,6 +20,7 @@ package uk.badamson.mc;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -444,13 +445,13 @@ public class BasicUserDetailsTest {
     private static final String PASSWORD_B = "password123";
 
     public static void assertInvariants(final BasicUserDetails user) {
-        ObjectTest.assertInvariants(user);// inherited
+        ObjectVerifier.assertInvariants(user);
         UserDetailsTest.assertInvariants(user);// inherited
     }
 
     public static void assertInvariants(final BasicUserDetails user1,
                                         final BasicUserDetails user2) {
-        ObjectTest.assertInvariants(user1, user2);// inherited
+        ObjectVerifier.assertInvariants(user1, user2);
         UserDetailsTest.assertInvariants(user1, user2);// inherited
     }
 

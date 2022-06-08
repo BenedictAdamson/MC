@@ -22,6 +22,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
+import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
+import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import javax.annotation.Nonnull;
 import java.time.Instant;
@@ -215,7 +217,8 @@ public class GameTest {
         }// class
 
         public static void assertInvariants(final Game.Identifier identifier) {
-            ObjectTest.assertInvariants(identifier);// inherited
+            // inherited
+            ObjectVerifier.assertInvariants(identifier);
 
             final var scenario = identifier.getScenario();
             final var created = identifier.getCreated();
@@ -225,7 +228,8 @@ public class GameTest {
 
         public static void assertInvariants(final Game.Identifier identifierA,
                                             final Game.Identifier identifierB) {
-            ObjectTest.assertInvariants(identifierA, identifierB);// inherited
+            // inherited
+            ObjectVerifier.assertInvariants(identifierA, identifierB);
 
             final var equals = identifierA.equals(identifierB);
             assertAll("Equality requires equal attributes",
@@ -285,17 +289,15 @@ public class GameTest {
     private static final Instant CREATED_B = Instant.now();
 
     public static void assertInvariants(final Game game) {
-        ObjectTest.assertInvariants(game);// inherited
+        ObjectVerifier.assertInvariants(game);
 
         assertAll("Not null",
                 () -> assertNotNull(game.getIdentifier(), "identifier"));
     }
 
     public static void assertInvariants(final Game gameA, final Game gameB) {
-        ObjectTest.assertInvariants(gameA, gameB);// inherited
-        assertEquals(gameA.equals(gameB),
-                gameA.getIdentifier().equals(gameB.getIdentifier()),
-                "Entity semantics, with the identifier serving as a unique identifier");
+        ObjectVerifier.assertInvariants(gameA, gameB);
+        EqualsSemanticsVerifier.assertEntitySemantics(gameA, gameB, Game::getIdentifier);
     }
 
     private static void constructor(@Nonnull final Game that) {

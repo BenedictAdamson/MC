@@ -20,6 +20,8 @@ package uk.badamson.mc;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
+import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import javax.annotation.Nonnull;
 import java.time.Instant;
@@ -256,7 +258,7 @@ public class GamePlayersTest {
     }
 
     public static void assertInvariants(final GamePlayers players) {
-        ObjectTest.assertInvariants(players);// inherited
+        ObjectVerifier.assertInvariants(players);
 
         final var users = players.getUsers();
         assertAll("Not null", () -> assertNotNull(players.getGame(), "game"),
@@ -266,10 +268,8 @@ public class GamePlayersTest {
 
     public static void assertInvariants(final GamePlayers playersA,
                                         final GamePlayers playersB) {
-        ObjectTest.assertInvariants(playersA, playersB);// inherited
-        assertEquals(playersA.equals(playersB),
-                playersA.getGame().equals(playersB.getGame()),
-                "Entity semantics, with the game serving as a unique identifier");
+        ObjectVerifier.assertInvariants(playersA, playersB);
+        EqualsSemanticsVerifier.assertEntitySemantics(playersA, playersB, GamePlayers::getGame);
     }
 
     private static void constructor(@Nonnull final Game.Identifier game,

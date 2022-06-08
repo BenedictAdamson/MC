@@ -22,6 +22,8 @@ import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
+import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -140,7 +142,7 @@ public class ScenarioTest {
     }
 
     public static void assertInvariants(final Scenario scenario) {
-        ObjectTest.assertInvariants(scenario);// inherited
+        ObjectVerifier.assertInvariants(scenario);
 
         final var identifier = scenario.getIdentifier();
         final var title = scenario.getTitle();
@@ -165,15 +167,13 @@ public class ScenarioTest {
 
     public static void assertInvariants(final Scenario scenarioA,
                                         final Scenario scenarioB) {
-        ObjectTest.assertInvariants(scenarioA, scenarioB);// inherited
-        assertEquals(scenarioA.equals(scenarioB),
-                scenarioA.getIdentifier().equals(scenarioB.getIdentifier()),
-                "Entity semantics, with the identifier serving as a unique identifier");
+        ObjectVerifier.assertInvariants(scenarioA, scenarioB);
+        EqualsSemanticsVerifier.assertEntitySemantics(scenarioA, scenarioB, Scenario::getIdentifier);
     }
 
-    private static Scenario constructor(@Nonnull final UUID identifier,
-                                        @Nonnull final String title, @Nonnull final String description,
-                                        @Nonnull final List<NamedUUID> characters) {
+    private static void constructor(@Nonnull final UUID identifier,
+                                    @Nonnull final String title, @Nonnull final String description,
+                                    @Nonnull final List<NamedUUID> characters) {
         final var scenario = new Scenario(identifier, title, description,
                 characters);
 
@@ -187,6 +187,5 @@ public class ScenarioTest {
                 () -> assertEquals(characters, scenario.getCharacters(),
                         "characters equal"));
 
-        return scenario;
     }
 }

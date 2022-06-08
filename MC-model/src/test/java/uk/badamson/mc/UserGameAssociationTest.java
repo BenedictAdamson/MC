@@ -20,6 +20,8 @@ package uk.badamson.mc;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
+import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.GameTest.IdentifierTest;
 
 import java.time.Instant;
@@ -138,7 +140,7 @@ public class UserGameAssociationTest {
             UUID.randomUUID(), Instant.now());
 
     public static void assertInvariants(final UserGameAssociation association) {
-        ObjectTest.assertInvariants(association);// inherited
+        ObjectVerifier.assertInvariants(association);
 
         final var game = association.getGame();
         assertAll("Not null", () -> assertNotNull(association.getUser(), "user"),
@@ -148,13 +150,13 @@ public class UserGameAssociationTest {
 
     public static void assertInvariants(final UserGameAssociation association1,
                                         final UserGameAssociation association2) {
-        ObjectTest.assertInvariants(association1, association2);// inherited
-        final var equals = association1.equals(association2);
-        assertAll("Value semantics requires equivalent attribute values",
-                () -> assertFalse(equals && !association1.getUser()
-                        .equals(association2.getUser()), "user"),
-                () -> assertFalse(equals && !association1.getGame()
-                        .equals(association2.getGame()), "game"));
+        ObjectVerifier.assertInvariants(association1, association2);
+        EqualsSemanticsVerifier.assertValueSemantics(
+                association1, association2, "user", UserGameAssociation::getUser
+        );
+        EqualsSemanticsVerifier.assertValueSemantics(
+                association1, association2, "game", UserGameAssociation::getGame
+        );
     }
 
     private static void constructor(final UUID user,

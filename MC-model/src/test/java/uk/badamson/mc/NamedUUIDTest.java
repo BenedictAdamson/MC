@@ -20,6 +20,8 @@ package uk.badamson.mc;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
+import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import java.util.UUID;
 
@@ -79,7 +81,7 @@ public class NamedUUIDTest {
     private static final String TITLE_B = "0123456789012345678901234567890123456789012345678901234567890123";// longest
 
     public static void assertInvariants(final NamedUUID identifier) {
-        ObjectTest.assertInvariants(identifier);// inherited
+        ObjectVerifier.assertInvariants(identifier);
         final var id = identifier.getId();
         final var title = identifier.getTitle();
         assertAll("Not null", () -> assertNotNull(id, "id"),
@@ -89,10 +91,8 @@ public class NamedUUIDTest {
 
     public static void assertInvariants(final NamedUUID identifierA,
                                         final NamedUUID identifierB) {
-        ObjectTest.assertInvariants(identifierA, identifierB);// inherited
-        assertEquals(identifierA.equals(identifierB),
-                identifierA.getId().equals(identifierB.getId()),
-                "Entity semantics, with the ID serving as a unique identifier");
+        ObjectVerifier.assertInvariants(identifierA, identifierB);
+        EqualsSemanticsVerifier.assertEntitySemantics(identifierA, identifierB, NamedUUID::getId);
     }
 
     private static void constructor(final UUID id, final String title) {
