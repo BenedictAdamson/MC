@@ -22,12 +22,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-/**
- * <p>
- * Auxiliary test code for classes implementing the {@link UserDetails}
- * interface.
- * </p>
- */
 public class UserDetailsTest {
 
     public static void assertInvariants(final UserDetails userDetails) {

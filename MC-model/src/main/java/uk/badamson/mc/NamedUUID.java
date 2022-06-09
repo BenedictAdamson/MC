@@ -111,10 +111,9 @@ public final class NamedUUID {
         if (this == that) {
             return true;
         }
-        if (!(that instanceof NamedUUID)) {
+        if (!(that instanceof final NamedUUID other)) {
             return false;
         }
-        final var other = (NamedUUID) that;
         return id.equals(other.getId());
     }
 

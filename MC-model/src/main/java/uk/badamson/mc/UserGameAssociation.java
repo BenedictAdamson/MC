@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020-21.
+ * © Copyright Benedict Adamson 2020-22.
  *
  * This file is part of MC.
  *
@@ -80,10 +80,9 @@ public final class UserGameAssociation {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof UserGameAssociation)) {
+        if (!(obj instanceof final UserGameAssociation other)) {
             return false;
         }
-        final var other = (UserGameAssociation) obj;
         return user.equals(other.user) && game.equals(other.game);
     }
 

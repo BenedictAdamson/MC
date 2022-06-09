@@ -79,8 +79,7 @@ public class UserTest {
 
             @Test
             public void nullPassword() {
-                final String password = null;
-                test(ID_A, USERNAME_A, password, Authority.ALL, true, true, true,
+                test(ID_A, USERNAME_A, null, Authority.ALL, true, true, true,
                         true);
             }
 
@@ -90,7 +89,7 @@ public class UserTest {
                         true);
             }
 
-            private User test(final UUID id, final String username,
+            private void test(final UUID id, final String username,
                               final String password, final Set<Authority> authorities,
                               final boolean accountNonExpired,
                               final boolean accountNonLocked,
@@ -98,7 +97,7 @@ public class UserTest {
                 final var basicUserDetails = new BasicUserDetails(username,
                         password, authorities, accountNonExpired, accountNonLocked,
                         credentialsNonExpired, enabled);
-                return constructor(id, basicUserDetails);
+                constructor(id, basicUserDetails);
             }
 
             @Test
@@ -270,8 +269,7 @@ public class UserTest {
 
             @Test
             public void c() {
-                final String password = null;
-                test(ID_A, USERNAME_A, password, Set.of(), true, false, true, true);
+                test(ID_A, USERNAME_A, null, Set.of(), true, false, true, true);
             }
 
             @Test
@@ -283,7 +281,7 @@ public class UserTest {
             @Test
             public void e() {
                 test(ID_B, USERNAME_A, PASSWORD_A, Authority.ALL, true, true, true,
-                        true);
+                        false);
             }
 
             private void test(final UUID id, final String username,
@@ -354,8 +352,7 @@ public class UserTest {
 
         @Test
         public void nullPassword() {
-            final String password = null;
-            constructor(ID_A, USERNAME_A, password, Authority.ALL, true, true,
+            constructor(ID_A, USERNAME_A, null, Authority.ALL, true, true,
                     true, true);
         }
 
@@ -459,8 +456,7 @@ public class UserTest {
 
         @Test
         public void nullPassword() {
-            final String password = null;
-            test(ID_A, USERNAME_A, password, Authority.ALL, true, true, true,
+            test(ID_A, USERNAME_A, null, Authority.ALL, true, true, true,
                     true);
         }
 
@@ -528,7 +524,7 @@ public class UserTest {
                 "equality determned by id value");
     }
 
-    private static User constructor(final UUID id,
+    private static void constructor(final UUID id,
                                     final BasicUserDetails basicUserDetails) {
         final var user = new User(id, basicUserDetails);
 
@@ -550,10 +546,9 @@ public class UserTest {
                 () -> assertEquals(basicUserDetails.isEnabled(),
                         user.isEnabled(), "enabled"));
 
-        return user;
     }
 
-    private static User constructor(final UUID id, final String username,
+    private static void constructor(final UUID id, final String username,
                                     final String password, final Set<Authority> authorities,
                                     final boolean accountNonExpired, final boolean accountNonLocked,
                                     final boolean credentialsNonExpired, final boolean enabled) {
@@ -577,10 +572,9 @@ public class UserTest {
                         "credentialsNonExpired"),
                 () -> assertEquals(enabled, user.isEnabled(), "enabled"));
 
-        return user;
     }
 
-    private static User createAdministrator(final String password) {
+    private static void createAdministrator(final String password) {
         final var administrator = User.createAdministrator(password);
 
         assertNotNull(administrator, "Not null, returned");// guard
@@ -601,6 +595,5 @@ public class UserTest {
                 () -> assertTrue(administrator.isCredentialsNonExpired(),
                         "credentialsNonExpired"),
                 () -> assertTrue(administrator.isEnabled(), "enabled"));
-        return administrator;
     }
 }

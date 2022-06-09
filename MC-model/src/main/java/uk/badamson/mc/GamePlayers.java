@@ -180,10 +180,9 @@ public class GamePlayers {
         if (this == that) {
             return true;
         }
-        if (!(that instanceof GamePlayers)) {
+        if (!(that instanceof final GamePlayers other)) {
             return false;
         }
-        final var other = (GamePlayers) that;
         return game.equals(other.game);
     }
 

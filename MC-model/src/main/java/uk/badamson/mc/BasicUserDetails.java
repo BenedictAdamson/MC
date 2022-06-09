@@ -25,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import java.util.Set;
  */
 public class BasicUserDetails implements UserDetails {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

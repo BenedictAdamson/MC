@@ -134,10 +134,9 @@ public class Scenario {
         if (this == that) {
             return true;
         }
-        if (!(that instanceof Scenario)) {
+        if (!(that instanceof final Scenario other)) {
             return false;
         }
-        final var other = (Scenario) that;
         return identifier.equals(other.getIdentifier());
     }
 

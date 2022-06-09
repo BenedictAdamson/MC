@@ -75,10 +75,9 @@ public class Game {
             if (this == obj) {
                 return true;
             }
-            if (!(obj instanceof Identifier)) {
+            if (!(obj instanceof final Identifier other)) {
                 return false;
             }
-            final var other = (Identifier) obj;
             /*
              * Two Identifiers are unlikely to have the same created value, so
              * check those values first.
@@ -186,10 +185,9 @@ public class Game {
         if (this == that) {
             return true;
         }
-        if (!(that instanceof Game)) {
+        if (!(that instanceof final Game other)) {
             return false;
         }
-        final var other = (Game) that;
         return identifier.equals(other.getIdentifier());
     }
 
