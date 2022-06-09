@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2019-20.
+ * © Copyright Benedict Adamson 2019-20,22.
  *
  * This file is part of MC.
  *
@@ -101,7 +101,7 @@ public class BasicUserDetailsTest {
                 test(USERNAME_B, PASSWORD_A, Authority.ALL, true, true, true, true);
             }
 
-        }// class
+        }
 
         @Nested
         public class TwoDifferentAttributes {
@@ -245,7 +245,7 @@ public class BasicUserDetailsTest {
                 test(userA, userB);
             }
 
-        }// class
+        }
 
         @Test
         public void authorities() {
@@ -300,7 +300,7 @@ public class BasicUserDetailsTest {
                     true);
         }
 
-    }// class
+    }
 
     @Nested
     public class CreateAdministrator {
@@ -319,7 +319,7 @@ public class BasicUserDetailsTest {
         public void nullPassword() {
             createAdministrator(null);
         }
-    }// class
+    }
 
     @Nested
     public class Json {
@@ -400,7 +400,7 @@ public class BasicUserDetailsTest {
         public void username() {
             test(USERNAME_B, PASSWORD_B, Authority.ALL, true, true, true, true);
         }
-    }// class
+    }
 
     @Nested
     public class SetPassword {
@@ -434,7 +434,7 @@ public class BasicUserDetailsTest {
 
             setPassword(userDetails, password);
         }
-    }// class
+    }
 
     private static final String USERNAME_A = "John";
 

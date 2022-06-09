@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2019-20.
+ * © Copyright Benedict Adamson 2019-20,22.
  *
  * This file is part of MC.
  *
@@ -111,7 +111,7 @@ public class UserTest {
                         true);
             }
 
-        }// class
+        }
 
         @Nested
         public class TwoDifferentAttributes {
@@ -255,7 +255,7 @@ public class UserTest {
                 test(userA, userB);
             }
 
-        }// class
+        }
 
         @Nested
         public class TwoEquivalent {
@@ -312,7 +312,7 @@ public class UserTest {
                 assertEquals(user1, user2);
             }
 
-        }// class
+        }
 
         @Test
         public void authorities() {
@@ -396,7 +396,7 @@ public class UserTest {
                     true, true);
         }
 
-    }// class
+    }
 
     @Nested
     public class CreateAdministrator {
@@ -415,7 +415,7 @@ public class UserTest {
         public void nullPassword() {
             createAdministrator(null);
         }
-    }// class
+    }
 
     @Nested
     public class Json {
@@ -507,7 +507,7 @@ public class UserTest {
             test(ID_A, USERNAME_B, PASSWORD_B, Authority.ALL, true, true, true,
                     true);
         }
-    }// class
+    }
 
     private static final UUID ID_A = UUID.randomUUID();
 

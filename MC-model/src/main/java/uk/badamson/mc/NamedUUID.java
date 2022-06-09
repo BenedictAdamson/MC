@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2020-21.
+ * © Copyright Benedict Adamson 2020-22.
  *
  * This file is part of MC.
  *
@@ -149,4 +149,4 @@ public final class NamedUUID {
     public int hashCode() {
         return id.hashCode();
     }
-}// class
+}

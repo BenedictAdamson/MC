@@ -59,7 +59,7 @@ public class NamedUUIDTest {
             assertInvariants(identifierA, identifierB);
             assertNotEquals(identifierA, identifierB);
         }
-    }// class
+    }
 
     @Nested
     public class Constructor {
@@ -73,7 +73,7 @@ public class NamedUUIDTest {
         public void b() {
             constructor(ID_B, TITLE_B);
         }
-    }// class
+    }
 
     private static final UUID ID_A = UUID.randomUUID();
     private static final UUID ID_B = UUID.randomUUID();

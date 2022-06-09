@@ -75,7 +75,7 @@ public class GamePlayersTest {
             addUser(players, character, user);
         }
 
-    }// class
+    }
 
     @Nested
     public class Construct2 {
@@ -115,7 +115,7 @@ public class GamePlayersTest {
             assertInvariants(playersA, playersB);
             assertEquals(playersA, playersB);
         }
-    }// class
+    }
 
     @Nested
     public class ConstructCopy {
@@ -136,7 +136,7 @@ public class GamePlayersTest {
 
             constructor(players0);
         }
-    }// class
+    }
 
     @Nested
     public class ConstructWithAttributes {
@@ -150,7 +150,7 @@ public class GamePlayersTest {
         public void b() {
             constructor(GAME_B, true, USERS_B);
         }
-    }// class
+    }
 
     @Nested
     public class EndRecruitment {
@@ -170,7 +170,7 @@ public class GamePlayersTest {
 
             endRecruitment(players);
         }
-    }// class
+    }
 
     @Nested
     public class IsValidUsers {
@@ -193,7 +193,7 @@ public class GamePlayersTest {
                     CHARACTER_ID_B, USER_ID_B);
             assertTrue(GamePlayers.isValidUsers(users));
         }
-    }// class
+    }
 
     @Nested
     public class Json {
@@ -222,7 +222,7 @@ public class GamePlayersTest {
                             "recruiting"),
                     () -> assertEquals(users, deserialized.getUsers(), "users"));
         }
-    }// class
+    }
 
     private static final UUID USER_ID_A = UUID.randomUUID();
     private static final UUID USER_ID_B = UUID.randomUUID();

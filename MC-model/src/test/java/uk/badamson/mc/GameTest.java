@@ -63,7 +63,7 @@ public class GameTest {
             assertInvariants(gameA, gameB);
             assertEquals(gameA, gameB);
         }
-    }// class
+    }
 
     @Nested
     public class ConstructCopy {
@@ -86,7 +86,7 @@ public class GameTest {
 
             constructor(game0);
         }
-    }// class
+    }
 
     @Nested
     public class ConstructWithAttributes {
@@ -102,7 +102,7 @@ public class GameTest {
             final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
             constructor(identifier, Game.RunState.RUNNING);
         }
-    }// class
+    }
 
     /**
      * <p>
@@ -142,7 +142,7 @@ public class GameTest {
                 assertInvariants(identifierA, identifierB);
                 assertEquals(identifierA, identifierB);
             }
-        }// class
+        }
 
         @Nested
         public class Constructor {
@@ -156,7 +156,7 @@ public class GameTest {
             public void b() {
                 constructor(SCENARIO_ID_B, CREATED_B);
             }
-        }// class
+        }
 
         @Nested
         public class JSON {
@@ -184,7 +184,7 @@ public class GameTest {
                         () -> assertEquals(created, identifier.getCreated(),
                                 "created"));
             }
-        }// class
+        }
 
         @Nested
         public class Serialize {
@@ -214,7 +214,7 @@ public class GameTest {
                         containsString(expectedSerializedCreated));
             }
 
-        }// class
+        }
 
         public static void assertInvariants(final Game.Identifier identifier) {
             // inherited
@@ -250,7 +250,7 @@ public class GameTest {
                     () -> assertSame(created, identifier.getCreated(),
                             "created"));
         }
-    }// class
+    }
 
     @Nested
     public class Json {
@@ -281,7 +281,7 @@ public class GameTest {
                     () -> assertEquals(runState, deserialized.getRunState(),
                             "runState"));
         }
-    }// class
+    }
 
     private static final UUID SCENARIO_ID_A = UUID.randomUUID();
     private static final UUID SCENARIO_ID_B = UUID.randomUUID();

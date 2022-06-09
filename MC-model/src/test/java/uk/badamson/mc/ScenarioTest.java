@@ -64,7 +64,7 @@ public class ScenarioTest {
             assertEquals(scenarioA, scenarioB);
         }
 
-    }// class
+    }
 
     @Nested
     public class Constructor {
@@ -78,7 +78,7 @@ public class ScenarioTest {
         public void b() {
             constructor(ID_B, TITLE_B, DESCRIPTION_B, CHARACTERS_B);
         }
-    }// class
+    }
 
     @Nested
     public class Json {
@@ -110,7 +110,7 @@ public class ScenarioTest {
                     () -> assertEquals(characters, scenario.getCharacters(),
                             "characters"));
         }
-    }// class
+    }
 
     private static final UUID ID_A = UUID.randomUUID();
     private static final UUID ID_B = UUID.randomUUID();

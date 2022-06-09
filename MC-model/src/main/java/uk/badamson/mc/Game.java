@@ -125,11 +125,11 @@ public class Game {
             return scenario + "@" + created;
         }
 
-    }// class
+    }
 
     public enum RunState {
         WAITING_TO_START, RUNNING, STOPPED
-    }// class
+    }
 
     @Id
     @org.springframework.data.annotation.Id

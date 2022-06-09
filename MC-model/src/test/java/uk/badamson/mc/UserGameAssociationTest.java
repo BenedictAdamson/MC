@@ -60,7 +60,7 @@ public class UserGameAssociationTest {
                 assertInvariants(association1, association2);
                 assertEquals(association1, association2);
             }
-        }// class
+        }
 
         @Nested
         public class TwoDifferent {
@@ -92,7 +92,7 @@ public class UserGameAssociationTest {
                 assertNotEquals(association1, association2);
             }
 
-        }// class
+        }
 
         @Test
         public void a() {
@@ -104,7 +104,7 @@ public class UserGameAssociationTest {
             constructor(USER_B, GAME_B);
         }
 
-    }// class
+    }
 
     @Nested
     public class Json {
@@ -127,7 +127,7 @@ public class UserGameAssociationTest {
             assertInvariants(association, deserialized);
             assertEquals(association, deserialized);
         }
-    }// class
+    }
 
     private static final UUID USER_A = UUID.randomUUID();
 
