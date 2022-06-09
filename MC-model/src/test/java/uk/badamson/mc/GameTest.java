@@ -33,11 +33,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * <p>
- * Unit tests for the class {@link Game}.
- * </p>
- */
 public class GameTest {
 
     @Nested
@@ -104,11 +99,6 @@ public class GameTest {
         }
     }
 
-    /**
-     * <p>
-     * Unit tests for the {@link Game.Identifier} class.
-     * </p>
-     */
     public static class IdentifierTest {
 
         @Nested

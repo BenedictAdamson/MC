@@ -33,11 +33,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * <p>
- * Unit tests for the class {@link Scenario}.
- * </p>
- */
 public class ScenarioTest {
 
     @Nested

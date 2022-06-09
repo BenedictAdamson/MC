@@ -27,11 +27,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * <p>
- * Unit tests for the class {@link NamedUUID}.
- * </p>
- */
 public class NamedUUIDTest {
 
     @Nested

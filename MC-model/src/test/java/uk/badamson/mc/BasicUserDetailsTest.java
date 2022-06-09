@@ -28,11 +28,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * <p>
- * Unit tests and auxiliary test code for the {@link BasicUserDetails} class.
- * </p>
- */
 public class BasicUserDetailsTest {
 
     @Nested
