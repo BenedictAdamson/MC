@@ -957,7 +957,7 @@ public class GamePlayersServiceTest {
       final Set<UUID> scenarioCharacterIds = scenarioCharacters.stream()
               .map(NamedUUID::getId).collect(toUnmodifiableSet());
       final var gamePlayers0 = service.getGamePlayersAsGameManager(game);
-      final var users0 = gamePlayers0.isPresent()
+      final Map<UUID,UUID> users0 = gamePlayers0.isPresent()
               ? gamePlayers0.get().getUsers()
               : Map.of();
       final var alreadyPlaying = users0.containsValue(user);
@@ -988,22 +988,24 @@ public class GamePlayersServiceTest {
               firstUnplayedCharacterId0.isPresent());// guard
       assertThat("The players of the game includes the user.",
               characterPlayed.isPresent());// guard
-      assertThat("The current game of the user is the given game.", currentGame,
-              is(Optional.of(game)));
-      assertThat(
-              "The character played by the player is one of the characters of the scenario of the game.",
-              scenarioCharacterIds, hasItem(characterPlayed.get()));
-      assertThat(
-              "The user is already a player, or the character played by the player did not previously have a player.",
-              alreadyPlaying || !users0.containsKey(characterPlayed.get()));
-      assertThat(
-              "The user is already a player, or the character played by the player is the first character that did not previously have a player.",
-              alreadyPlaying || characterPlayed.get()
-                      .equals(firstUnplayedCharacterId0.get()));
-      assertThat(
-              "If the scenario can not allow any more players, the game is no longer recruiting players.",
-              gamePlayers.isRecruiting() == users.size() < scenarioCharacters
-                      .size());
+      assertAll(
+              () -> assertThat("The current game of the user is the given game.", currentGame,
+                      is(Optional.of(game))),
+              () -> assertThat(
+                      "The character played by the player is one of the characters of the scenario of the game.",
+                      scenarioCharacterIds, hasItem(characterPlayed.get())),
+              () -> assertThat(
+                      "The user is already a player, or the character played by the player did not previously have a player.",
+                      alreadyPlaying || !users0.containsKey(characterPlayed.get())),
+              () -> assertThat(
+                      "The user is already a player, or the character played by the player is the first character that did not previously have a player.",
+                      alreadyPlaying || characterPlayed.get()
+                              .equals(firstUnplayedCharacterId0.get())),
+              () -> assertThat(
+                      "If the scenario can not allow any more players, the game is no longer recruiting players.",
+                      gamePlayers.isRecruiting() == users.size() < scenarioCharacters
+                              .size())
+      );
    }
 
    private final ScenarioService scenarioServiceA = new ScenarioService();

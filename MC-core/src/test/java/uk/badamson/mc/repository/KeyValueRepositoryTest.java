@@ -29,6 +29,9 @@ public class KeyValueRepositoryTest {
 
       protected final Map<KEY, VALUE> store = new ConcurrentHashMap<>();
 
+      @Nonnull
+      protected abstract VALUE copy(@Nonnull VALUE that);
+
       @Override
       public final long count() {
          return store.size();
@@ -56,21 +59,26 @@ public class KeyValueRepositoryTest {
       public final Iterable<VALUE> findAll() {
          // Return copies of the values, so we are isolated from downstream
          // mutations
-         return List.copyOf(store.values());
+         return store.values().stream().map(this::copy).toList();
       }
 
       @Nonnull
       @Override
       public final Optional<VALUE> find(@Nonnull final KEY identifier) {
          Objects.requireNonNull(identifier, "identifier");
-         return Optional.ofNullable(store.get(identifier));
+         final var stored = store.get(identifier);
+         if (stored == null) {
+            return Optional.empty();
+         } else {
+            return Optional.of(copy(stored));
+         }
       }
 
       @Override
       public final void save(@Nonnull final KEY id, @Nonnull VALUE value) {
          Objects.requireNonNull(id, "id");
          Objects.requireNonNull(value, "value");
-         store.put(id, value);
+         store.put(id, copy(value));
       }
 
    }

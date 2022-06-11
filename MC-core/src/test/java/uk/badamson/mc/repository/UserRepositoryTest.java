@@ -45,6 +45,11 @@ public class UserRepositoryTest {
                   .filter(u -> username.equals(u.getUsername())).findAny();
       }
 
+      @Nonnull
+      @Override
+      protected User copy(@Nonnull User that) {
+         return new User(that.getId(), that);
+      }
    }
 
    public static void assertInvariants(final UserRepository repository) {

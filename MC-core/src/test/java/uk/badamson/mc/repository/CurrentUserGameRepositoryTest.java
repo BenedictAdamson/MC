@@ -21,6 +21,7 @@ package uk.badamson.mc.repository;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.UserGameAssociation;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class CurrentUserGameRepositoryTest {
@@ -29,6 +30,11 @@ public class CurrentUserGameRepositoryTest {
             extends KeyValueRepositoryTest.AbstractFake<UUID, UserGameAssociation>
             implements CurrentUserGameRepository {
 
+      @Nonnull
+      @Override
+      protected UserGameAssociation copy(@Nonnull UserGameAssociation that) {
+         return that;
+      }
    }
 
    public static void assertInvariants(

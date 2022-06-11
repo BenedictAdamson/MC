@@ -21,12 +21,21 @@ package uk.badamson.mc.repository;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.Game;
 import uk.badamson.mc.GamePlayers;
+import uk.badamson.mc.UserGameAssociation;
+
+import javax.annotation.Nonnull;
 
 public class GamePlayersRepositoryTest {
 
    public static final class Fake extends
            KeyValueRepositoryTest.AbstractFake<Game.Identifier, GamePlayers>
             implements GamePlayersRepository {
+
+      @Nonnull
+      @Override
+      protected GamePlayers copy(@Nonnull GamePlayers that) {
+         return new GamePlayers(that);
+      }
 
    }
 

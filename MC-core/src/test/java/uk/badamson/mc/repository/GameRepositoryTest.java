@@ -21,12 +21,19 @@ package uk.badamson.mc.repository;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.Game;
 
+import javax.annotation.Nonnull;
+
 public class GameRepositoryTest {
 
    public static final class Fake
             extends KeyValueRepositoryTest.AbstractFake<Game.Identifier, Game>
             implements GameRepository {
 
+      @Nonnull
+      @Override
+      protected Game copy(@Nonnull Game that) {
+         return new Game(that);
+      }
    }
 
    public static void assertInvariants(final GameRepository repository) {
