@@ -44,7 +44,7 @@ public class ScenarioServiceTest {
         return service.getScenarioIdentifiers().collect(toUnmodifiableSet());
     }
 
-    public static Stream<NamedUUID> getNamedScenarioIdentifiers(
+    public static Set<NamedUUID> getNamedScenarioIdentifiers(
             final ScenarioService service) {
         final Set<UUID> expectedIdentifiers = service.getScenarioIdentifiers()
                 .collect(toUnmodifiableSet());
@@ -52,24 +52,14 @@ public class ScenarioServiceTest {
         final var scenarios = service.getNamedScenarioIdentifiers();
 
         assertInvariants(service);
-        assertNotNull(scenarios, "Always returns a (non null) stream.");
-        final var scenariosList = scenarios.toList();
-        final Set<NamedUUID> scenariosSet;
-        try {
-            scenariosSet = scenariosList.stream().collect(toUnmodifiableSet());
-        } catch (final NullPointerException e) {
-            throw new AssertionError(
-                    "The returned stream will not include a null element", e);
-        }
-        assertEquals(scenariosSet.size(), scenariosList.size(),
-                "Does not contain duplicates.");
-        final var identifiersOfScenarios = scenariosSet.stream()
+        assertNotNull(scenarios, "Always returns a (non null) set.");
+        final var identifiersOfScenarios = scenarios.stream()
                 .map(NamedUUID::getId).collect(toUnmodifiableSet());
         assertThat(
                 "Contains a named identifier corresponding to each scenario identifier",
                 identifiersOfScenarios, is(expectedIdentifiers));
 
-        return scenariosList.stream();
+        return scenarios;
     }
 
     public static Optional<Scenario> getScenario(
@@ -116,7 +106,7 @@ public class ScenarioServiceTest {
 
         final var namedIds = getNamedScenarioIdentifiers(service);
 
-        final var idsOfNamedIds = namedIds.map(NamedUUID::getId)
+        final var idsOfNamedIds = namedIds.stream().map(NamedUUID::getId)
                 .collect(toUnmodifiableSet());
         assertEquals(ids, idsOfNamedIds,
                 "Contains a named identifier corresponding to each scenario identifier.");

@@ -93,10 +93,10 @@ public class GameServiceTest {
         return game;
     }
 
-    public static Stream<Instant> getCreationTimesOfGamesOfScenario(
+    public static Set<Instant> getCreationTimesOfGamesOfScenario(
             final GameService service, final UUID scenario)
             throws NoSuchElementException {
-        final Stream<Instant> times;
+        final Set<Instant> times;
         try {
             times = service.getCreationTimesOfGamesOfScenario(scenario);
         } catch (final NoSuchElementException e) {
@@ -105,18 +105,8 @@ public class GameServiceTest {
         }
 
         assertInvariants(service);
-        assertNotNull(times, "Always returns a (non null) stream.");// guard
-        final var timesList = times.toList();
-        final Set<Instant> timesSet;
-        try {
-            timesSet = timesList.stream().collect(toUnmodifiableSet());
-        } catch (final NullPointerException e) {
-            throw new AssertionError(
-                    "The returned stream will not include a null element", e);
-        }
-        assertEquals(timesSet.size(), timesList.size(),
-                "Does not contain duplicates.");
-        return timesList.stream();
+        assertNotNull(times, "Always returns a (non null) set.");
+        return times;
     }
 
     public static Optional<Game> getGame(final GameService service,
@@ -242,7 +232,7 @@ public class GameServiceTest {
             final var result = getCreationTimesOfGamesOfScenario(service,
                     scenario);
 
-            assertEquals(0L, result.count(), "empty");
+            assertThat(result, empty());
         }
 
         @Test
@@ -256,10 +246,7 @@ public class GameServiceTest {
             final var result = getCreationTimesOfGamesOfScenario(service,
                     scenario);
 
-            final var list = result.collect(toList());
-            assertAll(() -> assertEquals(1L, list.size(), "count"),
-                    () -> assertThat("has creation time", list,
-                            hasItem(created)));
+            assertThat(result, contains(created));
         }
 
         @Test

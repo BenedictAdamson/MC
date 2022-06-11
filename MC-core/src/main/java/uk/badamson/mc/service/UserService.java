@@ -51,6 +51,21 @@ public class UserService {
                 passwordEncoder.encode(administratorPassword));
     }
 
+    /**
+     * <p>
+     * Create a new user, having given {@linkplain BasicUserDetails user
+     * details}, and add them to the {@linkplain #getUsers() list of users}.
+     * </p>
+     *
+     * @param userDetails The details of the user to add, with an unencrypted
+     *                    {@linkplain BasicUserDetails#getPassword() password}.
+     * @throws IllegalArgumentException If the {@linkplain BasicUserDetails#getUsername() username} of
+     *                                  {@code userDetails} indicates it is the
+     *                                  {@linkplain User#ADMINISTRATOR_USERNAME administrator}.
+     * @throws UserExistsException      If the {@linkplain BasicUserDetails#getUsername() username} of
+     *                                  {@code userDetails} is already the username of a user, and is
+     *                                  not the administrator.
+     */
     @Nonnull
     public User add(@Nonnull final BasicUserDetails userDetails) {
         Objects.requireNonNull(userDetails, "userDetails");

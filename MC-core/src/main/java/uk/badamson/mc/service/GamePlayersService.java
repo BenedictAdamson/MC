@@ -55,8 +55,37 @@ public final class GamePlayersService {
         return new GamePlayers(id, true, NO_USERS);
     }
 
+    private static GamePlayers filterForUser(
+            @Nonnull final GamePlayers fullInformation, @Nonnull final UUID user) {
+        final var allUsers = fullInformation.getUsers();
+        final Map<UUID, UUID> filteredUsers = allUsers.entrySet().stream()
+                .filter(entry -> user.equals(entry.getValue()))
+                .collect(toUnmodifiableMap(Map.Entry::getKey,
+                        Map.Entry::getValue));
+        if (allUsers.size() == filteredUsers.size()) {
+            return fullInformation;
+        } else {
+            return new GamePlayers(fullInformation.getGame(), false, filteredUsers);
+        }
+    }
+
+    /**
+     * <p>
+     * Indicate that a game is not {@linkplain GamePlayers#isRecruiting()
+     * recruiting} players (any longer).
+     * </p>
+     * <p>
+     * This mutator is idempotent: the mutator does not have the precondition
+     * that the game is recruiting.
+     * </p>
+     *
+     * @return The mutated game players' information.
+     * @throws NoSuchElementException If the associated {@linkplain #getGameService() game service}
+     *                                indicates that a {@linkplain GameService#getGame(Identifier)
+     *                                game} with the given ID does not exist.
+     */
     @Nonnull
-    public GamePlayers endRecruitment(@Nonnull final Identifier id)
+    public GamePlayers endRecruitment(@Nonnull final Game.Identifier id)
             throws NoSuchElementException {
         final var gamePlayersOptional = get(id);
         if (gamePlayersOptional.isEmpty()) {
@@ -80,16 +109,17 @@ public final class GamePlayersService {
         return result;
     }
 
-    private Optional<Identifier> getCurrent(final UUID user) {
-        Objects.requireNonNull(user, "user");
-        final var association = currentUserGameRepository.find(user);
-        if (association.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(association.get().getGame());
-        }
+    @Nonnull
+    private Optional<Game.Identifier> getCurrent(@Nonnull final UUID user) {
+        return currentUserGameRepository.find(user).map(UserGameAssociation::getGame);
     }
 
+    /**
+     * <p>
+     * The {@linkplain Game#getIdentifier() unique ID} of the <i>current game</i>
+     * of a user who has a given {@linkplain User#getId() unique ID}.
+     * </p>
+     */
     @Nonnull
     public Optional<Identifier> getCurrentGameOfUser(
             @Nonnull final UUID userId) {
@@ -106,32 +136,35 @@ public final class GamePlayersService {
         return currentUserGameRepository;
     }
 
+    /**
+     * <p>
+     * Retrieve complete information about the game players for the game that has
+     * a given unique ID.
+     * </p>
+     */
     @Nonnull
     public Optional<GamePlayers> getGamePlayersAsGameManager(
-            @Nonnull final Identifier id) {
+            @Nonnull final Game.Identifier id) {
         return get(id);
     }
 
+    /**
+     * <p>
+     * Retrieve information about the game players for the game that has a given
+     * unique ID, suitable for a non game manager.
+     * </p>
+     * <ul>
+     * <li>The collection of {@linkplain GamePlayers#getUsers() players} is
+     * either empty or contains only the requesting user: non game managers may
+     * not see the complete list of players of a game, but may see that they are
+     * a player of a game.</li>
+     * </ul>
+     */
     @Nonnull
     public Optional<GamePlayers> getGamePlayersAsNonGameManager(
-            @Nonnull final Identifier id, @Nonnull final UUID user) {
+            @Nonnull final Game.Identifier gameId, @Nonnull final UUID user) {
         Objects.requireNonNull(user, "user");
-
-        final var fullInformation = get(id);
-        if (fullInformation.isEmpty()) {
-            return fullInformation;
-        } else {
-            final var allUsers = fullInformation.get().getUsers();
-            final Map<UUID, UUID> filteredUsers = allUsers.entrySet().stream()
-                    .filter(entry -> user.equals(entry.getValue()))
-                    .collect(toUnmodifiableMap(Map.Entry::getKey,
-                            Map.Entry::getValue));
-            if (allUsers.size() == filteredUsers.size()) {
-                return fullInformation;
-            } else {
-                return Optional.of(new GamePlayers(id, false, filteredUsers));
-            }
-        }
+        return get(gameId).map(g -> filterForUser(g, user));
     }
 
     @Nonnull
@@ -216,6 +249,27 @@ public final class GamePlayersService {
         return userService;
     }
 
+    /**
+     * <p>
+     * Whether the {@link #userJoinsGame(UUID, Identifier)} operation would
+     * succeed
+     * </p>
+     * <p>
+     * That is, whether all the following are true.
+     * </p>
+     * <ul>
+     * <li>The{@code user} is the ID of a known user, according to the associated
+     * {@linkplain #getUserService() user service}.</li>
+     * <li>The {@code game} is the ID of a known game, according to the
+     * associated {@linkplain #getGameService() game service}.</li>
+     * <li>The {@code user} is not already playing a different game.</li>
+     * <li>The {@code user} {@linkplain User#getAuthorities() has}
+     * {@linkplain Authority#ROLE_PLAYER permission} to play games. Note that the
+     * given user need not be the current user.</li>
+     * <li>The user has already joined the game <em>or</em> the game is
+     * {@linkplain GamePlayers#isRecruiting() recruiting} players.</li>
+     * </ul>
+     */
     public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final Identifier game) {
         try {
             getUserJoinsGameState(user, game);
@@ -226,6 +280,29 @@ public final class GamePlayersService {
         return true;
     }
 
+    /**
+     * <p>
+     * Have a {@linkplain User user} become one of the
+     * {@linkplain GamePlayers#getUsers() players of a game}.
+     * </p>
+     *
+     * @throws NoSuchElementException      <ul>
+     *                                                <li>If {@code user} is not the ID of a known user, according to
+     *                                                the associated {@linkplain #getUserService() user
+     *                                                service}.</li>
+     *                                                <li>If {@code game} is not the ID of a game, according to the
+     *                                                associated {@linkplain #getGameService() game service}.</li>
+     *                                                </ul>
+     * @throws UserAlreadyPlayingException If the {@code user} is already playing a different game.
+     * @throws SecurityException           If the {@code user} does not {@linkplain User#getAuthorities()
+     *                                     have} {@linkplain Authority#ROLE_PLAYER permission} to play
+     *                                     games. Note that the given user need not be the current user.
+     * @throws IllegalGameStateException   <ul>
+     *                                                <li>If the game is not {@linkplain GamePlayers#isRecruiting()
+     *                                                recruiting} players.</li>
+     *                                                <li>If the game has no characters free.</li>
+     *                                                </ul>
+     */
     public void userJoinsGame(@Nonnull final UUID userId,
                               @Nonnull final Identifier gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,

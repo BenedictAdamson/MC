@@ -26,10 +26,8 @@ import javax.annotation.Nonnull;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -50,6 +48,17 @@ public final class GameService {
                 "scenarioService");
     }
 
+    /**
+     * <p>
+     * Create a new game for a given scenario.
+     * </p>
+     *
+     * @throws NoSuchElementException If {@code scenario} is not the ID of a recognised scenario.
+     *                                That is, if {@code scenario} is not one of the
+     *                                {@linkplain ScenarioService#getScenarioIdentifiers()
+     *                                identifiers} of the associated
+     *                                {@linkplain #getScenarioService() scenario service}.
+     */
     @Nonnull
     public Game create(@Nonnull final UUID scenario) throws NoSuchElementException {
         requireKnownScenario(scenario);// read-and-check
@@ -68,13 +77,30 @@ public final class GameService {
         return clock;
     }
 
+    /**
+     * <p>
+     * The creation times of the games that are for a given
+     * scenario.
+     * </p>
+     * <p>
+     * The given {@code scenario} ID could be combined with the returned creation
+     * times to create the identifiers of the games for the given scenario.
+     * </p>
+     *
+     * @throws NoSuchElementException If {@code scenario} is not the ID of a recognised scenario.
+     *                                That is, if {@code scenario} is not one of the
+     *                                {@linkplain ScenarioService#getScenarioIdentifiers()
+     *                                identifiers} of the associated
+     *                                {@linkplain #getScenarioService() scenario service}.
+     */
     @Nonnull
-    public Stream<Instant> getCreationTimesOfGamesOfScenario(@Nonnull final UUID scenario)
+    public Set<Instant> getCreationTimesOfGamesOfScenario(@Nonnull final UUID scenario)
             throws NoSuchElementException {
         requireKnownScenario(scenario);// read-and-check
         return getGameIdentifiers()// read
                 .filter(id -> scenario.equals(id.getScenario()))
-                .map(Identifier::getCreated);
+                .map(Identifier::getCreated)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     @Nonnull

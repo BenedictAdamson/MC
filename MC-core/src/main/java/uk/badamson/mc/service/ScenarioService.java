@@ -23,6 +23,7 @@ import uk.badamson.mc.Scenario;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScenarioService {
@@ -37,8 +38,8 @@ public class ScenarioService {
             .of(SCENARIO.getIdentifier(), SCENARIO);
 
     @Nonnull
-    public Stream<NamedUUID> getNamedScenarioIdentifiers() {
-        return SCENARIOS.values().stream().map(Scenario::getNamedUUID);
+    public Set<NamedUUID> getNamedScenarioIdentifiers() {
+        return SCENARIOS.values().stream().map(Scenario::getNamedUUID).collect(Collectors.toUnmodifiableSet());
     }
 
     @Nonnull
