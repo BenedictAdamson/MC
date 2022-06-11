@@ -21,27 +21,26 @@ package uk.badamson.mc.repository;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.Game;
 import uk.badamson.mc.GamePlayers;
-import uk.badamson.mc.UserGameAssociation;
 
 import javax.annotation.Nonnull;
 
 public class GamePlayersRepositoryTest {
 
-   public static final class Fake extends
-           KeyValueRepositoryTest.AbstractFake<Game.Identifier, GamePlayers>
+    public static void assertInvariants(final GameRepository repository) {
+        ObjectVerifier.assertInvariants(repository);// inherited
+        KeyValueRepositoryTest.assertInvariants(repository);// inherited
+    }
+
+    public static final class Fake extends
+            KeyValueRepositoryTest.AbstractFake<Game.Identifier, GamePlayers>
             implements GamePlayersRepository {
 
-      @Nonnull
-      @Override
-      protected GamePlayers copy(@Nonnull GamePlayers that) {
-         return new GamePlayers(that);
-      }
+        @Nonnull
+        @Override
+        protected GamePlayers copy(@Nonnull GamePlayers that) {
+            return new GamePlayers(that);
+        }
 
-   }
-
-   public static void assertInvariants(final GameRepository repository) {
-      ObjectVerifier.assertInvariants(repository);// inherited
-      KeyValueRepositoryTest.assertInvariants(repository);// inherited
-   }
+    }
 
 }

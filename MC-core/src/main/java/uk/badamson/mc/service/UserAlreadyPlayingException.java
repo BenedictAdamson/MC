@@ -26,8 +26,8 @@ package uk.badamson.mc.service;
  */
 public final class UserAlreadyPlayingException extends IllegalPlayerStateException {
 
-   public UserAlreadyPlayingException() {
-      super("User already playing");
-   }
+    public UserAlreadyPlayingException() {
+        super("User already playing");
+    }
 
 }

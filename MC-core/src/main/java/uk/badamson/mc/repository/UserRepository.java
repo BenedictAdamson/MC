@@ -24,9 +24,9 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository  extends KeyValueRepository<UUID, User> {
+public interface UserRepository extends KeyValueRepository<UUID, User> {
 
-   @Nonnull
-   Optional<User> findByUsername(@Nonnull String username);
+    @Nonnull
+    Optional<User> findByUsername(@Nonnull String username);
 
 }

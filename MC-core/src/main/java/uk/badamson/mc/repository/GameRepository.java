@@ -19,8 +19,7 @@ package uk.badamson.mc.repository;
  */
 
 import uk.badamson.mc.Game;
-import uk.badamson.mc.GamePlayers;
 
-public interface GameRepository  extends KeyValueRepository<Game.Identifier, Game> {
+public interface GameRepository extends KeyValueRepository<Game.Identifier, Game> {
 
 }

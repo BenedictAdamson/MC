@@ -36,119 +36,119 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ScenarioServiceTest {
 
-   @Nested
-   public class GetScenario {
+    public static void assertInvariants(final ScenarioService service) {
+        ObjectVerifier.assertInvariants(service);// inherited
+    }
 
-      @Test
-      public void absent() {
-         final var service = new ScenarioService();
-         final var ids = getIds(service);
-         var id = UUID.randomUUID();
-         while (ids.contains(id)) {
-            id = UUID.randomUUID();
-         }
+    private static Set<UUID> getIds(final ScenarioService service) {
+        return service.getScenarioIdentifiers().collect(toUnmodifiableSet());
+    }
 
-         final var result = getScenario(service, id);
-
-         assertTrue(result.isEmpty(), "absent");
-      }
-
-      @Test
-      public void present() {
-         final var service = new ScenarioService();
-         final Optional<UUID> idOptional = getIds(service).stream().findAny();
-         assertThat("id", idOptional.isPresent());
-         final var id = idOptional.get();
-
-         final var result = getScenario(service, id);
-
-         assertTrue(result.isPresent(), "present");
-      }
-   }
-
-   public static void assertInvariants(final ScenarioService service) {
-      ObjectVerifier.assertInvariants(service);// inherited
-   }
-
-   private static Set<UUID> getIds(final ScenarioService service) {
-      return service.getScenarioIdentifiers().collect(toUnmodifiableSet());
-   }
-
-   public static Stream<NamedUUID> getNamedScenarioIdentifiers(
+    public static Stream<NamedUUID> getNamedScenarioIdentifiers(
             final ScenarioService service) {
-      final Set<UUID> expectedIdentifiers = service.getScenarioIdentifiers()
-               .collect(toUnmodifiableSet());
+        final Set<UUID> expectedIdentifiers = service.getScenarioIdentifiers()
+                .collect(toUnmodifiableSet());
 
-      final var scenarios = service.getNamedScenarioIdentifiers();
+        final var scenarios = service.getNamedScenarioIdentifiers();
 
-      assertInvariants(service);
-      assertNotNull(scenarios, "Always returns a (non null) stream.");
-      final var scenariosList = scenarios.toList();
-      final Set<NamedUUID> scenariosSet;
-      try {
-         scenariosSet = scenariosList.stream().collect(toUnmodifiableSet());
-      } catch (final NullPointerException e) {
-         throw new AssertionError(
-                  "The returned stream will not include a null element", e);
-      }
-      assertEquals(scenariosSet.size(), scenariosList.size(),
-               "Does not contain duplicates.");
-      final var identifiersOfScenarios = scenariosSet.stream()
-               .map(NamedUUID::getId).collect(toUnmodifiableSet());
-      assertThat(
-               "Contains a named identifier corresponding to each scenario identifier",
-               identifiersOfScenarios, is(expectedIdentifiers));
+        assertInvariants(service);
+        assertNotNull(scenarios, "Always returns a (non null) stream.");
+        final var scenariosList = scenarios.toList();
+        final Set<NamedUUID> scenariosSet;
+        try {
+            scenariosSet = scenariosList.stream().collect(toUnmodifiableSet());
+        } catch (final NullPointerException e) {
+            throw new AssertionError(
+                    "The returned stream will not include a null element", e);
+        }
+        assertEquals(scenariosSet.size(), scenariosList.size(),
+                "Does not contain duplicates.");
+        final var identifiersOfScenarios = scenariosSet.stream()
+                .map(NamedUUID::getId).collect(toUnmodifiableSet());
+        assertThat(
+                "Contains a named identifier corresponding to each scenario identifier",
+                identifiersOfScenarios, is(expectedIdentifiers));
 
-      return scenariosList.stream();
-   }
+        return scenariosList.stream();
+    }
 
-   public static Optional<Scenario> getScenario(
-           final ScenarioService service, final UUID id) {
-      final var result = service.getScenario(id);
+    public static Optional<Scenario> getScenario(
+            final ScenarioService service, final UUID id) {
+        final var result = service.getScenario(id);
 
-      assertInvariants(service);
-      assertNotNull(result, "Returns a (non null) optional value.");// guard
-      result.ifPresent(scenario -> assertEquals(id, scenario.getIdentifier(), "identifier"));
-      return result;
-   }
+        assertInvariants(service);
+        assertNotNull(result, "Returns a (non null) optional value.");// guard
+        result.ifPresent(scenario -> assertEquals(id, scenario.getIdentifier(), "identifier"));
+        return result;
+    }
 
-   public static Stream<UUID> getScenarioIdentifiers(
+    public static Stream<UUID> getScenarioIdentifiers(
             final ScenarioService service) {
-      final var scenarios = service.getScenarioIdentifiers();
+        final var scenarios = service.getScenarioIdentifiers();
 
-      assertInvariants(service);
-      assertNotNull(scenarios, "Always returns a (non null) stream.");// guard
-      final var scenariosList = scenarios.toList();
-      final Set<UUID> scenariosSet;
-      try {
-         scenariosSet = scenariosList.stream().collect(toUnmodifiableSet());
-      } catch (final NullPointerException e) {
-         throw new AssertionError(
-                  "The returned stream will not include a null element", e);
-      }
-      assertEquals(scenariosSet.size(), scenariosList.size(),
-               "Does not contain duplicates.");
+        assertInvariants(service);
+        assertNotNull(scenarios, "Always returns a (non null) stream.");// guard
+        final var scenariosList = scenarios.toList();
+        final Set<UUID> scenariosSet;
+        try {
+            scenariosSet = scenariosList.stream().collect(toUnmodifiableSet());
+        } catch (final NullPointerException e) {
+            throw new AssertionError(
+                    "The returned stream will not include a null element", e);
+        }
+        assertEquals(scenariosSet.size(), scenariosList.size(),
+                "Does not contain duplicates.");
 
-      return scenariosList.stream();
-   }
+        return scenariosList.stream();
+    }
 
-   @Test
-   public void constructor() {
-      final var service = new ScenarioService();
+    @Test
+    public void constructor() {
+        final var service = new ScenarioService();
 
-      assertInvariants(service);
-   }
+        assertInvariants(service);
+    }
 
-   @Test
-   public void getNamedScenarioIdentifiers() {
-      final var service = new ScenarioService();
-      final var ids = getIds(service);
+    @Test
+    public void getNamedScenarioIdentifiers() {
+        final var service = new ScenarioService();
+        final var ids = getIds(service);
 
-      final var namedIds = getNamedScenarioIdentifiers(service);
+        final var namedIds = getNamedScenarioIdentifiers(service);
 
-      final var idsOfNamedIds = namedIds.map(NamedUUID::getId)
-               .collect(toUnmodifiableSet());
-      assertEquals(ids, idsOfNamedIds,
-               "Contains a named identifier corresponding to each scenario identifier.");
-   }
+        final var idsOfNamedIds = namedIds.map(NamedUUID::getId)
+                .collect(toUnmodifiableSet());
+        assertEquals(ids, idsOfNamedIds,
+                "Contains a named identifier corresponding to each scenario identifier.");
+    }
+
+    @Nested
+    public class GetScenario {
+
+        @Test
+        public void absent() {
+            final var service = new ScenarioService();
+            final var ids = getIds(service);
+            var id = UUID.randomUUID();
+            while (ids.contains(id)) {
+                id = UUID.randomUUID();
+            }
+
+            final var result = getScenario(service, id);
+
+            assertTrue(result.isEmpty(), "absent");
+        }
+
+        @Test
+        public void present() {
+            final var service = new ScenarioService();
+            final Optional<UUID> idOptional = getIds(service).stream().findAny();
+            assertThat("id", idOptional.isPresent());
+            final var id = idOptional.get();
+
+            final var result = getScenario(service, id);
+
+            assertTrue(result.isPresent(), "present");
+        }
+    }
 }

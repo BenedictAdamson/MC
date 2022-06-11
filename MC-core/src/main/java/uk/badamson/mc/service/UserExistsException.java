@@ -1,7 +1,7 @@
 package uk.badamson.mc.service;
-/* 
+/*
  * © Copyright Benedict Adamson 2020,22.
- * 
+ *
  * This file is part of MC.
  *
  * MC is free software: you can redistribute it and/or modify
@@ -26,8 +26,8 @@ package uk.badamson.mc.service;
  */
 public final class UserExistsException extends IllegalPlayerStateException {
 
-   public UserExistsException() {
-      super("User exists");
-   }
+    public UserExistsException() {
+        super("User exists");
+    }
 
 }

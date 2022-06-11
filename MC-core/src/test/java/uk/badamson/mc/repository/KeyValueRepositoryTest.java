@@ -19,73 +19,75 @@ package uk.badamson.mc.repository;
  */
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class KeyValueRepositoryTest {
 
-   public static abstract class AbstractFake<KEY, VALUE>
+    public static <KEY, VALUE> void assertInvariants(
+            @Nonnull final KeyValueRepository<KEY, VALUE> repository) {
+        // Do nothing
+    }
+
+    public static abstract class AbstractFake<KEY, VALUE>
             implements KeyValueRepository<KEY, VALUE> {
 
-      protected final Map<KEY, VALUE> store = new ConcurrentHashMap<>();
+        protected final Map<KEY, VALUE> store = new ConcurrentHashMap<>();
 
-      @Nonnull
-      protected abstract VALUE copy(@Nonnull VALUE that);
+        @Nonnull
+        protected abstract VALUE copy(@Nonnull VALUE that);
 
-      @Override
-      public final long count() {
-         return store.size();
-      }
+        @Override
+        public final long count() {
+            return store.size();
+        }
 
-      @Override
-      public final void deleteAll() {
-         store.clear();
-      }
+        @Override
+        public final void deleteAll() {
+            store.clear();
+        }
 
-      @Override
-      public final void delete(@Nonnull final KEY identifier) {
-         Objects.requireNonNull(identifier, "identifier");
-         store.remove(identifier);
-      }
+        @Override
+        public final void delete(@Nonnull final KEY identifier) {
+            Objects.requireNonNull(identifier, "identifier");
+            store.remove(identifier);
+        }
 
-      @Override
-      public final boolean exists(@Nonnull final KEY identifier) {
-         Objects.requireNonNull(identifier, "identifier");
-         return store.containsKey(identifier);
-      }
+        @Override
+        public final boolean exists(@Nonnull final KEY identifier) {
+            Objects.requireNonNull(identifier, "identifier");
+            return store.containsKey(identifier);
+        }
 
-      @Nonnull
-      @Override
-      public final Iterable<VALUE> findAll() {
-         // Return copies of the values, so we are isolated from downstream
-         // mutations
-         return store.values().stream().map(this::copy).toList();
-      }
+        @Nonnull
+        @Override
+        public final Iterable<VALUE> findAll() {
+            // Return copies of the values, so we are isolated from downstream
+            // mutations
+            return store.values().stream().map(this::copy).toList();
+        }
 
-      @Nonnull
-      @Override
-      public final Optional<VALUE> find(@Nonnull final KEY identifier) {
-         Objects.requireNonNull(identifier, "identifier");
-         final var stored = store.get(identifier);
-         if (stored == null) {
-            return Optional.empty();
-         } else {
-            return Optional.of(copy(stored));
-         }
-      }
+        @Nonnull
+        @Override
+        public final Optional<VALUE> find(@Nonnull final KEY identifier) {
+            Objects.requireNonNull(identifier, "identifier");
+            final var stored = store.get(identifier);
+            if (stored == null) {
+                return Optional.empty();
+            } else {
+                return Optional.of(copy(stored));
+            }
+        }
 
-      @Override
-      public final void save(@Nonnull final KEY id, @Nonnull VALUE value) {
-         Objects.requireNonNull(id, "id");
-         Objects.requireNonNull(value, "value");
-         store.put(id, copy(value));
-      }
+        @Override
+        public final void save(@Nonnull final KEY id, @Nonnull VALUE value) {
+            Objects.requireNonNull(id, "id");
+            Objects.requireNonNull(value, "value");
+            store.put(id, copy(value));
+        }
 
-   }
-
-   public static <KEY, VALUE> void assertInvariants(
-            @Nonnull final KeyValueRepository<KEY, VALUE> repository) {
-      // Do nothing
-   }
+    }
 
 }

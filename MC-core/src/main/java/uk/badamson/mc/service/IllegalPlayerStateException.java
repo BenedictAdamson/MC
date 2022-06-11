@@ -27,17 +27,16 @@ package uk.badamson.mc.service;
  */
 public class IllegalPlayerStateException extends IllegalStateException {
 
-   /**
-    * <p>
-    * Constructs a new exception with a given {@linkplain #getMessage() detail
-    * message}.
-    * </p>
-    *
-    * @param message
-    *           the detail message
-    */
-   public IllegalPlayerStateException(final String message) {
-      super(message);
-   }
+    /**
+     * <p>
+     * Constructs a new exception with a given {@linkplain #getMessage() detail
+     * message}.
+     * </p>
+     *
+     * @param message the detail message
+     */
+    public IllegalPlayerStateException(final String message) {
+        super(message);
+    }
 
 }

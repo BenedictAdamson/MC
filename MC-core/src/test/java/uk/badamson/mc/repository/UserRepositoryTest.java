@@ -33,28 +33,28 @@ import java.util.UUID;
  */
 public class UserRepositoryTest {
 
-   public static final class Fake
+    public static void assertInvariants(final UserRepository repository) {
+        ObjectVerifier.assertInvariants(repository);// inherited
+        KeyValueRepositoryTest.assertInvariants(repository);// inherited
+    }
+
+    public static final class Fake
             extends KeyValueRepositoryTest.AbstractFake<UUID, User>
             implements UserRepository {
 
-      @Nonnull
-      @Override
-      public Optional<User> findByUsername(@Nonnull final String username) {
-         Objects.requireNonNull(username, "username");
-         return store.values().stream()
-                  .filter(u -> username.equals(u.getUsername())).findAny();
-      }
+        @Nonnull
+        @Override
+        public Optional<User> findByUsername(@Nonnull final String username) {
+            Objects.requireNonNull(username, "username");
+            return store.values().stream()
+                    .filter(u -> username.equals(u.getUsername())).findAny();
+        }
 
-      @Nonnull
-      @Override
-      protected User copy(@Nonnull User that) {
-         return new User(that.getId(), that);
-      }
-   }
-
-   public static void assertInvariants(final UserRepository repository) {
-      ObjectVerifier.assertInvariants(repository);// inherited
-      KeyValueRepositoryTest.assertInvariants(repository);// inherited
-   }
+        @Nonnull
+        @Override
+        protected User copy(@Nonnull User that) {
+            return new User(that.getId(), that);
+        }
+    }
 
 }

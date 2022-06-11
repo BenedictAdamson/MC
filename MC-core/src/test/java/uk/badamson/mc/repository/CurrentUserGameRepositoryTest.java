@@ -26,21 +26,21 @@ import java.util.UUID;
 
 public class CurrentUserGameRepositoryTest {
 
-   public static final class Fake
+    public static void assertInvariants(
+            final CurrentUserGameRepository repository) {
+        ObjectVerifier.assertInvariants(repository);// inherited
+        KeyValueRepositoryTest.assertInvariants(repository);// inherited
+    }
+
+    public static final class Fake
             extends KeyValueRepositoryTest.AbstractFake<UUID, UserGameAssociation>
             implements CurrentUserGameRepository {
 
-      @Nonnull
-      @Override
-      protected UserGameAssociation copy(@Nonnull UserGameAssociation that) {
-         return that;
-      }
-   }
-
-   public static void assertInvariants(
-            final CurrentUserGameRepository repository) {
-      ObjectVerifier.assertInvariants(repository);// inherited
-      KeyValueRepositoryTest.assertInvariants(repository);// inherited
-   }
+        @Nonnull
+        @Override
+        protected UserGameAssociation copy(@Nonnull UserGameAssociation that) {
+            return that;
+        }
+    }
 
 }

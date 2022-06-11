@@ -27,29 +27,29 @@ import java.util.stream.Stream;
 
 public class ScenarioService {
 
-   // TODO have useful scenarios.
-   private static final Scenario SCENARIO = new Scenario(UUID.randomUUID(),
+    // TODO have useful scenarios.
+    private static final Scenario SCENARIO = new Scenario(UUID.randomUUID(),
             "Section assault", "Basic fire and movement tactics.",
             List.of(new NamedUUID(UUID.randomUUID(), "Lt. Winters"),
-                     new NamedUUID(UUID.randomUUID(), "Sgt. Summer"))) {
-   };
-   private static final Map<UUID, Scenario> SCENARIOS = Map
+                    new NamedUUID(UUID.randomUUID(), "Sgt. Summer"))) {
+    };
+    private static final Map<UUID, Scenario> SCENARIOS = Map
             .of(SCENARIO.getIdentifier(), SCENARIO);
 
-   @Nonnull
-   public Stream<NamedUUID> getNamedScenarioIdentifiers() {
-      return SCENARIOS.values().stream().map(Scenario::getNamedUUID);
-   }
+    @Nonnull
+    public Stream<NamedUUID> getNamedScenarioIdentifiers() {
+        return SCENARIOS.values().stream().map(Scenario::getNamedUUID);
+    }
 
-   @Nonnull
-   public Optional<Scenario> getScenario(@Nonnull final UUID id) {
-      Objects.requireNonNull(id, "id");
-      return Optional.ofNullable(SCENARIOS.get(id));
-   }
+    @Nonnull
+    public Optional<Scenario> getScenario(@Nonnull final UUID id) {
+        Objects.requireNonNull(id, "id");
+        return Optional.ofNullable(SCENARIOS.get(id));
+    }
 
-   @Nonnull
-   public Stream<UUID> getScenarioIdentifiers() {
-      return SCENARIOS.keySet().stream();
-   }
+    @Nonnull
+    public Stream<UUID> getScenarioIdentifiers() {
+        return SCENARIOS.keySet().stream();
+    }
 
 }
