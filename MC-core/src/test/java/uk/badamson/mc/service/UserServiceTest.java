@@ -37,7 +37,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserServiceImplTest {
+public class UserServiceTest {
 
     private static final String USERNAME_C = "John";
     private static final String USERNAME_B = "Alan";
