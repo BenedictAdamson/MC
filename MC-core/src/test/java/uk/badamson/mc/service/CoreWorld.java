@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 public final class CoreWorld {
@@ -19,7 +20,7 @@ public final class CoreWorld {
     private final GameRepository gameRepository = new GameRepositoryTest.Fake();
     private final UserRepository userRepository = new UserRepositoryTest.Fake();
 
-    private final Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
+    private final Clock clock = Clock.fixed(Instant.now().truncatedTo(ChronoUnit.MILLIS), ZoneId.systemDefault());
     private final ScenarioService scenarioService = new ScenarioService();
     private final GameService gameService = new GameService(gameRepository, clock, scenarioService);
     private final UserService userService = new UserService(
