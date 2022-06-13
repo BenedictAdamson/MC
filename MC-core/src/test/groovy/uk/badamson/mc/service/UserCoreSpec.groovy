@@ -5,6 +5,7 @@ import uk.badamson.mc.Authority
 import uk.badamson.mc.BasicUserDetails
 
 import static spock.util.matcher.HamcrestSupport.expect
+
 /**
  * © Copyright Benedict Adamson 2019-20,22.
  *
@@ -28,53 +29,54 @@ import static spock.util.matcher.HamcrestSupport.expect
  * Mission Command is a multi-player game. To conserve resources, play on a server is restricted to only known (and presumably trusted) users.
  */
 class UserCoreSpec extends CoreSpecification {
-  def "List users"() {
-    when: "getting the users"
-    def users = world.userService.users.toList()
+    def "List users"() {
+        when: "getting the users"
+        def users = world.userService.users.toList()
 
-    then: "the list of users has at least one user"
-    expect(users, Matchers.not(Matchers.empty()))
-  }
+        then: "the list of users has at least one user"
+        expect(users, Matchers.not(Matchers.empty()))
+    }
 
-  def "Examine user"() {
-    given: "have the list of users"
-    def users = world.userService.users
+    def "Examine user"() {
+        given: "have the list of users"
+        def users = world.userService.users
 
-    when: "navigate to one user"
-    def userIdOptional = users.map(u -> u.id).findAny()
-    userIdOptional.isPresent()
-    def userId = userIdOptional.get()
-    def userOptional = world.userService.getUser(userId)
+        when: "navigate to one user"
+        def userIdOptional = users.map(u -> u.id).findAny()
+        userIdOptional.isPresent()
+        def userId = userIdOptional.get()
+        def userOptional = world.userService.getUser(userId)
 
-    then: "provides the user"
-    userOptional.isPresent()
-    def user = userOptional.get()
+        then: "provides the user"
+        userOptional.isPresent()
+        def user = userOptional.get()
 
-    and: "the user includes the user name"
-    expect(user.username, Matchers.not(Matchers.emptyOrNullString()))
+        and: "the user includes the user name"
+        expect(user.username, Matchers.not(Matchers.emptyOrNullString()))
 
-    and: "the user lists the roles of the user"
-    expect(user.authorities, Matchers.any(Set.class))
-  }
+        and: "the user lists the roles of the user"
+        expect(user.authorities, Matchers.any(Set.class))
+    }
 
-  def "Add user"() {
-    when: "adding a user named ${userName} with password ${password}"
-    def userDetails = new BasicUserDetails(userName, password, Set.of(Authority.ROLE_PLAYER),
-            false, false, false, true)
-    def user = world.userService.add(userDetails)
+    def "Add user"() {
+        when:
+        "adding a user named ${userName} with password ${password}"
+        def userDetails = new BasicUserDetails(userName, password, Set.of(Authority.ROLE_PLAYER),
+                false, false, false, true)
+        def user = world.userService.add(userDetails)
 
-    then: "accepts the addition"
-    user != null
+        then: "accepts the addition"
+        user != null
 
-    and: "can get the list of users"
-    def users = world.userService.users
+        and: "can get the list of users"
+        def users = world.userService.users
 
-    and: "the list of users includes a user named ${userName}"
-    users.anyMatch(u -> u.username == userName)
+        and: "the list of users includes a user named ${userName}"
+        users.anyMatch(u -> u.username == userName)
 
-    where:
-    userName | password
-    'John' | 'secret'
-    'Jeff' | 'password123'
-  }
+        where:
+        userName | password
+        'John'   | 'secret'
+        'Jeff'   | 'password123'
+    }
 }

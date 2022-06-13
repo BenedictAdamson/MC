@@ -1,6 +1,6 @@
 package uk.badamson.mc.service
 
-import spock.lang.Shared
+
 import spock.lang.Specification
 
 /**
@@ -33,4 +33,4 @@ abstract class CoreSpecification extends Specification {
     void cleanup() {
         world = null
     }
- }
+}

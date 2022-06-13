@@ -4,6 +4,7 @@ import org.hamcrest.Matchers
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static spock.util.matcher.HamcrestSupport.expect
+
 /** © Copyright Benedict Adamson 2019,20,22.
  *
  * This file is part of MC.
@@ -32,7 +33,7 @@ class ScenarioCoreSpec extends CoreSpecification {
         def scenarioIdOptional = world.scenarioService.scenarioIdentifiers.findAny()
         assertThat('has a scenario', scenarioIdOptional.isPresent())
         def scenarioId = scenarioIdOptional.get()
-        def gameIdentifier= world.gameService.create(scenarioId).identifier
+        def gameIdentifier = world.gameService.create(scenarioId).identifier
 
         when: "examine the scenario"
         def scenarioOptional = world.scenarioService.getScenario(scenarioId)

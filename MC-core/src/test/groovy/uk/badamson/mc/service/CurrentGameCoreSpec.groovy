@@ -32,56 +32,56 @@ import static spock.util.matcher.HamcrestSupport.expect
  */
 class CurrentGameCoreSpec extends CoreSpecification {
 
-  def "May examine current-game only if playing"() {
-    given: "has a game"
-    createGame()
+    def "May examine current-game only if playing"() {
+        given: "has a game"
+        createGame()
 
-    and: "user with the player role"
-    def user = world.userService.add(world.createBasicUserDetails(EnumSet.of(Authority.ROLE_PLAYER)))
+        and: "user with the player role"
+        def user = world.userService.add(world.createBasicUserDetails(EnumSet.of(Authority.ROLE_PLAYER)))
 
-    when: "examine current-game of the user"
-    final Optional<Game.Identifier> currentGame = world.gamePlayersService.getCurrentGameOfUser(user.id)
+        when: "examine current-game of the user"
+        final Optional<Game.Identifier> currentGame = world.gamePlayersService.getCurrentGameOfUser(user.id)
 
-    then: "does not indicate that the user has a current game"
-    currentGame.isEmpty()
-  }
+        then: "does not indicate that the user has a current game"
+        currentGame.isEmpty()
+    }
 
-  def "Examine current game"() {
-    given: "has a game"
-    def game = createGame()
+    def "Examine current game"() {
+        given: "has a game"
+        def game = createGame()
 
-    and: "has a user with the player role"
-    def userDetails = world.createBasicUserDetails(EnumSet.of(Authority.ROLE_PLAYER))
-    def user = world.userService.add(userDetails)
+        and: "has a user with the player role"
+        def userDetails = world.createBasicUserDetails(EnumSet.of(Authority.ROLE_PLAYER))
+        def user = world.userService.add(userDetails)
 
-    and: "user is playing the game"
-    world.gamePlayersService.userJoinsGame(user.id, game.identifier)
+        and: "user is playing the game"
+        world.gamePlayersService.userJoinsGame(user.id, game.identifier)
 
-    when: "examine current game"
-    def currentGame = world.gamePlayersService.getCurrentGameOfUser(user.id)
+        when: "examine current game"
+        def currentGame = world.gamePlayersService.getCurrentGameOfUser(user.id)
 
-    then: "indicates that the user has a current game"
-    currentGame.isPresent()
-    currentGame.get() == game.identifier
+        then: "indicates that the user has a current game"
+        currentGame.isPresent()
+        currentGame.get() == game.identifier
 
-    when: "examine the players of the game"
-    def gamePlayersOptional = world.gamePlayersService.getGamePlayersAsNonGameManager(
-            game.identifier, user.id)
+        when: "examine the players of the game"
+        def gamePlayersOptional = world.gamePlayersService.getGamePlayersAsNonGameManager(
+                game.identifier, user.id)
 
-    then: "the game indicates which character the user is playing"
-    gamePlayersOptional.isPresent()
-    def gamePlayers = gamePlayersOptional.get()
-    def users = gamePlayers.users
-    expect(users, aMapWithSize(1))
-    expect(users.values(), contains(user.id))
-  }
+        then: "the game indicates which character the user is playing"
+        gamePlayersOptional.isPresent()
+        def gamePlayers = gamePlayersOptional.get()
+        def users = gamePlayers.users
+        expect(users, aMapWithSize(1))
+        expect(users.values(), contains(user.id))
+    }
 
-  private Game createGame() {
-    def scenarioIdOptional = world.scenarioService.scenarioIdentifiers.findAny()
-    assertThat('has a scenario', scenarioIdOptional.isPresent())
-    def scenarioId = scenarioIdOptional.get()
-    world.gameService.create(scenarioId)
-  }
+    private Game createGame() {
+        def scenarioIdOptional = world.scenarioService.scenarioIdentifiers.findAny()
+        assertThat('has a scenario', scenarioIdOptional.isPresent())
+        def scenarioId = scenarioIdOptional.get()
+        world.gameService.create(scenarioId)
+    }
 
 
 }
