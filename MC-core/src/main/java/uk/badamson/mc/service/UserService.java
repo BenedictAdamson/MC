@@ -21,7 +21,7 @@ package uk.badamson.mc.service;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import uk.badamson.mc.BasicUserDetails;
 import uk.badamson.mc.User;
-import uk.badamson.mc.repository.UserRepository;
+import uk.badamson.mc.repository.MCRepository;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -35,15 +35,14 @@ public class UserService {
     @Nonnull
     private final PasswordEncoder passwordEncoder;
     @Nonnull
-    private final UserRepository userRepository;
-    @Nonnull
     private final User administrator;
+    @Nonnull
+    private final MCRepository repository;
 
     public UserService(@Nonnull final PasswordEncoder passwordEncoder,
-                       @Nonnull final UserRepository userRepository,
-                       @Nonnull final String administratorPassword) {
-        this.userRepository = Objects.requireNonNull(userRepository,
-                "userRepository");
+                       @Nonnull final String administratorPassword,
+                       @Nonnull final MCRepository repository) {
+        this.repository = Objects.requireNonNull(repository, "repository");
         Objects.requireNonNull(administratorPassword, "administratorPassword");
         this.passwordEncoder = Objects.requireNonNull(passwordEncoder,
                 "passwordEncoder");
@@ -72,8 +71,7 @@ public class UserService {
         if (BasicUserDetails.ADMINISTRATOR_USERNAME
                 .equals(userDetails.getUsername())) {
             throw new IllegalArgumentException("User is administrator");
-        } else if (userRepository.findByUsername(userDetails.getUsername())
-                .isPresent()) {// read
+        } else if (repository.findUserByUsername(userDetails.getUsername()).isPresent()) {// read
             throw new UserExistsException();
         }
 
@@ -82,7 +80,7 @@ public class UserService {
                 .setPassword(passwordEncoder.encode(userDetails.getPassword()));
         final var id = UUID.randomUUID();
         final var user = new User(id, encryptedUserDetails);
-        userRepository.save(id, user);// write
+        repository.saveUser(id, user);// write
         return user;
     }
 
@@ -97,18 +95,13 @@ public class UserService {
         if (User.ADMINISTRATOR_ID.equals(id)) {
             return Optional.of(administrator);
         } else {
-            return userRepository.find(id);
+            return repository.findUser(id);
         }
     }
 
     @Nonnull
-    public final UserRepository getUserRepository() {
-        return userRepository;
-    }
-
-    @Nonnull
     public Stream<User> getUsers() {
-        final var repositoryIterable = userRepository.findAll();
+        final var repositoryIterable = repository.findAllUsers();
         final var adminUses = Stream.of(administrator);
         final var normalUsers = StreamSupport
                 .stream(repositoryIterable.spliterator(), false)
@@ -124,7 +117,7 @@ public class UserService {
         if (BasicUserDetails.ADMINISTRATOR_USERNAME.equals(username)) {
             return Optional.of(administrator);
         } else {
-            return userRepository.findByUsername(username);
+            return repository.findUserByUsername(username);
         }
     }
 

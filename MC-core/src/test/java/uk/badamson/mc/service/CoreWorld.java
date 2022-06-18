@@ -15,18 +15,14 @@ public final class CoreWorld {
 
     private static final String ADMINISTRATOR_PASSWORD = "top-secret";
 
-    private final CurrentUserGameRepository currentUserGameRepository = new CurrentUserGameRepositoryTest.Fake();
-    private final GamePlayersRepository gamePlayersRepository = new GamePlayersRepositoryTest.Fake();
-    private final GameRepository gameRepository = new GameRepositoryTest.Fake();
-    private final UserRepository userRepository = new UserRepositoryTest.Fake();
+    private final MCRepository repository = new MCRepositoryTest.Fake();
 
     private final Clock clock = Clock.fixed(Instant.now().truncatedTo(ChronoUnit.MILLIS), ZoneId.systemDefault());
     private final ScenarioService scenarioService = new ScenarioService();
-    private final GameService gameService = new GameService(gameRepository, clock, scenarioService);
+    private final GameService gameService = new GameService(clock, scenarioService, repository);
     private final UserService userService = new UserService(
-            PasswordEncoderTest.FAKE, userRepository, ADMINISTRATOR_PASSWORD);
-    private final GamePlayersService gamePlayersService = new GamePlayersService(
-            gamePlayersRepository, currentUserGameRepository, gameService, userService);
+            PasswordEncoderTest.FAKE, ADMINISTRATOR_PASSWORD, repository);
+    private final GamePlayersService gamePlayersService = new GamePlayersService(gameService, userService, repository);
 
     private int nUsers;
 

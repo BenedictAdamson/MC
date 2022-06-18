@@ -20,7 +20,7 @@ package uk.badamson.mc.service;
 
 import uk.badamson.mc.Game;
 import uk.badamson.mc.Game.Identifier;
-import uk.badamson.mc.repository.GameRepository;
+import uk.badamson.mc.repository.MCRepository;
 
 import javax.annotation.Nonnull;
 import java.time.Clock;
@@ -29,19 +29,18 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public final class GameService {
-
-    private final GameRepository repository;
 
     private final Clock clock;
 
     private final ScenarioService scenarioService;
 
-    public GameService(@Nonnull final GameRepository repository,
-                       @Nonnull final Clock clock,
-                       @Nonnull final ScenarioService scenarioService) {
+    private final MCRepository repository;
+
+    public GameService(@Nonnull final Clock clock,
+                       @Nonnull final ScenarioService scenarioService,
+                       @Nonnull MCRepository repository) {
         this.repository = Objects.requireNonNull(repository, "repository");
         this.clock = Objects.requireNonNull(clock, "clock");
         this.scenarioService = Objects.requireNonNull(scenarioService,
@@ -64,12 +63,12 @@ public final class GameService {
         requireKnownScenario(scenario);// read-and-check
         final var identifier = new Identifier(scenario, getNow());
         final var game = new Game(identifier, Game.RunState.WAITING_TO_START);
-        repository.save(identifier, game);// write
+        repository.saveGame(identifier, game);// write
         return game;
     }
 
     private Optional<Game> get(final Identifier id) {
-        return repository.find(id);
+        return repository.findGame(id);
     }
 
     @Nonnull
@@ -114,17 +113,12 @@ public final class GameService {
     }
 
     private Stream<Game> getGames() {
-        return StreamSupport.stream(repository.findAll().spliterator(), false);
+        return repository.findAllGames();
     }
 
     @Nonnull
     public Instant getNow() {
         return clock.instant().truncatedTo(ChronoUnit.MILLIS);
-    }
-
-    @Nonnull
-    public GameRepository getRepository() {
-        return repository;
     }
 
     @Nonnull
@@ -153,7 +147,7 @@ public final class GameService {
             case WAITING_TO_START:
                 game = new Game(game);
                 game.setRunState(Game.RunState.RUNNING);
-                repository.save(id, game);// write
+                repository.saveGame(id, game);// write
                 return game;
             case RUNNING:
                 // do nothing
@@ -176,7 +170,7 @@ public final class GameService {
             case WAITING_TO_START, RUNNING -> {
                 game = new Game(game);
                 game.setRunState(Game.RunState.STOPPED);
-                repository.save(id, game);
+                repository.saveGame(id, game);
                 // write
             }
             case STOPPED -> // do nothing

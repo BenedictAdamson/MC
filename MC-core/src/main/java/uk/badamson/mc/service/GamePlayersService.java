@@ -21,8 +21,7 @@ package uk.badamson.mc.service;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import uk.badamson.mc.*;
 import uk.badamson.mc.Game.Identifier;
-import uk.badamson.mc.repository.CurrentUserGameRepository;
-import uk.badamson.mc.repository.GamePlayersRepository;
+import uk.badamson.mc.repository.MCRepository;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -33,22 +32,18 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 public final class GamePlayersService {
 
     private static final Map<UUID, UUID> NO_USERS = Map.of();
-    private final GamePlayersRepository gamePlayersRepository;
-    private final CurrentUserGameRepository currentUserGameRepository;
+
+    private final MCRepository repository;
     private final GameService gameService;
     private final UserService userService;
 
     public GamePlayersService(
-            @Nonnull final GamePlayersRepository gamePlayersRepository,
-            @Nonnull final CurrentUserGameRepository currentUserGameRepository,
             @Nonnull final GameService gameService,
-            @Nonnull final UserService userService) {
-        this.gamePlayersRepository = Objects.requireNonNull(gamePlayersRepository,
-                "gamePlayersRepository");
-        this.currentUserGameRepository = Objects.requireNonNull(
-                currentUserGameRepository, "currentUserGameRepository");
+            @Nonnull final UserService userService,
+            @Nonnull MCRepository repository) {
         this.gameService = Objects.requireNonNull(gameService, "gameService");
         this.userService = Objects.requireNonNull(userService, "userService");
+        this.repository = Objects.requireNonNull(repository, "repository");
     }
 
     private static GamePlayers createDefault(final Identifier id) {
@@ -93,7 +88,7 @@ public final class GamePlayersService {
         }
         final var gamePlayers = gamePlayersOptional.get();
         gamePlayers.endRecruitment();
-        gamePlayersRepository.save(id, gamePlayers);
+        repository.saveGamePlayers(id, gamePlayers);
         return gamePlayers;
     }
 
@@ -101,7 +96,7 @@ public final class GamePlayersService {
         Objects.requireNonNull(id, "id");
         var result = Optional.<GamePlayers>empty();
         if (gameService.getGame(id).isPresent()) {
-            result = gamePlayersRepository.find(id);
+            result = repository.findGamePlayers(id);
             if (result.isEmpty()) {
                 result = Optional.of(createDefault(id));
             }
@@ -111,7 +106,7 @@ public final class GamePlayersService {
 
     @Nonnull
     private Optional<Game.Identifier> getCurrent(@Nonnull final UUID user) {
-        return currentUserGameRepository.find(user).map(UserGameAssociation::getGame);
+        return repository.findCurrentUserGame(user).map(UserGameAssociation::getGame);
     }
 
     /**
@@ -129,11 +124,6 @@ public final class GamePlayersService {
         } else {
             return Optional.empty();
         }
-    }
-
-    @Nonnull
-    public CurrentUserGameRepository getCurrentUserGameRepository() {
-        return currentUserGameRepository;
     }
 
     /**
@@ -165,11 +155,6 @@ public final class GamePlayersService {
             @Nonnull final Game.Identifier gameId, @Nonnull final UUID user) {
         Objects.requireNonNull(user, "user");
         return get(gameId).map(g -> filterForUser(g, user));
-    }
-
-    @Nonnull
-    public GamePlayersRepository getGamePlayersRepository() {
-        return gamePlayersRepository;
     }
 
     @Nonnull
@@ -322,8 +307,8 @@ public final class GamePlayersService {
         }
 
         // write:
-        currentUserGameRepository.save(userId, association);
-        gamePlayersRepository.save(gameId, state.gamePlayers);
+        repository.saveCurrentUserGame(userId, association);
+        repository.saveGamePlayers(gameId, state.gamePlayers);
     }
 
     @Immutable

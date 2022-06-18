@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.Game;
 import uk.badamson.mc.Game.Identifier;
-import uk.badamson.mc.repository.GameRepository;
-import uk.badamson.mc.repository.GameRepositoryTest;
+import uk.badamson.mc.repository.MCRepository;
+import uk.badamson.mc.repository.MCRepositoryTest;
 
 import javax.annotation.Nonnull;
 import java.time.Clock;
@@ -53,26 +53,22 @@ public class GameServiceTest {
             SCENARIO_ID_A, Instant.now());
     private final ScenarioService scenarioServiceA = new ScenarioService();
     private final ScenarioService scenarioServiceB = new ScenarioService();
-    private GameRepositoryTest.Fake gameRepositoryA;
-    private GameRepositoryTest.Fake gameRepositoryB;
+    private MCRepository repositoryA;
+    private MCRepository repositoryB;
 
     public static void assertInvariants(final GameService service) {
         ObjectVerifier.assertInvariants(service);// inherited
         assertAll(() -> assertNotNull(service.getClock(), "clock"),
                 () -> assertNotNull(service.getScenarioService(),
-                        "scenarioService"),
-                () -> assertNotNull(service.getRepository(), "Not null, repository"));
+                        "scenarioService"));
     }
 
-    private static void constructor(final GameRepository repository,
+    private static void constructor(final MCRepository repository,
                                     final Clock clock, final ScenarioService scenarioService) {
-        final var service = new GameService(repository, clock,
-                scenarioService);
+        final var service = new GameService(clock, scenarioService, repository);
 
         assertInvariants(service);
         assertAll("Has the given associations",
-                () -> assertSame(repository, service.getRepository(),
-                        "repository"),
                 () -> assertSame(clock, service.getClock(), "clock"),
                 () -> assertSame(scenarioService, service.getScenarioService(),
                         "scenarioService"));
@@ -146,8 +142,8 @@ public class GameServiceTest {
 
     @BeforeEach
     public void createRepositories() {
-        gameRepositoryA = new GameRepositoryTest.Fake();
-        gameRepositoryB = new GameRepositoryTest.Fake();
+        repositoryA = new MCRepositoryTest.Fake();
+        repositoryB = new MCRepositoryTest.Fake();
     }
 
     @Nested
@@ -155,12 +151,12 @@ public class GameServiceTest {
 
         @Test
         public void a() {
-            constructor(gameRepositoryA, CLOCK_A, scenarioServiceA);
+            constructor(repositoryA, CLOCK_A, scenarioServiceA);
         }
 
         @Test
         public void b() {
-            constructor(gameRepositoryB, CLOCK_B, scenarioServiceB);
+            constructor(repositoryB, CLOCK_B, scenarioServiceB);
         }
     }
 
@@ -170,8 +166,7 @@ public class GameServiceTest {
         @Test
         public void unknownScenario() {
             final var scenario = UUID.randomUUID();
-            final var service = new GameService(gameRepositoryA, CLOCK_A,
-                    scenarioServiceA);
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
 
             assertThrows(NoSuchElementException.class,
                     () -> create(service, scenario));
@@ -194,8 +189,7 @@ public class GameServiceTest {
                 final var clock = Clock.fixed(now, UTC);
                 final var scenarioService = scenarioServiceA;
                 final var scenario = getAScenarioId(scenarioService);
-                final var service = new GameService(gameRepositoryA, clock,
-                        scenarioService);
+                final var service = new GameService(clock, scenarioService, repositoryA);
                 final var truncatedNow = service.getNow();
 
                 final var game = create(service, scenario);
@@ -225,8 +219,7 @@ public class GameServiceTest {
 
         @Test
         public void none() {
-            final var service = new GameService(gameRepositoryA, CLOCK_A,
-                    scenarioServiceA);
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
             final var scenario = getAScenarioId(scenarioServiceA);
 
             final var result = getCreationTimesOfGamesOfScenario(service,
@@ -238,8 +231,7 @@ public class GameServiceTest {
         @Test
         public void one() {
             final var scenario = getAScenarioId(scenarioServiceA);
-            final var service = new GameService(gameRepositoryA, CLOCK_A,
-                    scenarioServiceA);
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
             final var created = service.create(scenario).getIdentifier()
                     .getCreated();
 
@@ -251,8 +243,7 @@ public class GameServiceTest {
 
         @Test
         public void unknownScenario() {
-            final var service = new GameService(gameRepositoryA, CLOCK_A,
-                    scenarioServiceA);
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
             final var scenario = UUID.randomUUID();
 
             assertThrows(NoSuchElementException.class,
@@ -265,8 +256,7 @@ public class GameServiceTest {
 
         @Test
         public void absent() {
-            final var service = new GameService(gameRepositoryA, CLOCK_A,
-                    scenarioServiceA);
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
 
             final var result = getGame(service, IDENTIFIER_A);
 
@@ -277,9 +267,8 @@ public class GameServiceTest {
         public void present() {
             final var id = IDENTIFIER_A;
             final var game = new Game(id, Game.RunState.RUNNING);
-            gameRepositoryA.save(id, game);
-            final var service = new GameService(gameRepositoryA, CLOCK_A,
-                    scenarioServiceA);
+            repositoryA.saveGame(id, game);
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
 
             final var result = getGame(service, id);
 
@@ -293,8 +282,7 @@ public class GameServiceTest {
 
         @Test
         public void none() {
-            final var service = new GameService(gameRepositoryA, CLOCK_A,
-                    scenarioServiceA);
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
 
             final var result = getGameIdentifiers(service);
 
@@ -304,9 +292,8 @@ public class GameServiceTest {
         @Test
         public void one() {
             final var id = IDENTIFIER_A;
-            gameRepositoryA.save(id, new Game(id, Game.RunState.RUNNING));
-            final var service = new GameService(gameRepositoryA, CLOCK_A,
-                    scenarioServiceA);
+            repositoryA.saveGame(id, new Game(id, Game.RunState.RUNNING));
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
 
             final var result = getGameIdentifiers(service);
 

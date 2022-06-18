@@ -25,8 +25,8 @@ import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.Authority;
 import uk.badamson.mc.BasicUserDetails;
 import uk.badamson.mc.User;
-import uk.badamson.mc.repository.UserRepository;
-import uk.badamson.mc.repository.UserRepositoryTest;
+import uk.badamson.mc.repository.MCRepository;
+import uk.badamson.mc.repository.MCRepositoryTest;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -46,8 +46,8 @@ public class UserServiceTest {
     private static final String PASSWORD_B = "password123";
     private static final String PASSWORD_C = "secret";
     private static final UUID USER_ID_A = UUID.randomUUID();
-    private UserRepository userRepositoryA;
-    private UserRepository userRepositoryB;
+    private MCRepository repositoryA;
+    private MCRepository repositoryB;
     private User userA;
     private User userB;
     private User userC;
@@ -85,23 +85,16 @@ public class UserServiceTest {
     public static void assertInvariants(final UserService service) {
         ObjectVerifier.assertInvariants(service);// inherited
 
-        final var userRepository = service.getUserRepository();
-        assertNotNull(userRepository,
-                "Always have a (non null) user repository.");
         assertNotNull(service.getPasswordEncoder(), "Not null, passwordEncoder");
-        UserRepositoryTest.assertInvariants(userRepository);
     }
 
     private static void constructor(
             final PasswordEncoder passwordEncoder,
-            final UserRepository userRepository,
-            final String administratorPassword) {
-        final var service = new UserService(passwordEncoder, userRepository,
-                administratorPassword);
+            final String administratorPassword,
+            final MCRepository repository) {
+        final var service = new UserService(passwordEncoder, administratorPassword, repository);
 
         assertInvariants(service);
-        assertSame(userRepository, service.getUserRepository(),
-                "The user repository of this service is the given user repository.");
         assertSame(passwordEncoder, service.getPasswordEncoder(),
                 "The password encoder of this service is the given password encoder.");
         getUsers(service);
@@ -156,19 +149,18 @@ public class UserServiceTest {
 
     @Test
     public void administratorInRepository() {
-        final var repository = userRepositoryA;
-        final var service = new UserService(PasswordEncoderTest.FAKE, repository,
-                PASSWORD_A);
+        final var repository = repositoryA;
+        final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repository);
         final var administrator = User.createAdministrator(PASSWORD_B);
-        repository.save(administrator.getId(), administrator);
+        repository.saveUser(administrator.getId(), administrator);
 
         getUsers(service);
     }
 
     @BeforeEach
     public void setUpRepositories() {
-        userRepositoryA = new UserRepositoryTest.Fake();
-        userRepositoryB = new UserRepositoryTest.Fake();
+        repositoryA = new MCRepositoryTest.Fake();
+        repositoryB = new MCRepositoryTest.Fake();
     }
 
     @BeforeEach
@@ -198,8 +190,7 @@ public class UserServiceTest {
             }
 
             private void test(final User user) {
-                final var service = new UserService(PasswordEncoderTest.FAKE,
-                        userRepositoryA, PASSWORD_A);
+                final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
                 service.add(user);
                 assertThrows(UserExistsException.class, () -> add(service, user));
             }
@@ -301,8 +292,7 @@ public class UserServiceTest {
             }
 
             private void test(final BasicUserDetails userDetails) {
-                final var service = new UserService(PasswordEncoderTest.FAKE,
-                        userRepositoryA, PASSWORD_A);
+                final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
 
                 final var user = add(service, userDetails);
 
@@ -375,8 +365,7 @@ public class UserServiceTest {
             }
 
             private void test(final BasicUserDetails userDetails1, final BasicUserDetails userDetails2) {
-                final var service = new UserService(PasswordEncoderTest.FAKE,
-                        userRepositoryA, PASSWORD_A);
+                final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
                 final var user1 = add(service, userDetails1);
                 final var user2 = add(service, userDetails2);
 
@@ -398,12 +387,12 @@ public class UserServiceTest {
 
         @Test
         public void a() {
-            constructor(PasswordEncoderTest.FAKE, userRepositoryA, PASSWORD_A);
+            constructor(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
         }
 
         @Test
         public void b() {
-            constructor(PasswordEncoderTest.FAKE, userRepositoryB, PASSWORD_B);
+            constructor(PasswordEncoderTest.FAKE, PASSWORD_B, repositoryB);
         }
     }
 
@@ -412,8 +401,7 @@ public class UserServiceTest {
 
         @Test
         public void absent() {
-            final var service = new UserService(PasswordEncoderTest.FAKE,
-                    userRepositoryA, PASSWORD_A);
+            final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
 
             final var result = getUser(service, USER_ID_A);
 
@@ -422,8 +410,7 @@ public class UserServiceTest {
 
         @Test
         public void administrator() {
-            final var service = new UserService(PasswordEncoderTest.FAKE,
-                    userRepositoryA, PASSWORD_A);
+            final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
 
             final var result = getUser(service, User.ADMINISTRATOR_ID);
 
@@ -438,8 +425,7 @@ public class UserServiceTest {
         public void present() {
             final var userDetails = new BasicUserDetails(USERNAME_A, PASSWORD_A,
                     Authority.ALL, true, true, true, true);
-            final var service = new UserService(PasswordEncoderTest.FAKE,
-                    userRepositoryA, PASSWORD_A);
+            final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
             final var user = service.add(userDetails);
 
             final var result = getUser(service, user.getId());
@@ -453,8 +439,7 @@ public class UserServiceTest {
 
         @Test
         public void absent() {
-            final var service = new UserService(PasswordEncoderTest.FAKE,
-                    userRepositoryA, PASSWORD_A);
+            final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
 
             final Optional<User> user = getUserByUsername(service, USERNAME_A);
 
@@ -463,8 +448,7 @@ public class UserServiceTest {
 
         @Test
         public void administrator() {
-            final var service = new UserService(PasswordEncoderTest.FAKE,
-                    userRepositoryA, PASSWORD_A);
+            final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
 
             final Optional<User> user = getUserByUsername(service, BasicUserDetails.ADMINISTRATOR_USERNAME);
 
@@ -477,8 +461,7 @@ public class UserServiceTest {
         public void present() {
             final var userDetails = new BasicUserDetails(USERNAME_A, PASSWORD_A,
                     Authority.ALL, true, true, true, true);
-            final var service = new UserService(PasswordEncoderTest.FAKE,
-                    userRepositoryA, PASSWORD_A);
+            final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
             final var user = service.add(userDetails);
 
             final Optional<User> result = getUserByUsername(service, user.getUsername());
@@ -503,8 +486,7 @@ public class UserServiceTest {
         }
 
         private void given_a_fresh_instance_of_MC() {
-            service = new UserService(PasswordEncoderTest.FAKE, userRepositoryA,
-                    PASSWORD_A);
+            service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
         }
 
         private void then_the_list_of_users_has_one_user() {

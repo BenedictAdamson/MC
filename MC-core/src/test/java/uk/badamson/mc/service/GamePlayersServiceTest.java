@@ -70,7 +70,7 @@ public class GamePlayersServiceTest {
     private static final UUID USER_ID_B = UUID.randomUUID();
     private static final String USERNAME_A = "John";
     private static final String USERNAME_B = "Paul";
-    private static final String PASSWORD_A = "letmein";
+    private static final String PASSWORD_A = "secret";
     private static final String PASSWORD_B = "password123";
     private static final Identifier GAME_IDENTIFIER_A = new Identifier(
             UUID.randomUUID(), Instant.EPOCH);
@@ -78,10 +78,10 @@ public class GamePlayersServiceTest {
             UUID.randomUUID(), Instant.now());
     private final ScenarioService scenarioServiceA = new ScenarioService();
     private final ScenarioService scenarioServiceB = new ScenarioService();
-    private GamePlayersRepositoryTest.Fake gamePlayersRepositoryA;
-    private GamePlayersRepositoryTest.Fake gamePlayersRepositoryB;
-    private CurrentUserGameRepositoryTest.Fake currentUserGameRepositoryA;
-    private CurrentUserGameRepositoryTest.Fake currentUserGameRepositoryB;
+
+    private MCRepository repositoryA;
+
+    private MCRepository repositoryB;
     private GameService gameServiceA;
     private GameService gameServiceB;
     private UserService userServiceA;
@@ -90,9 +90,6 @@ public class GamePlayersServiceTest {
     public static void assertInvariants(final GamePlayersService service) {
         ObjectVerifier.assertInvariants(service);// inherited
         assertNotNull(service.getGameService(), "Not null, gameService");
-
-        assertNotNull(service.getGamePlayersRepository(),
-                "Not null, gamePlayersRepository");
     }
 
     private static void assertIsDefault(final GamePlayers gamePlayers) {
@@ -103,20 +100,13 @@ public class GamePlayersServiceTest {
     }
 
     private static void constructor(
-            final GamePlayersRepository gamePlayersRepository,
-            final CurrentUserGameRepository currentUserGameRepository,
-            final GameService gameService, final UserService userService) {
-        final var service = new GamePlayersService(gamePlayersRepository,
-                currentUserGameRepository, gameService, userService);
+            @Nonnull final GameService gameService,
+            @Nonnull final UserService userService,
+            @Nonnull MCRepository repository) {
+        final var service = new GamePlayersService(gameService, userService, repository);
 
         assertInvariants(service);
-        assertAll("Has the given associations",
-                () -> assertSame(gamePlayersRepository,
-                        service.getGamePlayersRepository(),
-                        "gamePlayersRepository"),
-                () -> assertSame(currentUserGameRepository,
-                        service.getCurrentUserGameRepository(),
-                        "currentUserGameRepository"),
+        assertAll(
                 () -> assertSame(gameService, service.getGameService(),
                         "gameService"),
                 () -> assertSame(userService, service.getUserService(),
@@ -159,8 +149,6 @@ public class GamePlayersServiceTest {
 
     public static Optional<GamePlayers> getGamePlayersAsGameManager(
             final GamePlayersService service, final Identifier id) {
-        final boolean gameExists = service.getGameService().getGame(id)
-                .isPresent();
 
         final var result = service.getGamePlayersAsGameManager(id);
 
@@ -173,12 +161,6 @@ public class GamePlayersServiceTest {
         if (present) {
             assertEquals(id, result.get().getGame(), "game");
         }
-
-        final var repositoryResult = service.getGamePlayersRepository()
-                .find(id);
-        assertThat("Uses value from the repository, if there is one",
-                !gameExists || repositoryResult.isEmpty()
-                        || result.equals(repositoryResult));
 
         return result;
     }
@@ -224,11 +206,9 @@ public class GamePlayersServiceTest {
         final Set<UUID> scenarioCharacterIds = scenarioCharacters.stream()
                 .map(NamedUUID::getId).collect(toUnmodifiableSet());
         final var gamePlayers0 = service.getGamePlayersAsGameManager(game);
-        final Map<UUID, UUID> users0 = gamePlayers0.isPresent()
-                ? gamePlayers0.get().getUsers()
-                : Map.of();
+        final Map<UUID, UUID> users0 = gamePlayers0.map(GamePlayers::getUsers).orElseGet(Map::of);
         final var alreadyPlaying = users0.containsValue(user);
-        final var firstUnplayedCharacterId0 = scenarioCharacters.stream()
+        final var firstUnPlayedCharacterId0 = scenarioCharacters.stream()
                 .sequential().map(NamedUUID::getId)
                 .filter(id -> !users0.containsKey(id)).findFirst();
 
@@ -251,8 +231,8 @@ public class GamePlayersServiceTest {
         final var characterPlayed = users.entrySet().stream()
                 .filter(entry -> user.equals(entry.getValue()))
                 .map(Map.Entry::getKey).findAny();
-        assertThat("The game had a previously unplayed character",
-                firstUnplayedCharacterId0.isPresent());// guard
+        assertThat("The game had a previously un-played character",
+                firstUnPlayedCharacterId0.isPresent());// guard
         assertThat("The players of the game includes the user.",
                 characterPlayed.isPresent());// guard
         assertAll(
@@ -267,7 +247,7 @@ public class GamePlayersServiceTest {
                 () -> assertThat(
                         "The user is already a player, or the character played by the player is the first character that did not previously have a player.",
                         alreadyPlaying || characterPlayed.get()
-                                .equals(firstUnplayedCharacterId0.get())),
+                                .equals(firstUnPlayedCharacterId0.get())),
                 () -> assertThat(
                         "If the scenario can not allow any more players, the game is no longer recruiting players.",
                         gamePlayers.isRecruiting() == users.size() < scenarioCharacters
@@ -284,23 +264,13 @@ public class GamePlayersServiceTest {
 
     @BeforeEach
     public void setUp() {
-        GameRepositoryTest.Fake gameRepositoryA = new GameRepositoryTest.Fake();
-        GameRepositoryTest.Fake gameRepositoryB = new GameRepositoryTest.Fake();
-        gamePlayersRepositoryA = new GamePlayersRepositoryTest.Fake();
-        gamePlayersRepositoryB = new GamePlayersRepositoryTest.Fake();
-        currentUserGameRepositoryA = new CurrentUserGameRepositoryTest.Fake();
-        currentUserGameRepositoryB = new CurrentUserGameRepositoryTest.Fake();
-        UserRepository userRepositoryA = new UserRepositoryTest.Fake();
-        UserRepository userRepositoryB = new UserRepositoryTest.Fake();
+        repositoryA = new MCRepositoryTest.Fake();
+        repositoryB = new MCRepositoryTest.Fake();
 
-        gameServiceA = new GameService(gameRepositoryA, CLOCK_A,
-                scenarioServiceA);
-        gameServiceB = new GameService(gameRepositoryB, CLOCK_B,
-                scenarioServiceB);
-        userServiceA = new UserService(PasswordEncoderTest.FAKE, userRepositoryA,
-                PASSWORD_A);
-        userServiceB = new UserService(PasswordEncoderTest.FAKE, userRepositoryB,
-                PASSWORD_B);
+        gameServiceA = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
+        gameServiceB = new GameService(CLOCK_B, scenarioServiceB, repositoryB);
+        userServiceA = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repositoryA);
+        userServiceB = new UserService(PasswordEncoderTest.FAKE, PASSWORD_B, repositoryB);
     }
 
     @Nested
@@ -308,14 +278,12 @@ public class GamePlayersServiceTest {
 
         @Test
         public void a() {
-            constructor(gamePlayersRepositoryA, currentUserGameRepositoryA,
-                    gameServiceA, userServiceA);
+            constructor(gameServiceA, userServiceA, repositoryA);
         }
 
         @Test
         public void b() {
-            constructor(gamePlayersRepositoryB, currentUserGameRepositoryB,
-                    gameServiceB, userServiceB);
+            constructor(gameServiceB, userServiceB, repositoryB);
         }
     }
 
@@ -328,8 +296,7 @@ public class GamePlayersServiceTest {
             final var scenario = getAScenarioId(gameService);
             final var game = gameService.create(scenario);
             final var id = game.getIdentifier();
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userServiceA);
+            final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
             final var gamePlayers = endRecruitment(service, id);
 
@@ -360,8 +327,6 @@ public class GamePlayersServiceTest {
 
             private void test(final boolean recruiting0,
                               final Map<UUID, UUID> users) {
-                final var gamePlayersRepository = gamePlayersRepositoryA;
-                final var currentUserGameRepository = currentUserGameRepositoryA;
                 final var gameService = gameServiceA;
 
                 final var scenario = getAScenarioId(gameService);
@@ -369,10 +334,8 @@ public class GamePlayersServiceTest {
                 final var id = game.getIdentifier();
                 final var gamePlayersInRepository = new GamePlayers(id, recruiting0,
                         users);
-                gamePlayersRepository.save(id, gamePlayersInRepository);
-                final var service = new GamePlayersService(
-                        gamePlayersRepository, currentUserGameRepository,
-                        gameService, userServiceA);
+                repositoryA.saveGamePlayers(id, gamePlayersInRepository);
+                final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
                 final var gamePlayers = endRecruitment(service, id);
 
@@ -399,8 +362,6 @@ public class GamePlayersServiceTest {
 
             @Test
             public void inRepository() {
-                final var gamePlayersRepository = gamePlayersRepositoryA;
-                final var currentUserGameRepository = currentUserGameRepositoryA;
                 final var gameService = gameServiceA;
 
                 // Tough test: a valid scenario ID
@@ -408,19 +369,15 @@ public class GamePlayersServiceTest {
                 final var id = new Identifier(scenario, Instant.EPOCH);
                 final var gamePlayersInRepository = new GamePlayers(id, true,
                         Map.of());
-                gamePlayersRepository.save(id, gamePlayersInRepository);
-                final var service = new GamePlayersService(
-                        gamePlayersRepository, currentUserGameRepository,
-                        gameService, userServiceA);
+                repositoryA.saveGamePlayers(id, gamePlayersInRepository);
+                final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
                 assertThrows(NoSuchElementException.class,
                         () -> endRecruitment(service, id));
             }
 
             private void test(final Identifier id) {
-                final var service = new GamePlayersService(
-                        gamePlayersRepositoryA, currentUserGameRepositoryA,
-                        gameServiceA, userServiceA);
+                final var service = new GamePlayersService(gameServiceA, userServiceA, repositoryA);
 
                 assertThrows(NoSuchElementException.class,
                         () -> endRecruitment(service, id));
@@ -434,8 +391,7 @@ public class GamePlayersServiceTest {
 
         @Test
         public void unknownUser() {
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameServiceA, userServiceA);
+            final var service = new GamePlayersService(gameServiceA, userServiceA, repositoryA);
 
             final var result = getCurrentGameOfUser(service, USER_ID_A);
 
@@ -445,11 +401,8 @@ public class GamePlayersServiceTest {
         @Test
         public void unknownUserWithRecord() {
             final var userId = USER_ID_A;
-            final var currentUserGameRepository = currentUserGameRepositoryA;
-            currentUserGameRepository
-                    .save(userId, new UserGameAssociation(userId, GAME_IDENTIFIER_A));
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepository, gameServiceA, userServiceA);
+            repositoryA.saveCurrentUserGame(userId, new UserGameAssociation(userId, GAME_IDENTIFIER_A));
+            final var service = new GamePlayersService(gameServiceA, userServiceA, repositoryA);
 
             final var result = getCurrentGameOfUser(service, userId);
 
@@ -465,8 +418,7 @@ public class GamePlayersServiceTest {
             final var gameService = gameServiceA;
             final var scenario = getAScenarioId(gameService);
             final var game = gameService.create(scenario).getIdentifier();
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userServiceA);
+            final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
             final var result = getGamePlayersAsGameManager(service, game);
 
@@ -491,16 +443,13 @@ public class GamePlayersServiceTest {
             private void test(final boolean recruiting,
                               final Map<UUID, UUID> users) {
                 final var gameService = gameServiceA;
-                final var gamePlayersRepository = gamePlayersRepositoryA;
                 final var scenario = getAScenarioId(gameService);
                 final var game = gameService.create(scenario);
                 final var id = game.getIdentifier();
                 final var gamePlayersInRepository = new GamePlayers(id, recruiting,
                         users);
-                gamePlayersRepository.save(id, gamePlayersInRepository);
-                final var service = new GamePlayersService(
-                        gamePlayersRepository, currentUserGameRepositoryA,
-                        gameService, userServiceA);
+                repositoryA.saveGamePlayers(id, gamePlayersInRepository);
+                final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
                 final var result = getGamePlayersAsGameManager(service, id);
 
@@ -530,16 +479,13 @@ public class GamePlayersServiceTest {
             @Test
             public void inRepository() {
                 final var gameService = gameServiceA;
-                final var gamePlayersRepository = gamePlayersRepositoryA;
                 // Tough test: a valid scenario ID
                 final var scenario = getAScenarioId(gameService);
                 final var id = new Identifier(scenario, Instant.EPOCH);
                 final var gamePlayersInRepository = new GamePlayers(id, true,
                         Map.of());
-                gamePlayersRepository.save(id, gamePlayersInRepository);
-                final var service = new GamePlayersService(
-                        gamePlayersRepository, currentUserGameRepositoryA,
-                        gameService, userServiceA);
+                repositoryA.saveGamePlayers(id, gamePlayersInRepository);
+                final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
                 final var result = getGamePlayersAsGameManager(service, id);
 
@@ -547,9 +493,7 @@ public class GamePlayersServiceTest {
             }
 
             private void test(final Identifier id) {
-                final var service = new GamePlayersService(
-                        gamePlayersRepositoryA, currentUserGameRepositoryA,
-                        gameServiceA, userServiceA);
+                final var service = new GamePlayersService(gameServiceA, userServiceA, repositoryA);
 
                 final var result = getGamePlayersAsGameManager(service, id);
 
@@ -567,8 +511,7 @@ public class GamePlayersServiceTest {
             final var gameService = gameServiceA;
             final var scenario = getAScenarioId(gameService);
             final var game = gameService.create(scenario).getIdentifier();
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userServiceA);
+            final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
             final var result = getGamePlayersAsNonGameManager(service, game,
                     USER_ID_A);
@@ -601,16 +544,13 @@ public class GamePlayersServiceTest {
                               final Map<UUID, UUID> users, final UUID user,
                               final Map<UUID, UUID> expectedUsers) {
                 final var gameService = gameServiceA;
-                final var gamePlayersRepository = gamePlayersRepositoryA;
                 final var scenario = getAScenarioId(gameService);
                 final var game = gameService.create(scenario);
                 final var id = game.getIdentifier();
                 final var gamePlayersInRepository = new GamePlayers(id, recruiting,
                         users);
-                gamePlayersRepository.save(id, gamePlayersInRepository);
-                final var service = new GamePlayersService(
-                        gamePlayersRepository, currentUserGameRepositoryA,
-                        gameService, userServiceA);
+                repositoryA.saveGamePlayers(id, gamePlayersInRepository);
+                final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
                 final var result = getGamePlayersAsNonGameManager(service, id,
                         user);
@@ -641,16 +581,13 @@ public class GamePlayersServiceTest {
             @Test
             public void inRepository() {
                 final var gameService = gameServiceA;
-                final var gamePlayersRepository = gamePlayersRepositoryA;
                 // Tough test: a valid scenario ID
                 final var scenario = getAScenarioId(gameService);
                 final var id = new Identifier(scenario, Instant.EPOCH);
                 final var gamePlayersInRepository = new GamePlayers(id, true,
                         Map.of());
-                gamePlayersRepository.save(id, gamePlayersInRepository);
-                final var service = new GamePlayersService(
-                        gamePlayersRepository, currentUserGameRepositoryA,
-                        gameService, userServiceA);
+                repositoryA.saveGamePlayers(id, gamePlayersInRepository);
+                final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
                 final var result = getGamePlayersAsNonGameManager(service, id,
                         USER_ID_A);
@@ -659,9 +596,7 @@ public class GamePlayersServiceTest {
             }
 
             private void test(final Identifier id, final UUID user) {
-                final var service = new GamePlayersService(
-                        gamePlayersRepositoryA, currentUserGameRepositoryA,
-                        gameServiceA, userServiceA);
+                final var service = new GamePlayersService(gameServiceA, userServiceA, repositoryA);
 
                 final var result = getGamePlayersAsNonGameManager(service, id,
                         user);
@@ -685,8 +620,7 @@ public class GamePlayersServiceTest {
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, Authority.ALL, true, true, true, true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
             service.endRecruitment(game);
 
             assertFalse(mayUserJoinGame(service, user, game));
@@ -703,8 +637,7 @@ public class GamePlayersServiceTest {
                     PASSWORD_A, Set.of(Authority.ROLE_PLAYER), true, true, true,
                     true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
 
             assertTrue(mayUserJoinGame(service, user, game));
         }
@@ -715,8 +648,7 @@ public class GamePlayersServiceTest {
             // Tough test: user exists and is permitted
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, Authority.ALL, true, true, true, true)).getId();
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameServiceA, userService);
+            final var service = new GamePlayersService(gameServiceA, userService, repositoryA);
 
             assertFalse(mayUserJoinGame(service, user, GAME_IDENTIFIER_A));
         }
@@ -727,8 +659,7 @@ public class GamePlayersServiceTest {
             final var gameService = gameServiceA;
             final var scenario = getAScenarioId(gameService);
             final var game = gameService.create(scenario).getIdentifier();
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userServiceA);
+            final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
             assertFalse(mayUserJoinGame(service, USER_ID_A, game));
         }
@@ -744,8 +675,7 @@ public class GamePlayersServiceTest {
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, Authority.ALL, true, true, true, true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
             service.userJoinsGame(user, gameA);
 
             assertFalse(mayUserJoinGame(service, user, gameB));
@@ -760,8 +690,7 @@ public class GamePlayersServiceTest {
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, Authority.ALL, true, true, true, true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
             service.userJoinsGame(user, game);
 
             assertTrue(mayUserJoinGame(service, user, game));
@@ -780,8 +709,7 @@ public class GamePlayersServiceTest {
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, authorities, true, true, true, true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
 
             assertFalse(mayUserJoinGame(service, user, game));
         }
@@ -800,8 +728,7 @@ public class GamePlayersServiceTest {
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, Authority.ALL, true, true, true, true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
             service.endRecruitment(game);
 
             assertThrows(IllegalGameStateException.class,
@@ -814,8 +741,7 @@ public class GamePlayersServiceTest {
             // Tough test: user exists and is permitted
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, Authority.ALL, true, true, true, true));
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameServiceA, userService);
+            final var service = new GamePlayersService(gameServiceA, userService, repositoryA);
 
             assertThrows(NoSuchElementException.class, () -> userJoinsGame(service,
                     user.getId(), GAME_IDENTIFIER_A));
@@ -827,8 +753,7 @@ public class GamePlayersServiceTest {
             final var gameService = gameServiceA;
             final var scenario = getAScenarioId(gameService);
             final var game = gameService.create(scenario).getIdentifier();
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userServiceA);
+            final var service = new GamePlayersService(gameService, userServiceA, repositoryA);
 
             assertThrows(NoSuchElementException.class,
                     () -> userJoinsGame(service, USER_ID_A, game));
@@ -845,8 +770,7 @@ public class GamePlayersServiceTest {
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, Authority.ALL, true, true, true, true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
             service.userJoinsGame(user, gameA);
 
             assertThrows(UserAlreadyPlayingException.class,
@@ -862,8 +786,7 @@ public class GamePlayersServiceTest {
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, Authority.ALL, true, true, true, true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
             service.userJoinsGame(user, game);
 
             userJoinsGame(service, user, game);
@@ -887,14 +810,13 @@ public class GamePlayersServiceTest {
             // Tough test: game exists and is recruiting
             final var scenario = getAScenarioId(gameService);
             final var game = gameService.create(scenario).getIdentifier();
-            // Tough test: user has all other permissions
+            // Tough test: user has all the other permissions
             final Set<Authority> authorities = EnumSet
                     .complementOf(EnumSet.of(Authority.ROLE_PLAYER));
             final var user = userService.add(new BasicUserDetails(USERNAME_A,
                     PASSWORD_A, authorities, true, true, true, true)).getId();
 
-            final var service = new GamePlayersService(gamePlayersRepositoryA,
-                    currentUserGameRepositoryA, gameService, userService);
+            final var service = new GamePlayersService(gameService, userService, repositoryA);
 
             assertThrows(SecurityException.class,
                     () -> userJoinsGame(service, user, game));
@@ -914,9 +836,7 @@ public class GamePlayersServiceTest {
                 final var scenario = scenarioOptional.get();
                 final var nCharacters = scenario.getCharacters().size();
                 final var game = gameService.create(scenarioId).getIdentifier();
-                final var service = new GamePlayersService(
-                        gamePlayersRepositoryA, currentUserGameRepositoryA,
-                        gameService, userService);
+                final var service = new GamePlayersService(gameService, userService, repositoryA);
                 for (var c = 0; c < nCharacters - 1; ++c) {
                     final var userName = "User " + c;
                     final var user = userService.add(new BasicUserDetails(userName,
@@ -948,9 +868,7 @@ public class GamePlayersServiceTest {
                         PASSWORD_A, Set.of(Authority.ROLE_PLAYER), true, true,
                         true, true)).getId();
 
-                final var service = new GamePlayersService(
-                        gamePlayersRepositoryA, currentUserGameRepositoryA,
-                        gameService, userService);
+                final var service = new GamePlayersService(gameService, userService, repositoryA);
 
                 test(service, user, game);
             }
@@ -969,11 +887,11 @@ public class GamePlayersServiceTest {
                 assertThat("gamePlayers", gamePlayers0Optional.isPresent());
                 final var gamePlayers0 = gamePlayers0Optional.get();
                 final var playedCharacters0 = gamePlayers0.getUsers().keySet();
-                final Optional<UUID> firstUnplayedCharacter0Optional = characterIds.stream()
+                final Optional<UUID> firstUnPlayedCharacter0Optional = characterIds.stream()
                         .sequential().filter(c -> !playedCharacters0.contains(c))
                         .findFirst();
-                assertThat("firstUnplayedCharacter", firstUnplayedCharacter0Optional.isPresent());
-                final var firstUnplayedCharacter0 = firstUnplayedCharacter0Optional.get();
+                assertThat("firstUnPlayedCharacter", firstUnPlayedCharacter0Optional.isPresent());
+                final var firstUnPlayedCharacter0 = firstUnPlayedCharacter0Optional.get();
 
                 userJoinsGame(gamePlayersService, user, game);
 
@@ -994,8 +912,8 @@ public class GamePlayersServiceTest {
                         () -> assertThat("has the user as a player",
                                 users.values(), hasItem(user)),
                         () -> assertThat(
-                                "has the user as the player of the first unplayed character",
-                                users, hasEntry(firstUnplayedCharacter0, user)));
+                                "has the user as the player of the first un-played character",
+                                users, hasEntry(firstUnPlayedCharacter0, user)));
                 assertThat(
                         "If the scenario can not allow any more players the game is no longer recruiting players.",
                         gamePlayers.isRecruiting(),
@@ -1015,9 +933,7 @@ public class GamePlayersServiceTest {
                         PASSWORD_B, Set.of(Authority.ROLE_PLAYER), true, true,
                         true, true)).getId();
 
-                final var service = new GamePlayersService(
-                        gamePlayersRepositoryA, currentUserGameRepositoryA,
-                        gameService, userService);
+                final var service = new GamePlayersService(gameService, userService, repositoryA);
                 service.userJoinsGame(userA, game);
 
                 test(service, userB, game);
