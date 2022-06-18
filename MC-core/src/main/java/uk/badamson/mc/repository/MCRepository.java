@@ -28,34 +28,34 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public interface MCRepository {
+public abstract class MCRepository {
 
-    void saveGame(@Nonnull Game.Identifier id, @Nonnull Game game);
-
-    @Nonnull
-    Optional<Game> findGame(@Nonnull Game.Identifier id);
+    public abstract void saveGame(@Nonnull Game.Identifier id, @Nonnull Game game);
 
     @Nonnull
-    Stream<Game> findAllGames();
-
-    void saveGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers);
+    public abstract Optional<Game> findGame(@Nonnull Game.Identifier id);
 
     @Nonnull
-    Optional<GamePlayers> findGamePlayers(@Nonnull Game.Identifier id);
+    public abstract Stream<Game> findAllGames();
+
+    public abstract void saveGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers);
 
     @Nonnull
-    Optional<UserGameAssociation> findCurrentUserGame(@Nonnull UUID userId);
-
-    void saveCurrentUserGame(@Nonnull UUID userId, @Nonnull UserGameAssociation entity);
+    public abstract Optional<GamePlayers> findGamePlayers(@Nonnull Game.Identifier id);
 
     @Nonnull
-    Optional<User> findUserByUsername(@Nonnull String username);
+    public abstract Optional<UserGameAssociation> findCurrentUserGame(@Nonnull UUID userId);
+
+    public abstract void saveCurrentUserGame(@Nonnull UUID userId, @Nonnull UserGameAssociation entity);
 
     @Nonnull
-    Optional<User> findUser(@Nonnull UUID id);
+    public abstract Optional<User> findUserByUsername(@Nonnull String username);
 
     @Nonnull
-    Stream<User> findAllUsers();
+    public abstract Optional<User> findUser(@Nonnull UUID id);
 
-    void saveUser(@Nonnull UUID id, @Nonnull User user);
+    @Nonnull
+    public abstract Stream<User> findAllUsers();
+
+    public abstract void saveUser(@Nonnull UUID id, @Nonnull User user);
 }

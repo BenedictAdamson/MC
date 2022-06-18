@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class MCRepositoryTest {
 
-    public static class Fake implements MCRepository {
+    public static class Fake extends MCRepository {
 
         private final Map<Game.Identifier, Game> gameStore = new ConcurrentHashMap<>();
         private final Map<Game.Identifier, GamePlayers> gamePlayersStore = new ConcurrentHashMap<>();
