@@ -18,11 +18,11 @@ public final class CoreWorld {
     private final MCRepository repository = new MCRepositoryTest.Fake();
 
     private final Clock clock = Clock.fixed(Instant.now().truncatedTo(ChronoUnit.MILLIS), ZoneId.systemDefault());
-    private final ScenarioService scenarioService = new ScenarioService();
+    private final ScenarioService scenarioService = new ScenarioService(repository);
     private final GameService gameService = new GameService(clock, scenarioService, repository);
     private final UserService userService = new UserService(
             PasswordEncoderTest.FAKE, ADMINISTRATOR_PASSWORD, repository);
-    private final GamePlayersService gamePlayersService = new GamePlayersService(gameService, userService, repository);
+    private final GamePlayersService gamePlayersService = new GamePlayersService(gameService, userService, scenarioService, repository);
 
     private int nUsers;
 

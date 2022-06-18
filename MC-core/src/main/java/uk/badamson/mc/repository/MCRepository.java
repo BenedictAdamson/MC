@@ -30,32 +30,57 @@ import java.util.stream.Stream;
 
 public abstract class MCRepository {
 
-    public abstract void saveGame(@Nonnull Game.Identifier id, @Nonnull Game game);
+    public abstract class Context implements AutoCloseable {
+
+        public abstract void saveGame(@Nonnull Game.Identifier id, @Nonnull Game game);
+
+        @Nonnull
+        public abstract Optional<Game> findGame(@Nonnull Game.Identifier id);
+
+        @Nonnull
+        public abstract Stream<Game> findAllGames();
+
+        public abstract void saveGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers);
+
+        @Nonnull
+        public abstract Optional<GamePlayers> findGamePlayers(@Nonnull Game.Identifier id);
+
+        @Nonnull
+        public abstract Optional<UserGameAssociation> findCurrentUserGame(@Nonnull UUID userId);
+
+        public abstract void saveCurrentUserGame(@Nonnull UUID userId, @Nonnull UserGameAssociation entity);
+
+        @Nonnull
+        public abstract Optional<User> findUserByUsername(@Nonnull String username);
+
+        @Nonnull
+        public abstract Optional<User> findUser(@Nonnull UUID id);
+
+        @Nonnull
+        public abstract Stream<User> findAllUsers();
+
+        public abstract void saveUser(@Nonnull UUID id, @Nonnull User user);
+
+        @Nonnull
+        public MCRepository getRepository() {
+            return MCRepository.this;
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * Save operations performed through this context are not guaranteed to have been performed
+         * until normal return from this method. That is, the implementation may cache save (write) operations.
+         *
+         * @throws RuntimeException
+         * If not all save operations could be performed.
+         * This class is however not required to provide transaction semantics:
+         * if it throws an exception, some saves might have been performed and some might not.
+         */
+        @Override
+        public abstract void close() throws RuntimeException;
+    }
 
     @Nonnull
-    public abstract Optional<Game> findGame(@Nonnull Game.Identifier id);
-
-    @Nonnull
-    public abstract Stream<Game> findAllGames();
-
-    public abstract void saveGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers);
-
-    @Nonnull
-    public abstract Optional<GamePlayers> findGamePlayers(@Nonnull Game.Identifier id);
-
-    @Nonnull
-    public abstract Optional<UserGameAssociation> findCurrentUserGame(@Nonnull UUID userId);
-
-    public abstract void saveCurrentUserGame(@Nonnull UUID userId, @Nonnull UserGameAssociation entity);
-
-    @Nonnull
-    public abstract Optional<User> findUserByUsername(@Nonnull String username);
-
-    @Nonnull
-    public abstract Optional<User> findUser(@Nonnull UUID id);
-
-    @Nonnull
-    public abstract Stream<User> findAllUsers();
-
-    public abstract void saveUser(@Nonnull UUID id, @Nonnull User user);
+    public abstract Context openContext();
 }

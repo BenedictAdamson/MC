@@ -51,16 +51,14 @@ public class GameServiceTest {
     private static final UUID SCENARIO_ID_A = UUID.randomUUID();
     private static final Identifier IDENTIFIER_A = new Identifier(
             SCENARIO_ID_A, Instant.now());
-    private final ScenarioService scenarioServiceA = new ScenarioService();
-    private final ScenarioService scenarioServiceB = new ScenarioService();
     private MCRepository repositoryA;
     private MCRepository repositoryB;
+    private ScenarioService scenarioServiceA;
+    private ScenarioService scenarioServiceB;
 
     public static void assertInvariants(final GameService service) {
         ObjectVerifier.assertInvariants(service);// inherited
-        assertAll(() -> assertNotNull(service.getClock(), "clock"),
-                () -> assertNotNull(service.getScenarioService(),
-                        "scenarioService"));
+        assertNotNull(service.getClock(), "clock");
     }
 
     private static void constructor(final MCRepository repository,
@@ -68,11 +66,7 @@ public class GameServiceTest {
         final var service = new GameService(clock, scenarioService, repository);
 
         assertInvariants(service);
-        assertAll("Has the given associations",
-                () -> assertSame(clock, service.getClock(), "clock"),
-                () -> assertSame(scenarioService, service.getScenarioService(),
-                        "scenarioService"));
-
+        assertSame(clock, service.getClock(), "clock");
     }
 
     public static Game create(final GameService service, final UUID scenario)
@@ -141,9 +135,11 @@ public class GameServiceTest {
     }
 
     @BeforeEach
-    public void createRepositories() {
+    public void setUp() {
         repositoryA = new MCRepositoryTest.Fake();
         repositoryB = new MCRepositoryTest.Fake();
+        scenarioServiceA = new ScenarioService(repositoryA);
+        scenarioServiceB = new ScenarioService(repositoryB);
     }
 
     @Nested
@@ -265,10 +261,13 @@ public class GameServiceTest {
 
         @Test
         public void present() {
+            final var repository = repositoryA;
             final var id = IDENTIFIER_A;
             final var game = new Game(id, Game.RunState.RUNNING);
-            repositoryA.saveGame(id, game);
-            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
+            try(final var context = repository.openContext()) {
+                context.saveGame(id, game);
+            }
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repository);
 
             final var result = getGame(service, id);
 
@@ -291,9 +290,12 @@ public class GameServiceTest {
 
         @Test
         public void one() {
+            final var repository = repositoryA;
             final var id = IDENTIFIER_A;
-            repositoryA.saveGame(id, new Game(id, Game.RunState.RUNNING));
-            final var service = new GameService(CLOCK_A, scenarioServiceA, repositoryA);
+            try(final var context = repository.openContext()) {
+                context.saveGame(id, new Game(id, Game.RunState.RUNNING));
+            }
+            final var service = new GameService(CLOCK_A, scenarioServiceA, repository);
 
             final var result = getGameIdentifiers(service);
 

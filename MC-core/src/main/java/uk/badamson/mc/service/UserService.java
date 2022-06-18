@@ -68,20 +68,21 @@ public class UserService {
     @Nonnull
     public User add(@Nonnull final BasicUserDetails userDetails) {
         Objects.requireNonNull(userDetails, "userDetails");
-        if (BasicUserDetails.ADMINISTRATOR_USERNAME
-                .equals(userDetails.getUsername())) {
-            throw new IllegalArgumentException("User is administrator");
-        } else if (repository.findUserByUsername(userDetails.getUsername()).isPresent()) {// read
-            throw new UserExistsException();
-        }
+        try(final var context = repository.openContext()) {
+            if (BasicUserDetails.ADMINISTRATOR_USERNAME
+                    .equals(userDetails.getUsername())) {
+                throw new IllegalArgumentException("User is administrator");
+            } else if (context.findUserByUsername(userDetails.getUsername()).isPresent()) {// read
+                throw new UserExistsException();
+            }
 
-        final var encryptedUserDetails = new BasicUserDetails(userDetails);
-        encryptedUserDetails
-                .setPassword(passwordEncoder.encode(userDetails.getPassword()));
-        final var id = UUID.randomUUID();
-        final var user = new User(id, encryptedUserDetails);
-        repository.saveUser(id, user);// write
-        return user;
+            final var encryptedUserDetails = new BasicUserDetails(userDetails);
+            encryptedUserDetails.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+            final var id = UUID.randomUUID();
+            final var user = new User(id, encryptedUserDetails);
+            context.saveUser(id, user);// write
+            return user;
+        }
     }
 
     @Nonnull
@@ -91,23 +92,32 @@ public class UserService {
 
     @Nonnull
     public Optional<User> getUser(@Nonnull final UUID id) {
+        try(final var context = repository.openContext()) {
+            return getUser(context, id);
+        }
+    }
+
+    @Nonnull
+    final Optional<User> getUser(@Nonnull MCRepository.Context context, @Nonnull final UUID id) {
         Objects.requireNonNull(id, "id");
         if (User.ADMINISTRATOR_ID.equals(id)) {
             return Optional.of(administrator);
         } else {
-            return repository.findUser(id);
+            return context.findUser(id);
         }
     }
 
     @Nonnull
     public Stream<User> getUsers() {
-        final var repositoryIterable = repository.findAllUsers();
-        final var adminUses = Stream.of(administrator);
-        final var normalUsers = StreamSupport
-                .stream(repositoryIterable.spliterator(), false)
-                .filter(u -> !u.getUsername()
-                        .equals(BasicUserDetails.ADMINISTRATOR_USERNAME));
-        return Stream.concat(adminUses, normalUsers);
+        try(final var context = repository.openContext()) {
+            final var userStream = context.findAllUsers();
+            final var adminUses = Stream.of(administrator);
+            final var normalUsers = StreamSupport
+                    .stream(userStream.spliterator(), false)
+                    .filter(u -> !u.getUsername()
+                            .equals(BasicUserDetails.ADMINISTRATOR_USERNAME));
+            return Stream.concat(adminUses, normalUsers);
+        }
     }
 
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "reference semantics")
@@ -117,7 +127,9 @@ public class UserService {
         if (BasicUserDetails.ADMINISTRATOR_USERNAME.equals(username)) {
             return Optional.of(administrator);
         } else {
-            return repository.findUserByUsername(username);
+            try(final var context = repository.openContext()) {
+                return context.findUserByUsername(username);
+            }
         }
     }
 

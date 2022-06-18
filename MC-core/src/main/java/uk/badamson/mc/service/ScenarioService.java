@@ -20,13 +20,14 @@ package uk.badamson.mc.service;
 
 import uk.badamson.mc.NamedUUID;
 import uk.badamson.mc.Scenario;
+import uk.badamson.mc.repository.MCRepository;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ScenarioService {
+public final class ScenarioService {
 
     // TODO have useful scenarios.
     private static final Scenario SCENARIO = new Scenario(UUID.randomUUID(),
@@ -37,19 +38,42 @@ public class ScenarioService {
     private static final Map<UUID, Scenario> SCENARIOS = Map
             .of(SCENARIO.getIdentifier(), SCENARIO);
 
+    private final MCRepository repository;
+
+    public ScenarioService(MCRepository repository) {
+        this.repository = Objects.requireNonNull(repository);
+    }
+
     @Nonnull
     public Set<NamedUUID> getNamedScenarioIdentifiers() {
-        return SCENARIOS.values().stream().map(Scenario::getNamedUUID).collect(Collectors.toUnmodifiableSet());
+        try(final var ignored = repository.openContext()) {
+            return SCENARIOS.values().stream().map(Scenario::getNamedUUID).collect(Collectors.toUnmodifiableSet());
+        }
     }
 
     @Nonnull
     public Optional<Scenario> getScenario(@Nonnull final UUID id) {
+        Objects.requireNonNull(id, "id");
+        try(final var context = repository.openContext()) {
+            return getScenario(context, id);
+        }
+    }
+
+    @Nonnull
+    Optional<Scenario> getScenario(@Nonnull MCRepository.Context context, @Nonnull final UUID id) {
         Objects.requireNonNull(id, "id");
         return Optional.ofNullable(SCENARIOS.get(id));
     }
 
     @Nonnull
     public Stream<UUID> getScenarioIdentifiers() {
+        try(final var context = repository.openContext()) {
+            return getScenarioIdentifiers(context);
+        }
+    }
+
+    @Nonnull
+    Stream<UUID> getScenarioIdentifiers(@Nonnull MCRepository.Context context) {
         return SCENARIOS.keySet().stream();
     }
 

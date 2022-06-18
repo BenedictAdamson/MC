@@ -18,11 +18,14 @@ package uk.badamson.mc.service;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.NamedUUID;
 import uk.badamson.mc.Scenario;
+import uk.badamson.mc.repository.MCRepository;
+import uk.badamson.mc.repository.MCRepositoryTest;
 
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +38,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScenarioServiceTest {
+
+    private MCRepository repositoryA;
 
     public static void assertInvariants(final ScenarioService service) {
         ObjectVerifier.assertInvariants(service);// inherited
@@ -94,14 +99,14 @@ public class ScenarioServiceTest {
 
     @Test
     public void constructor() {
-        final var service = new ScenarioService();
+        final var service = new ScenarioService(repositoryA);
 
         assertInvariants(service);
     }
 
     @Test
     public void getNamedScenarioIdentifiers() {
-        final var service = new ScenarioService();
+        final var service = new ScenarioService(repositoryA);
         final var ids = getIds(service);
 
         final var namedIds = getNamedScenarioIdentifiers(service);
@@ -112,12 +117,17 @@ public class ScenarioServiceTest {
                 "Contains a named identifier corresponding to each scenario identifier.");
     }
 
+    @BeforeEach
+    public void setUp() {
+        repositoryA = new MCRepositoryTest.Fake();
+    }
+
     @Nested
     public class GetScenario {
 
         @Test
         public void absent() {
-            final var service = new ScenarioService();
+            final var service = new ScenarioService(repositoryA);
             final var ids = getIds(service);
             var id = UUID.randomUUID();
             while (ids.contains(id)) {
@@ -131,7 +141,7 @@ public class ScenarioServiceTest {
 
         @Test
         public void present() {
-            final var service = new ScenarioService();
+            final var service = new ScenarioService(repositoryA);
             final Optional<UUID> idOptional = getIds(service).stream().findAny();
             assertThat("id", idOptional.isPresent());
             final var id = idOptional.get();

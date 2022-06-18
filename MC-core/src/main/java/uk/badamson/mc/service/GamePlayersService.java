@@ -18,7 +18,6 @@ package uk.badamson.mc.service;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import uk.badamson.mc.*;
 import uk.badamson.mc.Game.Identifier;
 import uk.badamson.mc.repository.MCRepository;
@@ -35,14 +34,17 @@ public final class GamePlayersService {
 
     private final MCRepository repository;
     private final GameService gameService;
+    private final ScenarioService scenarioService;
     private final UserService userService;
 
     public GamePlayersService(
             @Nonnull final GameService gameService,
             @Nonnull final UserService userService,
+            @Nonnull final ScenarioService scenarioService,
             @Nonnull MCRepository repository) {
         this.gameService = Objects.requireNonNull(gameService, "gameService");
         this.userService = Objects.requireNonNull(userService, "userService");
+        this.scenarioService = Objects.requireNonNull(scenarioService, "scenarioService");
         this.repository = Objects.requireNonNull(repository, "repository");
     }
 
@@ -75,28 +77,28 @@ public final class GamePlayersService {
      * </p>
      *
      * @return The mutated game players' information.
-     * @throws NoSuchElementException If the associated {@linkplain #getGameService() game service}
-     *                                indicates that a {@linkplain GameService#getGame(Identifier)
-     *                                game} with the given ID does not exist.
+     * @throws NoSuchElementException If a game with the given ID does not exist.
      */
     @Nonnull
     public GamePlayers endRecruitment(@Nonnull final Game.Identifier id)
             throws NoSuchElementException {
-        final var gamePlayersOptional = get(id);
-        if (gamePlayersOptional.isEmpty()) {
-            throw new NoSuchElementException();
+        try(final var context = repository.openContext()){
+            final var gamePlayersOptional = get(context, id);
+            if (gamePlayersOptional.isEmpty()) {
+                throw new NoSuchElementException();
+            }
+            final var gamePlayers = gamePlayersOptional.get();
+            gamePlayers.endRecruitment();
+            context.saveGamePlayers(id, gamePlayers);
+            return gamePlayers;
         }
-        final var gamePlayers = gamePlayersOptional.get();
-        gamePlayers.endRecruitment();
-        repository.saveGamePlayers(id, gamePlayers);
-        return gamePlayers;
     }
 
-    private Optional<GamePlayers> get(@Nonnull final Identifier id) {
+    private Optional<GamePlayers> get(@Nonnull MCRepository.Context context, @Nonnull final Identifier id) {
         Objects.requireNonNull(id, "id");
         var result = Optional.<GamePlayers>empty();
-        if (gameService.getGame(id).isPresent()) {
-            result = repository.findGamePlayers(id);
+        if (gameService.getGame(context, id).isPresent()) {
+            result = context.findGamePlayers(id);
             if (result.isEmpty()) {
                 result = Optional.of(createDefault(id));
             }
@@ -105,8 +107,8 @@ public final class GamePlayersService {
     }
 
     @Nonnull
-    private Optional<Game.Identifier> getCurrent(@Nonnull final UUID user) {
-        return repository.findCurrentUserGame(user).map(UserGameAssociation::getGame);
+    private Optional<Game.Identifier> getCurrent(@Nonnull MCRepository.Context context, @Nonnull final UUID user) {
+        return context.findCurrentUserGame(user).map(UserGameAssociation::getGame);
     }
 
     /**
@@ -118,11 +120,14 @@ public final class GamePlayersService {
     @Nonnull
     public Optional<Identifier> getCurrentGameOfUser(
             @Nonnull final UUID userId) {
-        final var user = getUser(userId);
-        if (user.isPresent()) {
-            return getCurrent(userId);
-        } else {
-            return Optional.empty();
+        Objects.requireNonNull(userId);
+        try(final var context = repository.openContext()) {
+            final var user = getUser(context, userId);
+            if (user.isPresent()) {
+                return getCurrent(context, userId);
+            } else {
+                return Optional.empty();
+            }
         }
     }
 
@@ -135,7 +140,9 @@ public final class GamePlayersService {
     @Nonnull
     public Optional<GamePlayers> getGamePlayersAsGameManager(
             @Nonnull final Game.Identifier id) {
-        return get(id);
+        try(final var context = repository.openContext()) {
+            return get(context, id);
+        }
     }
 
     /**
@@ -154,33 +161,33 @@ public final class GamePlayersService {
     public Optional<GamePlayers> getGamePlayersAsNonGameManager(
             @Nonnull final Game.Identifier gameId, @Nonnull final UUID user) {
         Objects.requireNonNull(user, "user");
-        return get(gameId).map(g -> filterForUser(g, user));
+        final Optional<GamePlayers> gamePlayers;
+        try(final var context = repository.openContext()) {
+            gamePlayers = get(context, gameId);
+        }
+        return gamePlayers.map(g -> filterForUser(g, user));
     }
 
-    @Nonnull
-    public GameService getGameService() {
-        return gameService;
+    private Optional<User> getUser(MCRepository.Context context, final UUID userId) {
+        return userService.getUser(context, userId);
     }
 
-    private Optional<User> getUser(final UUID userId) {
-        return getUserService().getUser(userId);
-    }
-
-    private UserJoinsGameState getUserJoinsGameState(final UUID userId,
+    private UserJoinsGameState getUserJoinsGameState(@Nonnull MCRepository.Context context,
+                                                     final UUID userId,
                                                      final Identifier gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
-        final var userOptional = getUser(userId);
+        final var userOptional = getUser(context, userId);
         if (userOptional.isEmpty()) {
             throw new NoSuchElementException("user");
         }
         final var user = userOptional.get();
-        final var gamePlayersOptional = get(gameId);
+        final var gamePlayersOptional = get(context, gameId);
         if (gamePlayersOptional.isEmpty()) {
             throw new NoSuchElementException("game");
         }
         final var gamePlayers = gamePlayersOptional.get();
-        final var current = getCurrent(userId);
+        final var current = getCurrent(context, userId);
 
         if (!user.getAuthorities().contains(Authority.ROLE_PLAYER)) {
             throw new SecurityException("User does not have the player role");
@@ -206,8 +213,7 @@ public final class GamePlayersService {
             }
             alreadyJoined = false;
             final var scenarioId = gamePlayers.getGame().getScenario();
-            final var scenarioOptional = gameService.getScenarioService()
-                    .getScenario(scenarioId);
+            final var scenarioOptional = scenarioService.getScenario(context, scenarioId);
             if (scenarioOptional.isEmpty()) {
                 throw new NoSuchElementException("scenario");
             }
@@ -228,12 +234,6 @@ public final class GamePlayersService {
                 endRecruitment);
     }
 
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "reference semantics")
-    @Nonnull
-    public UserService getUserService() {
-        return userService;
-    }
-
     /**
      * <p>
      * Whether the {@link #userJoinsGame(UUID, Identifier)} operation would
@@ -243,10 +243,8 @@ public final class GamePlayersService {
      * That is, whether all the following are true.
      * </p>
      * <ul>
-     * <li>The{@code user} is the ID of a known user, according to the associated
-     * {@linkplain #getUserService() user service}.</li>
-     * <li>The {@code game} is the ID of a known game, according to the
-     * associated {@linkplain #getGameService() game service}.</li>
+     * <li>The{@code user} is the ID of a known user.</li>
+     * <li>The {@code game} is the ID of a known game.</li>
      * <li>The {@code user} is not already playing a different game.</li>
      * <li>The {@code user} {@linkplain User#getAuthorities() has}
      * {@linkplain Authority#ROLE_PLAYER permission} to play games. Note that the
@@ -256,8 +254,8 @@ public final class GamePlayersService {
      * </ul>
      */
     public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final Identifier game) {
-        try {
-            getUserJoinsGameState(user, game);
+        try(final var context = repository.openContext()){
+            getUserJoinsGameState(context, user, game);
         } catch (UserAlreadyPlayingException | IllegalGameStateException
                  | SecurityException | NoSuchElementException e) {
             return false;
@@ -272,11 +270,8 @@ public final class GamePlayersService {
      * </p>
      *
      * @throws NoSuchElementException      <ul>
-     *                                                <li>If {@code user} is not the ID of a known user, according to
-     *                                                the associated {@linkplain #getUserService() user
-     *                                                service}.</li>
-     *                                                <li>If {@code game} is not the ID of a game, according to the
-     *                                                associated {@linkplain #getGameService() game service}.</li>
+     *                                                <li>If {@code user} is not the ID of a known user.</li>
+     *                                                <li>If {@code game} is not the ID of a game.</li>
      *                                                </ul>
      * @throws UserAlreadyPlayingException If the {@code user} is already playing a different game.
      * @throws SecurityException           If the {@code user} does not {@linkplain User#getAuthorities()
@@ -292,23 +287,25 @@ public final class GamePlayersService {
                               @Nonnull final Identifier gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
-        // read and check:
-        final var state = getUserJoinsGameState(userId, gameId);
-        if (state.alreadyJoined) {
-            // optimisation
-            return;
-        }
+        try(final var context = repository.openContext()) {
+            // read and check:
+            final var state = getUserJoinsGameState(context, userId, gameId);
+            if (state.alreadyJoined) {
+                // optimisation
+                return;
+            }
 
-        // modify:
-        final var association = new UserGameAssociation(userId, gameId);
-        state.gamePlayers.addUser(state.character, userId);
-        if (state.endRecruitment) {
-            state.gamePlayers.endRecruitment();
-        }
+            // modify:
+            final var association = new UserGameAssociation(userId, gameId);
+            state.gamePlayers.addUser(state.character, userId);
+            if (state.endRecruitment) {
+                state.gamePlayers.endRecruitment();
+            }
 
-        // write:
-        repository.saveCurrentUserGame(userId, association);
-        repository.saveGamePlayers(gameId, state.gamePlayers);
+            // write:
+            context.saveCurrentUserGame(userId, association);
+            context.saveGamePlayers(gameId, state.gamePlayers);
+        }
     }
 
     @Immutable
