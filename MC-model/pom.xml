@@ -141,14 +141,6 @@
          <artifactId>jackson-annotations</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.springframework.data</groupId>
-         <artifactId>spring-data-commons</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.springframework.security</groupId>
-         <artifactId>spring-security-core</artifactId>
-      </dependency>
-      <dependency>
          <groupId>uk.badamson</groupId>
          <artifactId>DBC-assertions</artifactId>
          <scope>test</scope>

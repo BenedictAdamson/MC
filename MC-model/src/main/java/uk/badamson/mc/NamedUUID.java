@@ -66,7 +66,6 @@ public final class NamedUUID {
     }
 
     @Id
-    @org.springframework.data.annotation.Id
     private final UUID id;
     private final String title;
 

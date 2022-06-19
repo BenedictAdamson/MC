@@ -41,7 +41,6 @@ import java.util.UUID;
 public final class UserGameAssociation {
 
     @Id
-    @org.springframework.data.annotation.Id
     private final UUID user;
     private final Game.Identifier game;
 

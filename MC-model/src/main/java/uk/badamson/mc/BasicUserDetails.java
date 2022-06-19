@@ -21,7 +21,6 @@ package uk.badamson.mc;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,7 +35,7 @@ import java.util.Set;
  * A specification for a new {@linkplain User user}.
  * </p>
  */
-public class BasicUserDetails implements UserDetails {
+public class BasicUserDetails {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -148,38 +147,31 @@ public class BasicUserDetails implements UserDetails {
     }
 
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "authorities is unmodifiable")
-    @Override
     public final Set<Authority> getAuthorities() {
         return authorities;
     }
 
-    @Override
     public final String getPassword() {
         return password;
     }
 
-    @Override
     @Nonnull
     public final String getUsername() {
         return username;
     }
 
-    @Override
     public final boolean isAccountNonExpired() {
         return accountNonExpired;
     }
 
-    @Override
     public final boolean isAccountNonLocked() {
         return accountNonLocked;
     }
 
-    @Override
     public final boolean isCredentialsNonExpired() {
         return credentialsNonExpired;
     }
 
-    @Override
     public final boolean isEnabled() {
         return enabled;
     }

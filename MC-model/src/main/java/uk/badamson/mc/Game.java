@@ -21,7 +21,6 @@ package uk.badamson.mc;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.annotation.PersistenceCreator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -131,7 +130,6 @@ public class Game {
     }
 
     @Id
-    @org.springframework.data.annotation.Id
     private final Identifier identifier;
 
     private RunState runState;
@@ -160,7 +158,6 @@ public class Game {
      *                                         </ul>
      */
     @JsonCreator
-    @PersistenceCreator
     public Game(@Nonnull @JsonProperty("identifier") final Identifier identifier,
                 @Nonnull @JsonProperty("runState") final RunState runState) {
         this.identifier = Objects.requireNonNull(identifier, "identifier");

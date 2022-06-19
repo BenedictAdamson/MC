@@ -1,6 +1,6 @@
 package uk.badamson.mc;
 /*
- * © Copyright Benedict Adamson 2019-20.
+ * © Copyright Benedict Adamson 2019-20,22.
  *
  * This file is part of MC.
  *
@@ -18,8 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.springframework.security.core.GrantedAuthority;
-
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
@@ -30,7 +28,7 @@ import java.util.Set;
  * {@linkplain User player}.
  * </p>
  */
-public enum Authority implements GrantedAuthority {
+public enum Authority {
     /**
      * <p>
      * May play games.
@@ -57,10 +55,5 @@ public enum Authority implements GrantedAuthority {
      */
     public static final Set<Authority> ALL = Collections
             .unmodifiableSet(EnumSet.allOf(Authority.class));
-
-    @Override
-    public String getAuthority() {
-        return name();
-    }
 
 }

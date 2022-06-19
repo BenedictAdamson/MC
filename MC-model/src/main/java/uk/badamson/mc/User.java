@@ -20,13 +20,11 @@ package uk.badamson.mc;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.annotation.PersistenceCreator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.io.Serial;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -38,9 +36,6 @@ import java.util.UUID;
  */
 @Entity
 public final class User extends BasicUserDetails {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     /**
      * <p>
@@ -64,7 +59,6 @@ public final class User extends BasicUserDetails {
     }
 
     @Id
-    @org.springframework.data.annotation.Id
     private final UUID id;
 
     private User(final String password) {
@@ -117,7 +111,6 @@ public final class User extends BasicUserDetails {
      *                                         </ul>
      */
     @JsonCreator
-    @PersistenceCreator
     public User(@Nonnull @JsonProperty("id") final UUID id,
                 @Nonnull @JsonProperty("username") final String username,
                 @Nullable @JsonProperty("password") final String password,

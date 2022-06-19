@@ -66,7 +66,6 @@ public class Scenario {
     }
 
     @Id
-    @org.springframework.data.annotation.Id
     private final UUID identifier;
     private final String title;
     private final String description;

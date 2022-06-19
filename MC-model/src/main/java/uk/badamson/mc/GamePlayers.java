@@ -20,7 +20,6 @@ package uk.badamson.mc;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.annotation.PersistenceCreator;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Id;
@@ -57,7 +56,6 @@ public class GamePlayers {
     }
 
     @Id
-    @org.springframework.data.annotation.Id
     private final Game.Identifier game;
 
     private boolean recruiting;
@@ -82,7 +80,6 @@ public class GamePlayers {
      *                                  users map}
      */
     @JsonCreator
-    @PersistenceCreator
     public GamePlayers(@Nonnull @JsonProperty("game") final Game.Identifier game,
                        @JsonProperty("recruiting") final boolean recruiting,
                        @Nonnull @JsonProperty("users") final Map<UUID, UUID> users) {

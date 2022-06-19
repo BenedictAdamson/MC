@@ -441,13 +441,11 @@ public class BasicUserDetailsTest {
 
     public static void assertInvariants(final BasicUserDetails user) {
         ObjectVerifier.assertInvariants(user);
-        UserDetailsTest.assertInvariants(user);// inherited
     }
 
     public static void assertInvariants(final BasicUserDetails user1,
                                         final BasicUserDetails user2) {
         ObjectVerifier.assertInvariants(user1, user2);
-        UserDetailsTest.assertInvariants(user1, user2);// inherited
     }
 
     public static void setPassword(final BasicUserDetails userDetails,
