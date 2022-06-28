@@ -30,26 +30,17 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 
 public final class GamePlayersService {
 
-    private static final Map<UUID, UUID> NO_USERS = Map.of();
-
     private final MCRepository repository;
-    private final GameService gameService;
     private final ScenarioService scenarioService;
     private final UserService userService;
 
     public GamePlayersService(
-            @Nonnull final GameService gameService,
             @Nonnull final UserService userService,
             @Nonnull final ScenarioService scenarioService,
             @Nonnull MCRepository repository) {
-        this.gameService = Objects.requireNonNull(gameService, "gameService");
         this.userService = Objects.requireNonNull(userService, "userService");
         this.scenarioService = Objects.requireNonNull(scenarioService, "scenarioService");
         this.repository = Objects.requireNonNull(repository, "repository");
-    }
-
-    private static GamePlayers createDefault(final Identifier id) {
-        return new GamePlayers(id, true, NO_USERS);
     }
 
     private static GamePlayers filterForUser(
@@ -83,7 +74,7 @@ public final class GamePlayersService {
     public GamePlayers endRecruitment(@Nonnull final Game.Identifier id)
             throws NoSuchElementException {
         try(final var context = repository.openContext()){
-            final var gamePlayersOptional = get(context, id);
+            final var gamePlayersOptional = context.findGamePlayers(id);
             if (gamePlayersOptional.isEmpty()) {
                 throw new NoSuchElementException();
             }
@@ -92,18 +83,6 @@ public final class GamePlayersService {
             context.saveGamePlayers(id, gamePlayers);
             return gamePlayers;
         }
-    }
-
-    private Optional<GamePlayers> get(@Nonnull MCRepository.Context context, @Nonnull final Identifier id) {
-        Objects.requireNonNull(id, "id");
-        var result = Optional.<GamePlayers>empty();
-        if (gameService.getGame(context, id).isPresent()) {
-            result = context.findGamePlayers(id);
-            if (result.isEmpty()) {
-                result = Optional.of(createDefault(id));
-            }
-        }
-        return result;
     }
 
     @Nonnull
@@ -141,7 +120,7 @@ public final class GamePlayersService {
     public Optional<GamePlayers> getGamePlayersAsGameManager(
             @Nonnull final Game.Identifier id) {
         try(final var context = repository.openContext()) {
-            return get(context, id);
+            return context.findGamePlayers(id);
         }
     }
 
@@ -163,7 +142,7 @@ public final class GamePlayersService {
         Objects.requireNonNull(user, "user");
         final Optional<GamePlayers> gamePlayers;
         try(final var context = repository.openContext()) {
-            gamePlayers = get(context, gameId);
+            gamePlayers = context.findGamePlayers(gameId);
         }
         return gamePlayers.map(g -> filterForUser(g, user));
     }
@@ -182,7 +161,7 @@ public final class GamePlayersService {
             throw new NoSuchElementException("user");
         }
         final var user = userOptional.get();
-        final var gamePlayersOptional = get(context, gameId);
+        final var gamePlayersOptional = context.findGamePlayers(gameId);
         if (gamePlayersOptional.isEmpty()) {
             throw new NoSuchElementException("game");
         }

@@ -20,6 +20,7 @@ package uk.badamson.mc.service;
 
 import uk.badamson.mc.Game;
 import uk.badamson.mc.Game.Identifier;
+import uk.badamson.mc.GamePlayers;
 import uk.badamson.mc.repository.MCRepository;
 
 import javax.annotation.Nonnull;
@@ -31,6 +32,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class GameService {
+
+    private static final Map<UUID, UUID> NO_USERS = Map.of();
+
+    private static GamePlayers createGamePlayersForNewGame(final Identifier id) {
+        return new GamePlayers(id, true, NO_USERS);
+    }
 
     private final Clock clock;
 
@@ -58,10 +65,12 @@ public final class GameService {
     public Game create(@Nonnull final UUID scenario) throws NoSuchElementException {
         Objects.requireNonNull(scenario);
         try(final var context = repository.openContext()) {
-            requireKnownScenario(context, scenario);// read-and-check
+            requireKnownScenario(context, scenario);
             final var identifier = new Identifier(scenario, getNow());
             final var game = new Game(identifier, Game.RunState.WAITING_TO_START);
-            context.saveGame(identifier, game);// write
+            final var gamePlayers = createGamePlayersForNewGame(identifier);
+            context.saveGame(identifier, game);
+            context.saveGamePlayers(identifier, gamePlayers);
             return game;
         }
     }

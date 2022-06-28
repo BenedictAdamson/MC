@@ -22,7 +22,7 @@ public final class CoreWorld {
     private final GameService gameService = new GameService(clock, scenarioService, repository);
     private final UserService userService = new UserService(
             PasswordEncoderTest.FAKE, ADMINISTRATOR_PASSWORD, repository);
-    private final GamePlayersService gamePlayersService = new GamePlayersService(gameService, userService, scenarioService, repository);
+    private final GamePlayersService gamePlayersService = new GamePlayersService(userService, scenarioService, repository);
 
     private int nUsers;
 
