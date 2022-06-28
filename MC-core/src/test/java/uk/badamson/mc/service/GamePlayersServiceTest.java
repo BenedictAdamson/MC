@@ -522,6 +522,20 @@ public class GamePlayersServiceTest {
                         Map.of(CHARACTER_ID_A, USER_ID_A));
             }
 
+            @Test
+            public void otherPlayersNotRecruiting() {
+                final var users = Map.of(CHARACTER_ID_A, USER_ID_A, CHARACTER_ID_B, USER_ID_B);
+                final var expectedUsers = Map.of(CHARACTER_ID_A, USER_ID_A);
+                test(false, users, USER_ID_A, expectedUsers);
+            }
+
+            @Test
+            public void otherPlayersRecruiting() {
+                final var users = Map.of(CHARACTER_ID_A, USER_ID_A, CHARACTER_ID_B, USER_ID_B);
+                final var expectedUsers = Map.of(CHARACTER_ID_A, USER_ID_A);
+                test(true, users, USER_ID_A, expectedUsers);
+            }
+
             private void test(final boolean recruiting,
                               final Map<UUID, UUID> users, final UUID user,
                               final Map<UUID, UUID> expectedUsers) {

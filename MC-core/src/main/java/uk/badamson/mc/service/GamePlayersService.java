@@ -62,7 +62,7 @@ public final class GamePlayersService {
         if (allUsers.size() == filteredUsers.size()) {
             return fullInformation;
         } else {
-            return new GamePlayers(fullInformation.getGame(), false, filteredUsers);
+            return new GamePlayers(fullInformation.getGame(), fullInformation.isRecruiting(), filteredUsers);
         }
     }
 
