@@ -73,7 +73,7 @@ public final class GamePlayersService {
     @Nonnull
     public GamePlayers endRecruitment(@Nonnull final Game.Identifier id)
             throws NoSuchElementException {
-        try(final var context = repository.openContext()){
+        try(var context = repository.openContext()){
             final var gamePlayersOptional = context.findGamePlayers(id);
             if (gamePlayersOptional.isEmpty()) {
                 throw new NoSuchElementException();
@@ -100,7 +100,7 @@ public final class GamePlayersService {
     public Optional<Identifier> getCurrentGameOfUser(
             @Nonnull final UUID userId) {
         Objects.requireNonNull(userId);
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             final var user = getUser(context, userId);
             if (user.isPresent()) {
                 return getCurrent(context, userId);
@@ -119,7 +119,7 @@ public final class GamePlayersService {
     @Nonnull
     public Optional<GamePlayers> getGamePlayersAsGameManager(
             @Nonnull final Game.Identifier id) {
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             return context.findGamePlayers(id);
         }
     }
@@ -141,7 +141,7 @@ public final class GamePlayersService {
             @Nonnull final Game.Identifier gameId, @Nonnull final UUID user) {
         Objects.requireNonNull(user, "user");
         final Optional<GamePlayers> gamePlayers;
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             gamePlayers = context.findGamePlayers(gameId);
         }
         return gamePlayers.map(g -> filterForUser(g, user));
@@ -233,7 +233,7 @@ public final class GamePlayersService {
      * </ul>
      */
     public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final Identifier game) {
-        try(final var context = repository.openContext()){
+        try(var context = repository.openContext()){
             getUserJoinsGameState(context, user, game);
         } catch (UserAlreadyPlayingException | IllegalGameStateException
                  | SecurityException | NoSuchElementException e) {
@@ -266,7 +266,7 @@ public final class GamePlayersService {
                               @Nonnull final Identifier gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             // read and check:
             final var state = getUserJoinsGameState(context, userId, gameId);
             if (state.alreadyJoined) {

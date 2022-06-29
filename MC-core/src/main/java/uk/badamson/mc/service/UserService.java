@@ -68,7 +68,7 @@ public class UserService {
     @Nonnull
     public User add(@Nonnull final BasicUserDetails userDetails) {
         Objects.requireNonNull(userDetails, "userDetails");
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             if (BasicUserDetails.ADMINISTRATOR_USERNAME
                     .equals(userDetails.getUsername())) {
                 throw new IllegalArgumentException("User is administrator");
@@ -92,7 +92,7 @@ public class UserService {
 
     @Nonnull
     public Optional<User> getUser(@Nonnull final UUID id) {
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             return getUser(context, id);
         }
     }
@@ -109,7 +109,7 @@ public class UserService {
 
     @Nonnull
     public Stream<User> getUsers() {
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             final var userStream = context.findAllUsers();
             final var adminUses = Stream.of(administrator);
             final var normalUsers = StreamSupport
@@ -127,7 +127,7 @@ public class UserService {
         if (BasicUserDetails.ADMINISTRATOR_USERNAME.equals(username)) {
             return Optional.of(administrator);
         } else {
-            try(final var context = repository.openContext()) {
+            try(var context = repository.openContext()) {
                 return context.findUserByUsername(username);
             }
         }

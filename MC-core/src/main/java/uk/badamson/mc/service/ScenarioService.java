@@ -46,7 +46,7 @@ public final class ScenarioService {
 
     @Nonnull
     public Set<NamedUUID> getNamedScenarioIdentifiers() {
-        try(final var ignored = repository.openContext()) {
+        try(var ignored = repository.openContext()) {
             return SCENARIOS.values().stream().map(Scenario::getNamedUUID).collect(Collectors.toUnmodifiableSet());
         }
     }
@@ -54,7 +54,7 @@ public final class ScenarioService {
     @Nonnull
     public Optional<Scenario> getScenario(@Nonnull final UUID id) {
         Objects.requireNonNull(id, "id");
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             return getScenario(context, id);
         }
     }
@@ -67,7 +67,7 @@ public final class ScenarioService {
 
     @Nonnull
     public Stream<UUID> getScenarioIdentifiers() {
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             return getScenarioIdentifiers(context);
         }
     }

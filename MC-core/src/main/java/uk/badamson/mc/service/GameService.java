@@ -64,7 +64,7 @@ public final class GameService {
     @Nonnull
     public Game create(@Nonnull final UUID scenario) throws NoSuchElementException {
         Objects.requireNonNull(scenario);
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             requireKnownScenario(context, scenario);
             final var identifier = new Identifier(scenario, getNow());
             final var game = new Game(identifier, Game.RunState.WAITING_TO_START);
@@ -97,7 +97,7 @@ public final class GameService {
     public Set<Instant> getCreationTimesOfGamesOfScenario(@Nonnull final UUID scenario)
             throws NoSuchElementException {
         Objects.requireNonNull(scenario);
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             requireKnownScenario(context, scenario);// read-and-check
             return getGameIdentifiers(context)// read
                     .filter(id -> scenario.equals(id.getScenario()))
@@ -108,7 +108,7 @@ public final class GameService {
 
     @Nonnull
     public Optional<Game> getGame(@Nonnull final Identifier id) {
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             return getGame(context, id);
         }
     }
@@ -120,7 +120,7 @@ public final class GameService {
 
     @Nonnull
     public Stream<Identifier> getGameIdentifiers() {
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             return getGames(context).map(Game::getIdentifier);
         }
     }
@@ -152,7 +152,7 @@ public final class GameService {
     public Game startGame(@Nonnull final Identifier id)
             throws NoSuchElementException, IllegalGameStateException {
         Objects.requireNonNull(id);
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             Optional<Game> gameOptional = getGame(context, id);
             if (gameOptional.isEmpty()) {
                 throw new NoSuchElementException("game");
@@ -177,7 +177,7 @@ public final class GameService {
 
     public void stopGame(@Nonnull final Identifier id)
             throws NoSuchElementException {
-        try(final var context = repository.openContext()) {
+        try(var context = repository.openContext()) {
             Optional<Game> gameOptional = getGame(context, id);
             if (gameOptional.isEmpty()) {
                 throw new NoSuchElementException("game");
