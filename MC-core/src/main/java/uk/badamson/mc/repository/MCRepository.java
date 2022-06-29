@@ -24,12 +24,16 @@ import uk.badamson.mc.User;
 import uk.badamson.mc.UserGameAssociation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+@ThreadSafe
 public abstract class MCRepository {
 
+    @NotThreadSafe
     public abstract class Context implements AutoCloseable {
 
         public abstract void saveGame(@Nonnull Game.Identifier id, @Nonnull Game game);
