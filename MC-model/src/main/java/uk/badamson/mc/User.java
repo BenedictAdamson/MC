@@ -23,8 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -34,7 +32,6 @@ import java.util.UUID;
  * A user of the Mission Command game.
  * </p>
  */
-@Entity
 public final class User extends BasicUserDetails {
 
     /**
@@ -58,7 +55,6 @@ public final class User extends BasicUserDetails {
         return new User(password);
     }
 
-    @Id
     private final UUID id;
 
     private User(final String password) {

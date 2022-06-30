@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import javax.persistence.Id;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -129,7 +128,6 @@ public class Game {
         WAITING_TO_START, RUNNING, STOPPED
     }
 
-    @Id
     private final Identifier identifier;
 
     private RunState runState;

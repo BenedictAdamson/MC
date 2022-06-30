@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Id;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -65,7 +64,6 @@ public class Scenario {
                 && !hasDuplicateIds(characters);
     }
 
-    @Id
     private final UUID identifier;
     private final String title;
     private final String description;

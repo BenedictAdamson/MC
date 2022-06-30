@@ -24,7 +24,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.Serial;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -36,9 +35,6 @@ import java.util.Set;
  * </p>
  */
 public class BasicUserDetails {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     /**
      * <p>

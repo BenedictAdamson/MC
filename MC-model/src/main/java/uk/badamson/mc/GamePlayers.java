@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Id;
 import java.util.*;
 
 /**
@@ -55,7 +54,6 @@ public class GamePlayers {
         return character != null && user != null;
     }
 
-    @Id
     private final Game.Identifier game;
 
     private boolean recruiting;

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import javax.persistence.Id;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -40,7 +39,6 @@ import java.util.UUID;
 @Immutable
 public final class UserGameAssociation {
 
-    @Id
     private final UUID user;
     private final Game.Identifier game;
 

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import javax.persistence.Id;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -65,7 +64,6 @@ public final class NamedUUID {
         }
     }
 
-    @Id
     private final UUID id;
     private final String title;
 
