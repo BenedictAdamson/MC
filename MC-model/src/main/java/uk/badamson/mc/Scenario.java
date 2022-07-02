@@ -18,9 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import javax.annotation.Nonnull;
@@ -93,11 +90,10 @@ public class Scenario {
      *                                             characters}.</li>
      *                                             </ul>
      */
-    @JsonCreator
-    public Scenario(@JsonProperty("identifier") @Nonnull final UUID identifier,
-                    @Nonnull @JsonProperty("title") final String title,
-                    @Nonnull @JsonProperty("description") final String description,
-                    @Nonnull @JsonProperty("characters") final List<NamedUUID> characters) {
+    public Scenario(@Nonnull final UUID identifier,
+                    @Nonnull final String title,
+                    @Nonnull final String description,
+                    @Nonnull final List<NamedUUID> characters) {
         this.identifier = Objects.requireNonNull(identifier, "identifier");
         this.title = Objects.requireNonNull(title, "title");
         this.description = Objects.requireNonNull(description, "description");
@@ -150,7 +146,6 @@ public class Scenario {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "authorities is unmodifiable")
     @Nonnull
-    @JsonProperty("characters")
     public final List<NamedUUID> getCharacters() {
         return characters;
     }
@@ -167,7 +162,6 @@ public class Scenario {
      * @see NamedUUID#getTitle()
      */
     @Nonnull
-    @JsonProperty("description")
     public final String getDescription() {
         return description;
     }
@@ -183,7 +177,6 @@ public class Scenario {
      * @return the identifier.
      */
     @Nonnull
-    @JsonProperty("identifier")
     public final UUID getIdentifier() {
         return identifier;
     }
@@ -194,7 +187,6 @@ public class Scenario {
      * </p>
      */
     @Nonnull
-    @JsonIgnore
     public final NamedUUID getNamedUUID() {
         return new NamedUUID(identifier, title);
     }
@@ -209,7 +201,6 @@ public class Scenario {
      * </p>
      */
     @Nonnull
-    @JsonProperty("title")
     public final String getTitle() {
         return title;
     }

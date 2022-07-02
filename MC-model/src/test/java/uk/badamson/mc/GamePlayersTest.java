@@ -190,35 +190,6 @@ public class GamePlayersTest {
         }
     }
 
-    @Nested
-    public class Json {
-
-        @Test
-        public void a() {
-            test(GAME_A, false, USERS_A);
-        }
-
-        @Test
-        public void b() {
-            test(GAME_B, true, USERS_B);
-        }
-
-        private void test(final Game.Identifier game, final boolean recruiting,
-                          final Map<UUID, UUID> users) {
-            final var players = new GamePlayers(game, recruiting, users);
-            final var deserialized = JsonTest.serializeAndDeserialize(players);
-
-            assertInvariants(deserialized);
-            assertInvariants(players, deserialized);
-            assertEquals(players, deserialized);
-            assertAll("Deserialized attributes",
-                    () -> assertEquals(game, deserialized.getGame(), "game"),
-                    () -> assertEquals(recruiting, deserialized.isRecruiting(),
-                            "recruiting"),
-                    () -> assertEquals(users, deserialized.getUsers(), "users"));
-        }
-    }
-
     private static final UUID USER_ID_A = UUID.randomUUID();
     private static final UUID USER_ID_B = UUID.randomUUID();
     private static final UUID CHARACTER_ID_A = UUID.randomUUID();

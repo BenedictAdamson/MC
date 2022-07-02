@@ -18,9 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
@@ -56,9 +53,8 @@ public final class UserGameAssociation {
      *                                         <li>If {@code game} is null.</li>
      *                                         </ul>
      */
-    @JsonCreator
-    public UserGameAssociation(@Nonnull @JsonProperty("user") final UUID user,
-                               @Nonnull @JsonProperty("game") final Game.Identifier game) {
+    public UserGameAssociation(@Nonnull final UUID user,
+                               @Nonnull final Game.Identifier game) {
         this.user = Objects.requireNonNull(user, "user");
         this.game = Objects.requireNonNull(game, "game");
     }

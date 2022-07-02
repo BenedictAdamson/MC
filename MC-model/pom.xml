@@ -89,16 +89,6 @@
    </reporting>
    <dependencies>
       <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-databind</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>com.fasterxml.jackson.datatype</groupId>
-         <artifactId>jackson-datatype-jsr310</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
          <groupId>com.github.spotbugs</groupId>
          <artifactId>spotbugs-annotations</artifactId>
       </dependency>
@@ -130,10 +120,6 @@
          <groupId>org.hamcrest</groupId>
          <artifactId>hamcrest</artifactId>
          <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-annotations</artifactId>
       </dependency>
       <dependency>
          <groupId>uk.badamson</groupId>

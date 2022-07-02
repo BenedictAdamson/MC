@@ -102,29 +102,6 @@ public class UserGameAssociationTest {
 
     }
 
-    @Nested
-    public class Json {
-
-        @Test
-        public void a() {
-            test(USER_A, GAME_A);
-        }
-
-        @Test
-        public void b() {
-            test(USER_B, GAME_B);
-        }
-
-        private void test(final UUID user, final Game.Identifier game) {
-            final var association = new UserGameAssociation(user, game);
-
-            final var deserialized = JsonTest.serializeAndDeserialize(association);
-
-            assertInvariants(association, deserialized);
-            assertEquals(association, deserialized);
-        }
-    }
-
     private static final UUID USER_A = UUID.randomUUID();
 
     private static final UUID USER_B = UUID.randomUUID();

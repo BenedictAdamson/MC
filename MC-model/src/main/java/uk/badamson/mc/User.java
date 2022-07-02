@@ -18,9 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -106,15 +103,14 @@ public final class User extends BasicUserDetails {
      *                                         <li>If {@code authorities} contains null</li>
      *                                         </ul>
      */
-    @JsonCreator
-    public User(@Nonnull @JsonProperty("id") final UUID id,
-                @Nonnull @JsonProperty("username") final String username,
-                @Nullable @JsonProperty("password") final String password,
-                @Nonnull @JsonProperty("authorities") final Set<Authority> authorities,
-                @JsonProperty("accountNonExpired") final boolean accountNonExpired,
-                @JsonProperty("accountNonLocked") final boolean accountNonLocked,
-                @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
-                @JsonProperty("enabled") final boolean enabled) {
+    public User(@Nonnull final UUID id,
+                @Nonnull final String username,
+                @Nullable final String password,
+                @Nonnull final Set<Authority> authorities,
+                final boolean accountNonExpired,
+                final boolean accountNonLocked,
+                final boolean credentialsNonExpired,
+                final boolean enabled) {
         super(username, password, authorities, accountNonExpired,
                 accountNonLocked, credentialsNonExpired, enabled);
         this.id = Objects.requireNonNull(id, "id");

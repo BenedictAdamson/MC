@@ -18,10 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.time.Instant;
@@ -60,9 +56,8 @@ public class Game {
          *                                         <li>If {@code created} is null.</li>
          *                                         </ul>
          */
-        @JsonCreator
-        public Identifier(@Nonnull @JsonProperty("scenario") final UUID scenario,
-                          @Nonnull @JsonProperty("created") final Instant created) {
+        public Identifier(@Nonnull final UUID scenario,
+                          @Nonnull final Instant created) {
             this.scenario = Objects.requireNonNull(scenario, "scenario");
             this.created = Objects.requireNonNull(created, "created");
 
@@ -96,7 +91,6 @@ public class Game {
          * </p>
          */
         @Nonnull
-        @JsonFormat(shape = JsonFormat.Shape.STRING)
         public Instant getCreated() {
             return created;
         }
@@ -155,9 +149,8 @@ public class Game {
      *                                         <li>If {@code runState} is null.</li>
      *                                         </ul>
      */
-    @JsonCreator
-    public Game(@Nonnull @JsonProperty("identifier") final Identifier identifier,
-                @Nonnull @JsonProperty("runState") final RunState runState) {
+    public Game(@Nonnull final Identifier identifier,
+                @Nonnull final RunState runState) {
         this.identifier = Objects.requireNonNull(identifier, "identifier");
         this.runState = Objects.requireNonNull(runState, "runState");
     }
@@ -192,13 +185,11 @@ public class Game {
      * </p>
      */
     @Nonnull
-    @JsonProperty("identifier")
     public final Identifier getIdentifier() {
         return identifier;
     }
 
     @Nonnull
-    @JsonProperty("runState")
     public RunState getRunState() {
         return runState;
     }

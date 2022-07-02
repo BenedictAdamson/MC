@@ -18,10 +18,8 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
 import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 
@@ -29,8 +27,6 @@ import javax.annotation.Nonnull;
 import java.time.Instant;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
@@ -148,64 +144,6 @@ public class GameTest {
             }
         }
 
-        @Nested
-        public class JSON {
-
-            @Test
-            public void a() {
-                test(SCENARIO_ID_A, CREATED_A);
-            }
-
-            @Test
-            public void b() {
-                test(SCENARIO_ID_B, CREATED_B);
-            }
-
-            private void test(final UUID scenario, final Instant created) {
-                final var identifier = new Game.Identifier(scenario, created);
-                final var deserialized = JsonTest
-                        .serializeAndDeserialize(identifier);
-
-                IdentifierTest.assertInvariants(deserialized);
-                assertInvariants(identifier, deserialized);
-                assertAll("Deserialized attributes",
-                        () -> assertEquals(scenario, identifier.getScenario(),
-                                "scenario"),
-                        () -> assertEquals(created, identifier.getCreated(),
-                                "created"));
-            }
-        }
-
-        @Nested
-        public class Serialize {
-
-            @Test
-            public void a() {
-                test(SCENARIO_ID_A, CREATED_A);
-            }
-
-            @Test
-            public void b() {
-                test(SCENARIO_ID_B, CREATED_B);
-            }
-
-            private void test(final UUID scenario, final Instant created) {
-                final var expectedSerializedCreated = created.toString();
-                final var identifier = new Game.Identifier(scenario, created);
-
-                final String serialized;
-                try {
-                    serialized = JsonTest.serialize(identifier);
-                } catch (final JsonProcessingException e) {
-                    throw new AssertionFailedError("can serialize as JSON", e);
-                }
-
-                assertThat("contains serialized 'created' value", serialized,
-                        containsString(expectedSerializedCreated));
-            }
-
-        }
-
         public static void assertInvariants(final Game.Identifier identifier) {
             // inherited
             ObjectVerifier.assertInvariants(identifier);
@@ -239,37 +177,6 @@ public class GameTest {
                             "scenario"),
                     () -> assertSame(created, identifier.getCreated(),
                             "created"));
-        }
-    }
-
-    @Nested
-    public class Json {
-
-        @Test
-        public void a() {
-            final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-            test(identifier, Game.RunState.WAITING_TO_START);
-        }
-
-        @Test
-        public void b() {
-            final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
-            test(identifier, Game.RunState.RUNNING);
-        }
-
-        private void test(final Game.Identifier identifier,
-                          final Game.RunState runState) {
-            final var game = new Game(identifier, runState);
-            final var deserialized = JsonTest.serializeAndDeserialize(game);
-
-            assertInvariants(deserialized);
-            assertInvariants(game, deserialized);
-            assertEquals(game, deserialized);
-            assertAll("Deserialized attributes",
-                    () -> assertEquals(identifier, deserialized.getIdentifier(),
-                            "identifier"),
-                    () -> assertEquals(runState, deserialized.getRunState(),
-                            "runState"));
         }
     }
 

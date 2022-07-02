@@ -18,9 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
@@ -81,9 +78,8 @@ public final class NamedUUID {
      * @throws IllegalArgumentException If the {@code title} is not {@linkplain #isValidTitle(String)
      *                                  valid}.
      */
-    @JsonCreator
-    public NamedUUID(@Nonnull @JsonProperty("id") final UUID id,
-                     @Nonnull @JsonProperty("title") final String title) {
+    public NamedUUID(@Nonnull final UUID id,
+                     @Nonnull final String title) {
         this.id = Objects.requireNonNull(id, "id");
         this.title = Objects.requireNonNull(title, "title");
         if (!isValidTitle(title)) {

@@ -18,8 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import javax.annotation.Nonnull;
@@ -123,15 +121,14 @@ public class BasicUserDetails {
      *                                         <li>If {@code authorities} contains null</li>
      *                                         </ul>
      */
-    @JsonCreator
     public BasicUserDetails(
-            @Nonnull @JsonProperty("username") final String username,
-            @Nullable @JsonProperty("password") final String password,
-            @Nonnull @JsonProperty("authorities") final Set<Authority> authorities,
-            @JsonProperty("accountNonExpired") final boolean accountNonExpired,
-            @JsonProperty("accountNonLocked") final boolean accountNonLocked,
-            @JsonProperty("credentialsNonExpired") final boolean credentialsNonExpired,
-            @JsonProperty("enabled") final boolean enabled) {
+            @Nonnull final String username,
+            @Nullable final String password,
+            @Nonnull final Set<Authority> authorities,
+            final boolean accountNonExpired,
+            final boolean accountNonLocked,
+            final boolean credentialsNonExpired,
+            final boolean enabled) {
         this.username = Objects.requireNonNull(username, "username");
         this.password = password;
         this.authorities = authorities.isEmpty() ? Collections.emptySet()

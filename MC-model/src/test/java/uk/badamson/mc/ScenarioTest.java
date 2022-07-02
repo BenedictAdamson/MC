@@ -75,38 +75,6 @@ public class ScenarioTest {
         }
     }
 
-    @Nested
-    public class Json {
-
-        @Test
-        public void a() {
-            test(ID_A, TITLE_A, DESCRIPTION_A, CHARACTERS_A);
-        }
-
-        @Test
-        public void b() {
-            test(ID_B, TITLE_B, DESCRIPTION_B, CHARACTERS_B);
-        }
-
-        private void test(final UUID identifier, final String title,
-                          final String description, final List<NamedUUID> characters) {
-            final var scenario = new Scenario(identifier, title, description,
-                    characters);
-            final var deserialized = JsonTest.serializeAndDeserialize(scenario);
-
-            assertInvariants(deserialized);
-            assertInvariants(scenario, deserialized);
-            assertAll("Deserialised attributes",
-                    () -> assertEquals(identifier, scenario.getIdentifier(),
-                            "identifier"),
-                    () -> assertEquals(title, scenario.getTitle(), "title"),
-                    () -> assertEquals(description, scenario.getDescription(),
-                            "description"),
-                    () -> assertEquals(characters, scenario.getCharacters(),
-                            "characters"));
-        }
-    }
-
     private static final UUID ID_A = UUID.randomUUID();
     private static final UUID ID_B = UUID.randomUUID();
     private static final String TITLE_A = "Beach Assault";

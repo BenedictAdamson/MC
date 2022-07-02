@@ -18,9 +18,6 @@ package uk.badamson.mc;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.annotation.Nonnull;
 import java.util.*;
 
@@ -77,10 +74,9 @@ public class GamePlayers {
      * @throws IllegalArgumentException If {@code users} is not a {@linkplain #isValidUsers(Map) valid
      *                                  users map}
      */
-    @JsonCreator
-    public GamePlayers(@Nonnull @JsonProperty("game") final Game.Identifier game,
-                       @JsonProperty("recruiting") final boolean recruiting,
-                       @Nonnull @JsonProperty("users") final Map<UUID, UUID> users) {
+    public GamePlayers(@Nonnull final Game.Identifier game,
+                       final boolean recruiting,
+                       @Nonnull final Map<UUID, UUID> users) {
         this.game = Objects.requireNonNull(game, "game");
         this.recruiting = recruiting;
         this.users = new HashMap<>(Objects.requireNonNull(users, "users"));
@@ -193,7 +189,6 @@ public class GamePlayers {
      * @return the identifier.
      */
     @Nonnull
-    @JsonProperty("game")
     public final Game.Identifier getGame() {
         return game;
     }
@@ -216,7 +211,6 @@ public class GamePlayers {
      * @return the users
      */
     @Nonnull
-    @JsonProperty("users")
     public final Map<UUID, UUID> getUsers() {
         return Collections.unmodifiableMap(users);
     }
@@ -229,7 +223,6 @@ public class GamePlayers {
     /**
      * @see #endRecruitment()
      */
-    @JsonProperty("recruiting")
     public final boolean isRecruiting() {
         return recruiting;
     }
