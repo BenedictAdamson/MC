@@ -38,6 +38,8 @@ public abstract class MCRepository {
         private final IdentityHashMap<Game, Game.Identifier> gameToIdMap = new IdentityHashMap<>();
         private final Map<Game.Identifier, Game> idToGameMap = new HashMap<>();
         private boolean haveAllGames = false;
+        private final IdentityHashMap<GamePlayers, Game.Identifier> gamePlayersToIdMap = new IdentityHashMap<>();
+        private final Map<Game.Identifier, GamePlayers> idToGamePlayersMap = new HashMap<>();
 
         public final void addGame(@Nonnull Game.Identifier id, @Nonnull Game game) {
             if (gameToIdMap.containsKey(game) || idToGameMap.containsKey(id)) {
@@ -80,10 +82,37 @@ public abstract class MCRepository {
             return Set.copyOf(idToGameMap.keySet()).stream();
         }
 
-        public abstract void saveGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers);
+        public final void addGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers) {
+            if (gamePlayersToIdMap.containsKey(gamePlayers) || idToGamePlayersMap.containsKey(id)) {
+                throw new IllegalStateException("already present");
+            }
+            gamePlayersToIdMap.put(gamePlayers, id);
+            idToGamePlayersMap.put(id, gamePlayers);
+            addGamePlayersUncached(id, gamePlayers);
+        }
+
+        public final void updateGamePlayers(@Nonnull GamePlayers gamePlayers) {
+            final var id = gamePlayersToIdMap.get(gamePlayers);
+            if (id == null) {
+                throw new IllegalStateException("not present");
+            }
+            updateGamePlayersUncached(id, gamePlayers);
+        }
 
         @Nonnull
-        public abstract Optional<GamePlayers> findGamePlayers(@Nonnull Game.Identifier id);
+        public final Optional<GamePlayers> findGamePlayers(@Nonnull Game.Identifier id) {
+            var game = idToGamePlayersMap.get(id);
+            if (game != null) {
+                return Optional.of(game);
+            }
+            final var result = findGamePlayersUncached(id);
+            if (result.isPresent()) {
+                game = result.get();
+                gamePlayersToIdMap.put(game, id);
+                idToGamePlayersMap.put(id, game);
+            }
+            return result;
+        }
 
         @Nonnull
         public abstract Optional<UserGameAssociation> findCurrentUserGame(@Nonnull UUID userId);
@@ -131,6 +160,13 @@ public abstract class MCRepository {
 
         @Nonnull
         protected abstract Optional<Game> findGameUncached(@Nonnull Game.Identifier id);
+
+        protected abstract void addGamePlayersUncached(@Nonnull Game.Identifier id, @Nonnull GamePlayers game);
+
+        protected abstract void updateGamePlayersUncached(@Nonnull Game.Identifier id, @Nonnull GamePlayers game);
+
+        @Nonnull
+        protected abstract Optional<GamePlayers> findGamePlayersUncached(@Nonnull Game.Identifier id);
 
         @Nonnull
         protected abstract Stream<Game.Identifier> findAllGameIdentifiersUncached();

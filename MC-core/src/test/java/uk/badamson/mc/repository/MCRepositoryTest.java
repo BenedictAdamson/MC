@@ -62,7 +62,14 @@ public class MCRepositoryTest {
             }
 
             @Override
-            public void saveGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers) {
+            protected void addGamePlayersUncached(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers) {
+                Objects.requireNonNull(id);
+                Objects.requireNonNull(gamePlayers);
+                gamePlayersStore.put(id, copy(gamePlayers));
+            }
+
+            @Override
+            protected void updateGamePlayersUncached(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers) {
                 Objects.requireNonNull(id);
                 Objects.requireNonNull(gamePlayers);
                 gamePlayersStore.put(id, copy(gamePlayers));
@@ -70,7 +77,7 @@ public class MCRepositoryTest {
 
             @Nonnull
             @Override
-            public Optional<GamePlayers> findGamePlayers(@Nonnull Game.Identifier id) {
+            protected Optional<GamePlayers> findGamePlayersUncached(@Nonnull Game.Identifier id) {
                 return Optional.ofNullable(gamePlayersStore.get(id)).map(Fake::copy);
             }
 

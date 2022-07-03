@@ -70,7 +70,7 @@ public final class GameService {
             final var game = new Game(identifier, Game.RunState.WAITING_TO_START);
             final var gamePlayers = createGamePlayersForNewGame(identifier);
             context.addGame(identifier, game);
-            context.saveGamePlayers(identifier, gamePlayers);
+            context.addGamePlayers(identifier, gamePlayers);
             return game;
         }
     }

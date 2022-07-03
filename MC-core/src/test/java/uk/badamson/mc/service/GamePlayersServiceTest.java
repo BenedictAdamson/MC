@@ -294,7 +294,7 @@ public class GamePlayersServiceTest {
                 final var gamePlayersInRepository = new GamePlayers(id, recruiting0,
                         users);
                 try(final var context = repository.openContext()) {
-                    context.saveGamePlayers(id, gamePlayersInRepository);
+                    context.addGamePlayers(id, gamePlayersInRepository);
                 }
                 final var service = new GamePlayersService(userServiceA, scenarioService, repository);
 
@@ -400,7 +400,7 @@ public class GamePlayersServiceTest {
                 final var gamePlayersInRepository = new GamePlayers(id, recruiting,
                         users);
                 try(final var context = repository.openContext()) {
-                    context.saveGamePlayers(id, gamePlayersInRepository);
+                    context.addGamePlayers(id, gamePlayersInRepository);
                 }
                 final var service = new GamePlayersService(userServiceA, scenarioService, repository);
 
@@ -504,7 +504,7 @@ public class GamePlayersServiceTest {
                 final var gamePlayersInRepository = new GamePlayers(id, recruiting,
                         users);
                 try(final var context = repository.openContext()) {
-                    context.saveGamePlayers(id, gamePlayersInRepository);
+                    context.addGamePlayers(id, gamePlayersInRepository);
                 }
                 final var service = new GamePlayersService(userServiceA, scenarioService, repository);
 

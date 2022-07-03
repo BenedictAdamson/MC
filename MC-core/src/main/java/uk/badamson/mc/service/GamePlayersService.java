@@ -80,7 +80,7 @@ public final class GamePlayersService {
             }
             final var gamePlayers = gamePlayersOptional.get();
             gamePlayers.endRecruitment();
-            context.saveGamePlayers(id, gamePlayers);
+            context.updateGamePlayers(gamePlayers);
             return gamePlayers;
         }
     }
@@ -283,7 +283,7 @@ public final class GamePlayersService {
 
             // write:
             context.saveCurrentUserGame(userId, association);
-            context.saveGamePlayers(gameId, state.gamePlayers);
+            context.updateGamePlayers(state.gamePlayers);
         }
     }
 
