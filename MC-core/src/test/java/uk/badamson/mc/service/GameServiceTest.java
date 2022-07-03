@@ -265,7 +265,7 @@ public class GameServiceTest {
             final var id = IDENTIFIER_A;
             final var game = new Game(id, Game.RunState.RUNNING);
             try(final var context = repository.openContext()) {
-                context.saveGame(id, game);
+                context.addGame(id, game);
             }
             final var service = new GameService(CLOCK_A, scenarioServiceA, repository);
 
@@ -293,7 +293,7 @@ public class GameServiceTest {
             final var repository = repositoryA;
             final var id = IDENTIFIER_A;
             try(final var context = repository.openContext()) {
-                context.saveGame(id, new Game(id, Game.RunState.RUNNING));
+                context.addGame(id, new Game(id, Game.RunState.RUNNING));
             }
             final var service = new GameService(CLOCK_A, scenarioServiceA, repository);
 

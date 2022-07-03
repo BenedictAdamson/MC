@@ -69,7 +69,7 @@ public final class GameService {
             final var identifier = new Identifier(scenario, getNow());
             final var game = new Game(identifier, Game.RunState.WAITING_TO_START);
             final var gamePlayers = createGamePlayersForNewGame(identifier);
-            context.saveGame(identifier, game);
+            context.addGame(identifier, game);
             context.saveGamePlayers(identifier, gamePlayers);
             return game;
         }
@@ -121,17 +121,13 @@ public final class GameService {
     @Nonnull
     public Stream<Identifier> getGameIdentifiers() {
         try(var context = repository.openContext()) {
-            return getGames(context).map(Game::getIdentifier);
+            return context.findAllGameIdentifiers();
         }
     }
 
     @Nonnull
     Stream<Identifier> getGameIdentifiers(@Nonnull MCRepository.Context context) {
-        return getGames(context).map(Game::getIdentifier);
-    }
-
-    private Stream<Game> getGames(@Nonnull MCRepository.Context context) {
-        return context.findAllGames();
+        return context.findAllGameIdentifiers();
     }
 
     @Nonnull
@@ -149,7 +145,7 @@ public final class GameService {
     }
 
     @Nonnull
-    public Game startGame(@Nonnull final Identifier id)
+    public Game startGame(@Nonnull final Game.Identifier id)
             throws NoSuchElementException, IllegalGameStateException {
         Objects.requireNonNull(id);
         try(var context = repository.openContext()) {
@@ -160,9 +156,8 @@ public final class GameService {
             var game = gameOptional.get();// read
             switch (game.getRunState()) {
                 case WAITING_TO_START:
-                    game = new Game(game);
                     game.setRunState(Game.RunState.RUNNING);
-                    context.saveGame(id, game);// write
+                    context.updateGame(game);// write
                     return game;
                 case RUNNING:
                     // do nothing
@@ -185,9 +180,8 @@ public final class GameService {
             var game = gameOptional.get();// read
             switch (game.getRunState()) {
                 case WAITING_TO_START, RUNNING -> {
-                    game = new Game(game);
                     game.setRunState(Game.RunState.STOPPED);
-                    context.saveGame(id, game);
+                    context.updateGame(game);
                     // write
                 }
                 case STOPPED -> // do nothing

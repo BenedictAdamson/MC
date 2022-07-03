@@ -24,10 +24,10 @@ import uk.badamson.mc.User;
 import uk.badamson.mc.UserGameAssociation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 @ThreadSafe
@@ -35,14 +35,50 @@ public abstract class MCRepository {
 
     @NotThreadSafe
     public abstract class Context implements AutoCloseable {
+        private final IdentityHashMap<Game, Game.Identifier> gameToIdMap = new IdentityHashMap<>();
+        private final Map<Game.Identifier, Game> idToGameMap = new HashMap<>();
+        private boolean haveAllGames = false;
 
-        public abstract void saveGame(@Nonnull Game.Identifier id, @Nonnull Game game);
+        public final void addGame(@Nonnull Game.Identifier id, @Nonnull Game game) {
+            if (gameToIdMap.containsKey(game) || idToGameMap.containsKey(id)) {
+                throw new IllegalStateException("already present");
+            }
+            gameToIdMap.put(game, id);
+            idToGameMap.put(id, game);
+            addGameUncached(id, game);
+        }
+
+        public final void updateGame(@Nonnull Game game) {
+            final var id = gameToIdMap.get(game);
+            if (id == null) {
+                throw new IllegalStateException("not present");
+            }
+            updateGameUncached(id, game);
+        }
 
         @Nonnull
-        public abstract Optional<Game> findGame(@Nonnull Game.Identifier id);
+        public final Optional<Game> findGame(@Nonnull Game.Identifier id) {
+            var game = idToGameMap.get(id);
+            if (game != null) {
+                return Optional.of(game);
+            }
+            final var result = findGameUncached(id);
+            if (result.isPresent()) {
+                game = result.get();
+                gameToIdMap.put(game, id);
+                idToGameMap.put(id, game);
+            }
+            return result;
+        }
 
         @Nonnull
-        public abstract Stream<Game> findAllGames();
+        public final Stream<Game.Identifier> findAllGameIdentifiers() {
+            if (!haveAllGames) {
+                findAllGameIdentifiersUncached().forEach(id -> idToGameMap.putIfAbsent(id, null) );
+                haveAllGames = true;
+            }
+            return Set.copyOf(idToGameMap.keySet()).stream();
+        }
 
         public abstract void saveGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers);
 
@@ -82,7 +118,22 @@ public abstract class MCRepository {
          * if it throws an exception, some saves might have been performed and some might not.
          */
         @Override
-        public abstract void close() throws RuntimeException;
+        @OverridingMethodsMustInvokeSuper
+        public void close() throws RuntimeException {
+            gameToIdMap.clear();
+            idToGameMap.clear();
+            haveAllGames = false;
+        }
+
+        protected abstract void addGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game);
+
+        protected abstract void updateGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game);
+
+        @Nonnull
+        protected abstract Optional<Game> findGameUncached(@Nonnull Game.Identifier id);
+
+        @Nonnull
+        protected abstract Stream<Game.Identifier> findAllGameIdentifiersUncached();
     }
 
     @Nonnull

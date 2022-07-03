@@ -38,21 +38,27 @@ public class MCRepositoryTest {
         private class FakeContext extends Context {
 
             @Override
-            public void saveGame(@Nonnull Game.Identifier id, @Nonnull Game game) {
+            public void addGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game) {
+                Objects.requireNonNull(id);
+                gameStore.put(id, copy(game));
+            }
+
+            @Override
+            public void updateGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game) {
                 Objects.requireNonNull(id);
                 gameStore.put(id, copy(game));
             }
 
             @Nonnull
             @Override
-            public Optional<Game> findGame(@Nonnull Game.Identifier id) {
+            public Optional<Game> findGameUncached(@Nonnull Game.Identifier id) {
                 return Optional.ofNullable(gameStore.get(id)).map(Fake::copy);
             }
 
             @Nonnull
             @Override
-            public Stream<Game> findAllGames() {
-                return List.copyOf(gameStore.values()).stream().map(Fake::copy);
+            public Stream<Game.Identifier> findAllGameIdentifiersUncached() {
+                return Set.copyOf(gameStore.keySet()).stream();
             }
 
             @Override
@@ -103,11 +109,6 @@ public class MCRepositoryTest {
                 Objects.requireNonNull(id);
                 Objects.requireNonNull(user);
                 userStore.put(id, user);
-            }
-
-            @Override
-            public void close() {
-                // Do nothing
             }
 
         }
