@@ -348,7 +348,7 @@ public class GamePlayersServiceTest {
             final var userId = USER_ID_A;
             final var repository = repositoryA;
             try(final var context = repository.openContext()) {
-                context.saveCurrentUserGame(userId, new UserGameAssociation(userId, GAME_IDENTIFIER_A));
+                context.addCurrentUserGame(userId, new UserGameAssociation(userId, GAME_IDENTIFIER_A));
             }
             final var service = new GamePlayersService(userServiceA, scenarioServiceA, repository);
 

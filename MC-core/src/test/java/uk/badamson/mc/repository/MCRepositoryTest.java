@@ -82,7 +82,14 @@ public class MCRepositoryTest {
             }
 
             @Override
-            public void saveCurrentUserGame(@Nonnull UUID userId, @Nonnull UserGameAssociation association) {
+            protected void addCurrentUserGameUncached(@Nonnull UUID userId, @Nonnull UserGameAssociation association) {
+                Objects.requireNonNull(userId);
+                Objects.requireNonNull(association);
+                currentUserGameStore.put(userId, association);
+            }
+
+            @Override
+            protected void updateCurrentUserGameUncached(@Nonnull UUID userId, @Nonnull UserGameAssociation association) {
                 Objects.requireNonNull(userId);
                 Objects.requireNonNull(association);
                 currentUserGameStore.put(userId, association);
@@ -90,7 +97,7 @@ public class MCRepositoryTest {
 
             @Nonnull
             @Override
-            public Optional<UserGameAssociation> findCurrentUserGame(@Nonnull UUID userId) {
+            protected Optional<UserGameAssociation> findCurrentUserGameUncached(@Nonnull UUID userId) {
                 Objects.requireNonNull(userId);
                 return Optional.ofNullable(currentUserGameStore.get(userId));
             }

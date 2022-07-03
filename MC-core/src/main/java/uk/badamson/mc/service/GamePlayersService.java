@@ -282,7 +282,7 @@ public final class GamePlayersService {
             }
 
             // write:
-            context.saveCurrentUserGame(userId, association);
+            context.addCurrentUserGame(userId, association);
             context.updateGamePlayers(state.gamePlayers);
         }
     }

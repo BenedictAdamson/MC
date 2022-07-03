@@ -40,6 +40,8 @@ public abstract class MCRepository {
         private boolean haveAllGames = false;
         private final IdentityHashMap<GamePlayers, Game.Identifier> gamePlayersToIdMap = new IdentityHashMap<>();
         private final Map<Game.Identifier, GamePlayers> idToGamePlayersMap = new HashMap<>();
+        private final IdentityHashMap<UserGameAssociation, UUID> userGameAssociationToIdMap = new IdentityHashMap<>();
+        private final Map<UUID, UserGameAssociation> idToUserGameAssociationMap = new HashMap<>();
 
         public final void addGame(@Nonnull Game.Identifier id, @Nonnull Game game) {
             if (gameToIdMap.containsKey(game) || idToGameMap.containsKey(id)) {
@@ -115,9 +117,36 @@ public abstract class MCRepository {
         }
 
         @Nonnull
-        public abstract Optional<UserGameAssociation> findCurrentUserGame(@Nonnull UUID userId);
+        public final Optional<UserGameAssociation> findCurrentUserGame(@Nonnull UUID id) {
+            var game = idToUserGameAssociationMap.get(id);
+            if (game != null) {
+                return Optional.of(game);
+            }
+            final var result = findCurrentUserGameUncached(id);
+            if (result.isPresent()) {
+                game = result.get();
+                userGameAssociationToIdMap.put(game, id);
+                idToUserGameAssociationMap.put(id, game);
+            }
+            return result;
+        }
 
-        public abstract void saveCurrentUserGame(@Nonnull UUID userId, @Nonnull UserGameAssociation entity);
+        public final void addCurrentUserGame(@Nonnull UUID id, @Nonnull UserGameAssociation entry) {
+            if (userGameAssociationToIdMap.containsKey(entry) || idToUserGameAssociationMap.containsKey(id)) {
+                throw new IllegalStateException("already present");
+            }
+            userGameAssociationToIdMap.put(entry, id);
+            idToUserGameAssociationMap.put(id, entry);
+            addCurrentUserGameUncached(id, entry);
+        }
+
+        public final void updateCurrentUserGame(@Nonnull UserGameAssociation entry) {
+            final var id = userGameAssociationToIdMap.get(entry);
+            if (id == null) {
+                throw new IllegalStateException("not present");
+            }
+            updateCurrentUserGameUncached(id, entry);
+        }
 
         @Nonnull
         public abstract Optional<User> findUserByUsername(@Nonnull String username);
@@ -170,6 +199,13 @@ public abstract class MCRepository {
 
         @Nonnull
         protected abstract Stream<Game.Identifier> findAllGameIdentifiersUncached();
+
+        protected abstract void addCurrentUserGameUncached(@Nonnull UUID id, @Nonnull UserGameAssociation entry);
+
+        protected abstract void updateCurrentUserGameUncached(@Nonnull UUID id, @Nonnull UserGameAssociation entry);
+
+        @Nonnull
+        protected abstract Optional<UserGameAssociation> findCurrentUserGameUncached(@Nonnull UUID userId);
     }
 
     @Nonnull
