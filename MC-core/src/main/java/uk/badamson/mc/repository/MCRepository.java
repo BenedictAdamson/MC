@@ -181,6 +181,8 @@ public abstract class MCRepository {
             gameToIdMap.clear();
             idToGameMap.clear();
             haveAllGames = false;
+            gamePlayersToIdMap.clear();
+            idToGamePlayersMap.clear();
         }
 
         protected abstract void addGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game);
