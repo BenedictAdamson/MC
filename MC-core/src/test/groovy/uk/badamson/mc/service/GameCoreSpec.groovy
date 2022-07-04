@@ -45,7 +45,7 @@ class GameCoreSpec extends CoreSpecification {
         def gameOptional = world.gameService.getGame(gameIdentifier)
         gameOptional.isPresent()
         def game = gameOptional.get()
-        def gamePlayersOptional = world.gamePlayersService.getGamePlayersAsNonGameManager(
+        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
                 gameIdentifier, user.id)
 
         then: "the game indicates its scenario"
@@ -62,7 +62,7 @@ class GameCoreSpec extends CoreSpecification {
         expect(gamePlayers.recruiting, Matchers.any(Boolean.class))
 
         and: "the game indicates whether the user may join the game"
-        expect(world.gamePlayersService.mayUserJoinGame(user.id, gameIdentifier), Matchers.any(Boolean.class))
+        expect(world.gameService.mayUserJoinGame(user.id, gameIdentifier), Matchers.any(Boolean.class))
 
         and: "the game indicates whether the user is playing the game"
         expect(gamePlayers.users, Matchers.notNullValue())
@@ -93,7 +93,7 @@ class GameCoreSpec extends CoreSpecification {
         def gameOptional = world.gameService.getGame(gameIdentifier)
         gameOptional.isPresent()
         def game = gameOptional.get()
-        def gamePlayersOptional = world.gamePlayersService.getGamePlayersAsNonGameManager(
+        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
                 gameIdentifier, user.id)
 
         then: "the game indicates its scenario"
@@ -110,7 +110,7 @@ class GameCoreSpec extends CoreSpecification {
         expect(gamePlayers.recruiting, Matchers.any(Boolean.class))
 
         and: "the game indicates whether the user may join the game"
-        expect(world.gamePlayersService.mayUserJoinGame(user.id, gameIdentifier), Matchers.any(Boolean.class))
+        expect(world.gameService.mayUserJoinGame(user.id, gameIdentifier), Matchers.any(Boolean.class))
 
         and: "the game indicates whether the user is playing the game"
         expect(gamePlayers.users, Matchers.notNullValue())
@@ -143,7 +143,7 @@ class GameCoreSpec extends CoreSpecification {
         game != null
 
         and: "the game indicates that it is recruiting players"
-        def gamePlayersOptional = world.gamePlayersService.getGamePlayersAsNonGameManager(
+        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
                 game.identifier, user.id)
         gamePlayersOptional.isPresent()
         def gamePlayers = gamePlayersOptional.get()
@@ -169,7 +169,7 @@ class GameCoreSpec extends CoreSpecification {
         def gameIdentifier = world.gameService.create(scenarioId).identifier
 
         when: "user ends recruitment for the game"
-        def gamePlayers = world.gamePlayersService.endRecruitment(gameIdentifier)
+        def gamePlayers = world.gameService.endRecruitment(gameIdentifier)
 
         then: "the game indicates that it is not recruiting players"
         !gamePlayers.recruiting
@@ -185,13 +185,13 @@ class GameCoreSpec extends CoreSpecification {
         def user = world.userService.add(userDetails)
 
         when: "examine the game"
-        def gamePlayersOptional = world.gamePlayersService.getGamePlayersAsNonGameManager(
+        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
                 gameIdentifier, user.id)
         gamePlayersOptional.isPresent()
         def gamePlayers = gamePlayersOptional.get()
 
         then: "the game indicates that the user may join the game"
-        world.gamePlayersService.mayUserJoinGame(user.id, gameIdentifier)
+        world.gameService.mayUserJoinGame(user.id, gameIdentifier)
 
         and: "the game indicates that the user is not playing the game"
         expect(gamePlayers.users.values(), Matchers.not(Matchers.hasItem(user.id)))
@@ -207,10 +207,10 @@ class GameCoreSpec extends CoreSpecification {
         def user = world.userService.add(userDetails)
 
         when: "the user joins the game"
-        world.gamePlayersService.userJoinsGame(user.id, gameIdentifier)
+        world.gameService.userJoinsGame(user.id, gameIdentifier)
 
         then: "the game indicates that the user is playing the game"
-        def gamePlayersOptional = world.gamePlayersService.getGamePlayersAsNonGameManager(
+        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
                 gameIdentifier, user.id)
         gamePlayersOptional.isPresent()
         def users = gamePlayersOptional.get().users
@@ -230,7 +230,7 @@ class GameCoreSpec extends CoreSpecification {
         def user = world.userService.add(userDetails)
 
         when: "examine the game"
-        def mayJoin = world.gamePlayersService.mayUserJoinGame(user.id, gameIdentifier)
+        def mayJoin = world.gameService.mayUserJoinGame(user.id, gameIdentifier)
 
         then: "the game indicates that the user may not join the game"
         !mayJoin

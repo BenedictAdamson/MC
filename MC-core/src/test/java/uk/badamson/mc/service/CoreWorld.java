@@ -19,10 +19,9 @@ public final class CoreWorld {
 
     private final Clock clock = Clock.fixed(Instant.now().truncatedTo(ChronoUnit.MILLIS), ZoneId.systemDefault());
     private final ScenarioService scenarioService = new ScenarioService(repository);
-    private final GameService gameService = new GameService(clock, scenarioService, repository);
     private final UserService userService = new UserService(
             PasswordEncoderTest.FAKE, ADMINISTRATOR_PASSWORD, repository);
-    private final GamePlayersService gamePlayersService = new GamePlayersService(userService, scenarioService, repository);
+    private final GameService gameService = new GameService(clock, scenarioService, userService, repository);
 
     private int nUsers;
 
@@ -44,11 +43,6 @@ public final class CoreWorld {
     @Nonnull
     public UserService getUserService() {
         return userService;
-    }
-
-    @Nonnull
-    public GamePlayersService getGamePlayersService() {
-        return gamePlayersService;
     }
 
     @Nonnull

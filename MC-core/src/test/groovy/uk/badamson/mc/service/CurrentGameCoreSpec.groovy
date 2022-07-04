@@ -40,7 +40,7 @@ class CurrentGameCoreSpec extends CoreSpecification {
         def user = world.userService.add(world.createBasicUserDetails(EnumSet.of(Authority.ROLE_PLAYER)))
 
         when: "examine current-game of the user"
-        final Optional<Game.Identifier> currentGame = world.gamePlayersService.getCurrentGameOfUser(user.id)
+        final Optional<Game.Identifier> currentGame = world.gameService.getCurrentGameOfUser(user.id)
 
         then: "does not indicate that the user has a current game"
         currentGame.isEmpty()
@@ -55,17 +55,17 @@ class CurrentGameCoreSpec extends CoreSpecification {
         def user = world.userService.add(userDetails)
 
         and: "user is playing the game"
-        world.gamePlayersService.userJoinsGame(user.id, game.identifier)
+        world.gameService.userJoinsGame(user.id, game.identifier)
 
         when: "examine current game"
-        def currentGame = world.gamePlayersService.getCurrentGameOfUser(user.id)
+        def currentGame = world.gameService.getCurrentGameOfUser(user.id)
 
         then: "indicates that the user has a current game"
         currentGame.isPresent()
         currentGame.get() == game.identifier
 
         when: "examine the players of the game"
-        def gamePlayersOptional = world.gamePlayersService.getGamePlayersAsNonGameManager(
+        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
                 game.identifier, user.id)
 
         then: "the game indicates which character the user is playing"
