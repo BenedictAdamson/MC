@@ -153,7 +153,7 @@ public class UserServiceTest {
         final var service = new UserService(PasswordEncoderTest.FAKE, PASSWORD_A, repository);
         final var administrator = User.createAdministrator(PASSWORD_B);
         try(final var context = repository.openContext()) {
-            context.saveUser(administrator.getId(), administrator);
+            context.addUser(administrator.getId(), administrator);
         }
 
         getUsers(service);

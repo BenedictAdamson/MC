@@ -80,7 +80,7 @@ public class UserService {
             encryptedUserDetails.setPassword(passwordEncoder.encode(userDetails.getPassword()));
             final var id = UUID.randomUUID();
             final var user = new User(id, encryptedUserDetails);
-            context.saveUser(id, user);// write
+            context.addUser(id, user);// write
             return user;
         }
     }

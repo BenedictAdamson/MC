@@ -103,23 +103,38 @@ public class MCRepositoryTest {
             }
 
             @Nonnull
-            public Optional<User> findUser(@Nonnull UUID id) {
+            @Override
+            protected Optional<User> findUserUncached(@Nonnull UUID id) {
                 Objects.requireNonNull(id);
                 return Optional.ofNullable(userStore.get(id)).map(Fake::copy);
             }
 
             @Nonnull
-            public Optional<User> findUserByUsername(@Nonnull String username) {
+            @Override
+            protected Optional<UUID> findUserIdForUsernameUncached(@Nonnull String username) {
                 Objects.requireNonNull(username);
-                return userStore.values().stream().filter(u -> u.getUsername().equals(username)).findAny().map(Fake::copy);
+                return userStore.values().stream()
+                        .filter(u -> u.getUsername().equals(username))
+                        .map(User::getId)
+                        .findAny();
             }
 
             @Nonnull
-            public Stream<User> findAllUsers() {
-                return userStore.values().stream();
+            @Override
+            public Stream<Map.Entry<UUID,User>> findAllUsersUncached() {
+                return userStore.values().stream()
+                        .map(u -> new AbstractMap.SimpleImmutableEntry<>(u.getId(), u));
             }
 
-            public void saveUser(@Nonnull UUID id, @Nonnull User user) {
+            @Override
+            public void addUserUncached(@Nonnull UUID id, @Nonnull User user) {
+                Objects.requireNonNull(id);
+                Objects.requireNonNull(user);
+                userStore.put(id, user);
+            }
+
+            @Override
+            public void updateUserUncached(@Nonnull UUID id, @Nonnull User user) {
                 Objects.requireNonNull(id);
                 Objects.requireNonNull(user);
                 userStore.put(id, user);

@@ -42,6 +42,10 @@ public abstract class MCRepository {
         private final Map<Game.Identifier, GamePlayers> idToGamePlayersMap = new HashMap<>();
         private final IdentityHashMap<UserGameAssociation, UUID> userGameAssociationToIdMap = new IdentityHashMap<>();
         private final Map<UUID, UserGameAssociation> idToUserGameAssociationMap = new HashMap<>();
+        private final IdentityHashMap<User, UUID> userToIdMap = new IdentityHashMap<>();
+        private final Map<UUID, User> idToUserMap = new HashMap<>();
+        private final Map<String, User> usernameToUserMap = new HashMap<>();
+        private boolean haveAllUsers = false;
 
         public final void addGame(@Nonnull Game.Identifier id, @Nonnull Game game) {
             if (gameToIdMap.containsKey(game) || idToGameMap.containsKey(id)) {
@@ -148,16 +152,68 @@ public abstract class MCRepository {
             updateCurrentUserGameUncached(id, entry);
         }
 
-        @Nonnull
-        public abstract Optional<User> findUserByUsername(@Nonnull String username);
+        public final void addUser(@Nonnull UUID id, @Nonnull User user) {
+            if (userToIdMap.containsKey(user) || idToUserMap.containsKey(id)) {
+                throw new IllegalStateException("already present");
+            }
+            cacheUser(id, user);
+            addUserUncached(id, user);
+        }
+
+        public final void updateUser(@Nonnull User user) {
+            final var id = userToIdMap.get(user);
+            if (id == null) {
+                throw new IllegalStateException("not present");
+            }
+            updateUserUncached(id, user);
+        }
 
         @Nonnull
-        public abstract Optional<User> findUser(@Nonnull UUID id);
+        public final Optional<User> findUser(@Nonnull UUID id) {
+            var user = idToUserMap.get(id);
+            if (user != null) {
+                return Optional.of(user);
+            }
+            final var result = findUserUncached(id);
+            if (result.isPresent()) {
+                user = result.get();
+                cacheUser(id, user);
+            }
+            return result;
+        }
 
         @Nonnull
-        public abstract Stream<User> findAllUsers();
+        public final Optional<User> findUserByUsername(@Nonnull String username) {
+            var user = usernameToUserMap.get(username);
+            if (user != null) {
+                return Optional.of(user);
+            }
+            final var id = findUserIdForUsernameUncached(username);
+            if (id.isPresent()) {
+                return findUser(id.get());
+            } else {
+                return Optional.empty();
+            }
+        }
 
-        public abstract void saveUser(@Nonnull UUID id, @Nonnull User user);
+        @Nonnull
+        public final Stream<User> findAllUsers() {
+            if (!haveAllUsers) {
+                findAllUsersUncached().forEach(entry -> {
+                    final var id = entry.getKey();
+                    final var user = entry.getValue();
+                    cacheUser(id, user);
+                });
+                haveAllUsers = true;
+            }
+            return List.copyOf(idToUserMap.values()).stream();
+        }
+
+        private void cacheUser(UUID id, User user) {
+            userToIdMap.put(user, id);
+            idToUserMap.put(id, user);
+            usernameToUserMap.put(user.getUsername(), user);
+        }
 
         @Nonnull
         public MCRepository getRepository() {
@@ -185,6 +241,13 @@ public abstract class MCRepository {
             idToGamePlayersMap.clear();
             userGameAssociationToIdMap.clear();
             idToUserGameAssociationMap.clear();
+            userToIdMap.clear();
+            idToUserMap.clear();
+            usernameToUserMap.clear();
+            userToIdMap.clear();
+            idToUserMap.clear();
+            usernameToUserMap.clear();
+            haveAllUsers = false;
         }
 
         protected abstract void addGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game);
@@ -210,6 +273,19 @@ public abstract class MCRepository {
 
         @Nonnull
         protected abstract Optional<UserGameAssociation> findCurrentUserGameUncached(@Nonnull UUID userId);
+
+        @Nonnull
+        protected abstract Optional<UUID> findUserIdForUsernameUncached(@Nonnull String username);
+
+        @Nonnull
+        protected abstract Optional<User> findUserUncached(@Nonnull UUID id);
+
+        protected abstract void addUserUncached(@Nonnull UUID id, @Nonnull User user);
+
+        protected abstract void updateUserUncached(@Nonnull UUID id, @Nonnull User user);
+
+        @Nonnull
+        protected abstract Stream<Map.Entry<UUID,User>> findAllUsersUncached();
     }
 
     @Nonnull
