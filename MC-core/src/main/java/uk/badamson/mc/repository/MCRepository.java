@@ -183,6 +183,8 @@ public abstract class MCRepository {
             haveAllGames = false;
             gamePlayersToIdMap.clear();
             idToGamePlayersMap.clear();
+            userGameAssociationToIdMap.clear();
+            idToUserGameAssociationMap.clear();
         }
 
         protected abstract void addGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game);
