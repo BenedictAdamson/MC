@@ -29,7 +29,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toUnmodifiableMap;
 
@@ -105,7 +104,7 @@ public final class GameService {
         Objects.requireNonNull(scenario);
         try(var context = repository.openContext()) {
             requireKnownScenario(context, scenario);// read-and-check
-            return getGameIdentifiers(context)// read
+            return getGameIdentifiers(context).stream()// read
                     .filter(id -> scenario.equals(id.getScenario()))
                     .map(Identifier::getCreated)
                     .collect(Collectors.toUnmodifiableSet());
@@ -125,15 +124,19 @@ public final class GameService {
     }
 
     @Nonnull
-    public Stream<Identifier> getGameIdentifiers() {
+    public Iterable<Identifier> getGameIdentifiers() {
         try(var context = repository.openContext()) {
             return getGameIdentifiers(context);
         }
     }
 
     @Nonnull
-    Stream<Identifier> getGameIdentifiers(@Nonnull MCRepository.Context context) {
-        return context.findAllGames().map(Map.Entry::getKey);
+    Set<Identifier> getGameIdentifiers(@Nonnull MCRepository.Context context) {
+        final Set<Identifier> result = new HashSet<>();
+        for (var entry: context.findAllGames()) {
+            result.add(entry.getKey());
+        };
+        return result;
     }
 
     @Nonnull

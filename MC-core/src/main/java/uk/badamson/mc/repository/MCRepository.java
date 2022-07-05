@@ -28,7 +28,6 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
-import java.util.stream.Stream;
 
 @ThreadSafe
 public abstract class MCRepository {
@@ -71,19 +70,17 @@ public abstract class MCRepository {
                 return Optional.of(game);
             }
             final var result = findGameUncached(id);
-            if (result.isPresent()) {
-                cacheGame(id, result.get());
-            }
+            result.ifPresent(value -> cacheGame(id, value));
             return result;
         }
 
         @Nonnull
-        public final Stream<Map.Entry<Game.Identifier, Game>> findAllGames() {
+        public final Iterable<Map.Entry<Game.Identifier, Game>> findAllGames() {
             if (!haveAllGames) {
                 findAllGamesUncached().forEach(entry -> cacheGame(entry.getKey(), entry.getValue()) );
                 haveAllGames = true;
             }
-            return Set.copyOf(idToGameMap.entrySet()).stream();
+            return Set.copyOf(idToGameMap.entrySet());
         }
 
         private void cacheGame(@Nonnull Game.Identifier id, @Nonnull Game game) {
@@ -192,15 +189,11 @@ public abstract class MCRepository {
                 return Optional.of(user);
             }
             final var id = findUserIdForUsernameUncached(username);
-            if (id.isPresent()) {
-                return findUser(id.get());
-            } else {
-                return Optional.empty();
-            }
+            return id.flatMap(this::findUser);
         }
 
         @Nonnull
-        public final Stream<User> findAllUsers() {
+        public final Iterable<User> findAllUsers() {
             if (!haveAllUsers) {
                 findAllUsersUncached().forEach(entry -> {
                     final var id = entry.getKey();
@@ -209,7 +202,7 @@ public abstract class MCRepository {
                 });
                 haveAllUsers = true;
             }
-            return List.copyOf(idToUserMap.values()).stream();
+            return List.copyOf(idToUserMap.values());
         }
 
         private void cacheUser(UUID id, User user) {
@@ -268,7 +261,7 @@ public abstract class MCRepository {
         protected abstract Optional<GamePlayers> findGamePlayersUncached(@Nonnull Game.Identifier id);
 
         @Nonnull
-        protected abstract Stream<Map.Entry<Game.Identifier, Game>> findAllGamesUncached();
+        protected abstract Iterable<Map.Entry<Game.Identifier, Game>> findAllGamesUncached();
 
         protected abstract void addCurrentUserGameUncached(@Nonnull UUID id, @Nonnull UserGameAssociation entry);
 
@@ -288,7 +281,7 @@ public abstract class MCRepository {
         protected abstract void updateUserUncached(@Nonnull UUID id, @Nonnull User user);
 
         @Nonnull
-        protected abstract Stream<Map.Entry<UUID,User>> findAllUsersUncached();
+        protected abstract Iterable<Map.Entry<UUID,User>> findAllUsersUncached();
     }
 
     @Nonnull

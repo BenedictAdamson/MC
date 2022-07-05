@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 public class MCRepositoryTest {
 
@@ -57,8 +56,8 @@ public class MCRepositoryTest {
 
             @Nonnull
             @Override
-            public Stream<Map.Entry<Game.Identifier, Game>> findAllGamesUncached() {
-                return Set.copyOf(gameStore.entrySet()).stream();
+            public Iterable<Map.Entry<Game.Identifier, Game>> findAllGamesUncached() {
+                return Set.copyOf(gameStore.entrySet());
             }
 
             @Override
@@ -121,9 +120,8 @@ public class MCRepositoryTest {
 
             @Nonnull
             @Override
-            public Stream<Map.Entry<UUID,User>> findAllUsersUncached() {
-                return userStore.values().stream()
-                        .map(u -> new AbstractMap.SimpleImmutableEntry<>(u.getId(), u));
+            public Iterable<Map.Entry<UUID,User>> findAllUsersUncached() {
+                return Set.copyOf(userStore.entrySet());
             }
 
             @Override

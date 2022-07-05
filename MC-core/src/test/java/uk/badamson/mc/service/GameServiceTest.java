@@ -33,10 +33,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -130,22 +127,12 @@ public class GameServiceTest {
         return result;
     }
 
-    public static Stream<Identifier> getGameIdentifiers(
+    public static Iterable<Identifier> getGameIdentifiers(
             final GameService service) {
         final var games = service.getGameIdentifiers();
 
-        assertNotNull(games, "Always returns a (non null) stream.");
-        final var gamesList = games.toList();
-        final Set<Identifier> gamesSet;
-        try {
-            gamesSet = gamesList.stream().collect(toUnmodifiableSet());
-        } catch (final NullPointerException e) {
-            throw new AssertionError(
-                    "The returned stream will not include a null element", e);
-        }
-        assertEquals(gamesSet.size(), gamesList.size(),
-                "Does not contain duplicates.");
-        return gamesList.stream();
+        assertThat(games, notNullValue());
+        return games;
     }
 
     private static UUID getAScenarioId(@Nonnull ScenarioService scenarioService) {
@@ -154,8 +141,6 @@ public class GameServiceTest {
         assertThat("scenario", scenarioOptional.isPresent());
         return scenarioOptional.get();
     }
-
-    /////////////////////
 
     public static GamePlayers endRecruitment(
             final GameService service, final Identifier id)
@@ -416,7 +401,7 @@ public class GameServiceTest {
 
             final var result = getGameIdentifiers(service);
 
-            assertEquals(0L, result.count(), "empty");
+            assertThat("empty", result.iterator().hasNext(), is(false));
         }
 
         @Test
@@ -430,13 +415,12 @@ public class GameServiceTest {
 
             final var result = getGameIdentifiers(service);
 
-            final var list = result.collect(toList());
-            assertAll(() -> assertEquals(1L, list.size(), "count"),
-                    () -> assertThat("has ID", list, hasItem(id)));
+            final var i = result.iterator();
+            assertThat(i.hasNext(), is(true));
+            assertThat(i.next(), is(id));
         }
     }
 
-    ///////////////////////////////
 
     @Nested
     public class EndRecruitment {
