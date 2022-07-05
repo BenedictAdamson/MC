@@ -127,7 +127,7 @@ public final class GameService {
     @Nonnull
     public Stream<Identifier> getGameIdentifiers() {
         try(var context = repository.openContext()) {
-            return context.findAllGameIdentifiers();
+            return getGameIdentifiers(context);
         }
     }
 
