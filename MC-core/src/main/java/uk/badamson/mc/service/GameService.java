@@ -133,7 +133,7 @@ public final class GameService {
 
     @Nonnull
     Stream<Identifier> getGameIdentifiers(@Nonnull MCRepository.Context context) {
-        return context.findAllGameIdentifiers();
+        return context.findAllGames().map(Map.Entry::getKey);
     }
 
     @Nonnull

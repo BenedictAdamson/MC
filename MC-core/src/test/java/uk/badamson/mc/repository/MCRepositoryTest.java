@@ -57,8 +57,8 @@ public class MCRepositoryTest {
 
             @Nonnull
             @Override
-            public Stream<Game.Identifier> findAllGameIdentifiersUncached() {
-                return Set.copyOf(gameStore.keySet()).stream();
+            public Stream<Map.Entry<Game.Identifier, Game>> findAllGamesUncached() {
+                return Set.copyOf(gameStore.entrySet()).stream();
             }
 
             @Override

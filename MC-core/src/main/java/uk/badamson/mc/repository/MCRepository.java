@@ -72,20 +72,23 @@ public abstract class MCRepository {
             }
             final var result = findGameUncached(id);
             if (result.isPresent()) {
-                game = result.get();
-                gameToIdMap.put(game, id);
-                idToGameMap.put(id, game);
+                cacheGame(id, result.get());
             }
             return result;
         }
 
         @Nonnull
-        public final Stream<Game.Identifier> findAllGameIdentifiers() {
+        public final Stream<Map.Entry<Game.Identifier, Game>> findAllGames() {
             if (!haveAllGames) {
-                findAllGameIdentifiersUncached().forEach(id -> idToGameMap.putIfAbsent(id, null) );
+                findAllGamesUncached().forEach(entry -> cacheGame(entry.getKey(), entry.getValue()) );
                 haveAllGames = true;
             }
-            return Set.copyOf(idToGameMap.keySet()).stream();
+            return Set.copyOf(idToGameMap.entrySet()).stream();
+        }
+
+        private void cacheGame(@Nonnull Game.Identifier id, @Nonnull Game game) {
+            gameToIdMap.put(game, id);
+            idToGameMap.put(id, game);
         }
 
         public final void addGamePlayers(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers) {
@@ -265,7 +268,7 @@ public abstract class MCRepository {
         protected abstract Optional<GamePlayers> findGamePlayersUncached(@Nonnull Game.Identifier id);
 
         @Nonnull
-        protected abstract Stream<Game.Identifier> findAllGameIdentifiersUncached();
+        protected abstract Stream<Map.Entry<Game.Identifier, Game>> findAllGamesUncached();
 
         protected abstract void addCurrentUserGameUncached(@Nonnull UUID id, @Nonnull UserGameAssociation entry);
 
