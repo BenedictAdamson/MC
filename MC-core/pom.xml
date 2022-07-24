@@ -5,7 +5,7 @@
     <parent>
         <artifactId>MC</artifactId>
         <groupId>uk.badamson.mc</groupId>
-        <version>2.26.0</version>
+        <version>2.27.0-SNAPSHOT</version>
     </parent>
     <artifactId>MC-core</artifactId>
     <packaging>jar</packaging>
