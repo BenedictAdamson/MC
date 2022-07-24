@@ -21,8 +21,7 @@ package uk.badamson.mc;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.time.Instant;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <p>
@@ -30,6 +29,28 @@ import java.util.UUID;
  * </p>
  */
 public class Game {
+
+    /**
+     * <p>
+     * Whether a given map is a valid {@linkplain #getUsers() users} map.
+     * </p>
+     */
+    public static boolean isValidUsers(final Map<UUID, UUID> users) {
+        return users != null
+                && users.entrySet().stream()
+                .allMatch(Game::isValidUsersEntry)
+                && hasNoDuplicates(users.values());
+    }
+
+    private static boolean isValidUsersEntry(final Map.Entry<UUID, UUID> entry) {
+        final var character = entry.getKey();
+        final var user = entry.getValue();
+        return character != null && user != null;
+    }
+
+    private static boolean hasNoDuplicates(final Collection<UUID> values) {
+        return values.size() == Set.copyOf(values).size();
+    }
 
     /**
      * <p>
@@ -123,8 +144,9 @@ public class Game {
     }
 
     private final Identifier identifier;
-
     private RunState runState;
+    private boolean recruiting;
+    private final Map<UUID, UUID> users;
 
     /**
      * <p>
@@ -137,6 +159,8 @@ public class Game {
         Objects.requireNonNull(that, "that");
         identifier = that.identifier;
         runState = that.runState;
+        recruiting = that.recruiting;
+        this.users = new HashMap<>(that.users);
     }
 
     /**
@@ -150,9 +174,17 @@ public class Game {
      *                                         </ul>
      */
     public Game(@Nonnull final Identifier identifier,
-                @Nonnull final RunState runState) {
+                @Nonnull final RunState runState,
+                final boolean recruiting,
+                @Nonnull final Map<UUID, UUID> users) {
         this.identifier = Objects.requireNonNull(identifier, "identifier");
         this.runState = Objects.requireNonNull(runState, "runState");
+        this.recruiting = recruiting;
+        this.users = new HashMap<>(Objects.requireNonNull(users, "users"));
+
+        if (!isValidUsers(this.users)) {// copy then test to avoid race hazards
+            throw new IllegalArgumentException("users");
+        }
     }
 
     /**
@@ -194,6 +226,35 @@ public class Game {
         return runState;
     }
 
+    /**
+     * @see #endRecruitment()
+     */
+    public final boolean isRecruiting() {
+        return recruiting;
+    }
+
+    /**
+     * <p>
+     * The ({@linkplain User#getId() unique IDs} of the {@linkplain User users}
+     * who played, or are playing, the game, and the IDs
+     * of the characters they played.
+     * </p>
+     * <ul>
+     * <li>The map maps a character ID to the ID of the user who is playing (or
+     * played, or will play) that character.</li>
+     * </ul>
+     * <ul>
+     * <li>Always returns a {@linkplain #isValidUsers(Map) valid users map}.</li>
+     * <li>The returned map of users is not modifiable.</li>
+     * </ul>
+     *
+     * @return the users
+     */
+    @Nonnull
+    public final Map<UUID, UUID> getUsers() {
+        return Collections.unmodifiableMap(users);
+    }
+
     @Override
     public final int hashCode() {
         return identifier.hashCode();
@@ -201,6 +262,56 @@ public class Game {
 
     public void setRunState(@Nonnull final RunState runState) {
         this.runState = Objects.requireNonNull(runState, "runState");
+    }
+
+    /**
+     * <p>
+     * Add a {@linkplain User#getId() user ID} to the {@linkplain #getUsers() set
+     * of users who played, or are playing}, the game.
+     * </p>
+     *
+     * @param character The ID of the character that the user played.
+     * @param user      The unique ID of the user to add as a player.
+     * @throws NullPointerException  <ul>
+     *                                          <li>If {@code character} is null.</li>
+     *                                          <li>If {@code user} is null.</li>
+     *                                          </ul>
+     * @throws IllegalStateException <ul>
+     *                                          <li>If the game is not {@linkplain #isRecruiting() recruiting}
+     *                                          players.</li>
+     *                                          <li>If the game already has the given user, but for a different
+     *                                          character.</li>
+     *                                          </ul>
+     */
+    public final void addUser(@Nonnull final UUID character,
+                              @Nonnull final UUID user) {
+        Objects.requireNonNull(character, "character");
+        Objects.requireNonNull(user, "users");
+        if (!recruiting) {
+            throw new IllegalStateException("Game not recruiting players");
+        }
+        if (!user.equals(users.get(character)) && users.containsValue(user)) {
+            throw new IllegalArgumentException(
+                    "User already present with a different character");
+        }
+
+        users.put(character, user);
+    }
+
+    /**
+     * <p>
+     * Indicate that this game is not {@linkplain #isRecruiting() recruiting}
+     * players (any longer).
+     * </p>
+     * <p>
+     * This mutator is idempotent: the mutator does not have the precondition
+     * that it is recruiting.
+     * </p>
+     *
+     * @see #isRecruiting()
+     */
+    public final void endRecruitment() {
+        recruiting = false;
     }
 
 }

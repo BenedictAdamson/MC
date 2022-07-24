@@ -1,7 +1,6 @@
 package uk.badamson.mc.repository;
 
 import uk.badamson.mc.Game;
-import uk.badamson.mc.GamePlayers;
 import uk.badamson.mc.User;
 import uk.badamson.mc.UserGameAssociation;
 
@@ -15,18 +14,12 @@ public class MCRepositoryTest {
     public static class Fake extends MCRepository {
 
         private final Map<Game.Identifier, Game> gameStore = new ConcurrentHashMap<>();
-        private final Map<Game.Identifier, GamePlayers> gamePlayersStore = new ConcurrentHashMap<>();
         private final Map<UUID, UserGameAssociation> currentUserGameStore = new ConcurrentHashMap<>();
         private final Map<UUID, User> userStore = new ConcurrentHashMap<>();
 
         @Nullable
         private static Game copy(@Nullable Game game) {
             return game == null? null: new Game(game);
-        }
-
-        @Nullable
-        private static GamePlayers copy(@Nullable GamePlayers gamePlayers) {
-            return gamePlayers == null? null: new GamePlayers(gamePlayers);
         }
 
         @Nullable
@@ -58,26 +51,6 @@ public class MCRepositoryTest {
             @Override
             public Iterable<Map.Entry<Game.Identifier, Game>> findAllGamesUncached() {
                 return Set.copyOf(gameStore.entrySet());
-            }
-
-            @Override
-            protected void addGamePlayersUncached(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers) {
-                Objects.requireNonNull(id);
-                Objects.requireNonNull(gamePlayers);
-                gamePlayersStore.put(id, copy(gamePlayers));
-            }
-
-            @Override
-            protected void updateGamePlayersUncached(@Nonnull Game.Identifier id, @Nonnull GamePlayers gamePlayers) {
-                Objects.requireNonNull(id);
-                Objects.requireNonNull(gamePlayers);
-                gamePlayersStore.put(id, copy(gamePlayers));
-            }
-
-            @Nonnull
-            @Override
-            protected Optional<GamePlayers> findGamePlayersUncached(@Nonnull Game.Identifier id) {
-                return Optional.ofNullable(gamePlayersStore.get(id)).map(Fake::copy);
             }
 
             @Override

@@ -36,10 +36,6 @@ public final class GameService {
 
     private static final Map<UUID, UUID> NO_USERS = Map.of();
 
-    private static GamePlayers createGamePlayersForNewGame(final Identifier id) {
-        return new GamePlayers(id, true, NO_USERS);
-    }
-
     private final Clock clock;
 
     private final ScenarioService scenarioService;
@@ -72,10 +68,8 @@ public final class GameService {
         try(var context = repository.openContext()) {
             requireKnownScenario(context, scenario);
             final var identifier = new Identifier(scenario, getNow());
-            final var game = new Game(identifier, Game.RunState.WAITING_TO_START);
-            final var gamePlayers = createGamePlayersForNewGame(identifier);
+            final var game = new Game(identifier, Game.RunState.WAITING_TO_START, true, NO_USERS);
             context.addGame(identifier, game);
-            context.addGamePlayers(identifier, gamePlayers);
             return game;
         }
     }
@@ -112,13 +106,6 @@ public final class GameService {
     }
 
     @Nonnull
-    public Optional<Game> getGame(@Nonnull final Identifier id) {
-        try(var context = repository.openContext()) {
-            return getGame(context, id);
-        }
-    }
-
-    @Nonnull
     Optional<Game> getGame(@Nonnull MCRepository.Context context, @Nonnull final Identifier id) {
         return context.findGame(id);
     }
@@ -135,7 +122,7 @@ public final class GameService {
         final Set<Identifier> result = new HashSet<>();
         for (var entry: context.findAllGames()) {
             result.add(entry.getKey());
-        };
+        }
         return result;
     }
 
@@ -202,23 +189,27 @@ public final class GameService {
     }
 
 
-    private static GamePlayers filterForUser(
-            @Nonnull final GamePlayers fullInformation, @Nonnull final UUID user) {
+    private static Game filterForUser(
+            @Nonnull final Game fullInformation, @Nonnull final UUID user) {
         final var allUsers = fullInformation.getUsers();
         final Map<UUID, UUID> filteredUsers = allUsers.entrySet().stream()
-                .filter(entry -> user.equals(entry.getValue()))
+                .filter(entry -> Objects.equals(user, entry.getValue()))
                 .collect(toUnmodifiableMap(Map.Entry::getKey,
                         Map.Entry::getValue));
         if (allUsers.size() == filteredUsers.size()) {
             return fullInformation;
         } else {
-            return new GamePlayers(fullInformation.getGame(), fullInformation.isRecruiting(), filteredUsers);
+            return new Game(
+                    fullInformation.getIdentifier(),
+                    fullInformation.getRunState(),
+                    fullInformation.isRecruiting(),
+                    filteredUsers);
         }
     }
 
     /**
      * <p>
-     * Indicate that a game is not {@linkplain GamePlayers#isRecruiting()
+     * Indicate that a game is not {@linkplain Game#isRecruiting()
      * recruiting} players (any longer).
      * </p>
      * <p>
@@ -230,17 +221,17 @@ public final class GameService {
      * @throws NoSuchElementException If a game with the given ID does not exist.
      */
     @Nonnull
-    public GamePlayers endRecruitment(@Nonnull final Game.Identifier id)
+    public Game endRecruitment(@Nonnull final Game.Identifier id)
             throws NoSuchElementException {
         try(var context = repository.openContext()){
-            final var gamePlayersOptional = context.findGamePlayers(id);
-            if (gamePlayersOptional.isEmpty()) {
+            final var gameOptional = context.findGame(id);
+            if (gameOptional.isEmpty()) {
                 throw new NoSuchElementException();
             }
-            final var gamePlayers = gamePlayersOptional.get();
-            gamePlayers.endRecruitment();
-            context.updateGamePlayers(gamePlayers);
-            return gamePlayers;
+            final var game = gameOptional.get();
+            game.endRecruitment();
+            context.updateGame(game);
+            return game;
         }
     }
 
@@ -276,10 +267,10 @@ public final class GameService {
      * </p>
      */
     @Nonnull
-    public Optional<GamePlayers> getGamePlayersAsGameManager(
+    public Optional<Game> getGameAsGameManager(
             @Nonnull final Game.Identifier id) {
         try(var context = repository.openContext()) {
-            return context.findGamePlayers(id);
+            return context.findGame(id);
         }
     }
 
@@ -289,21 +280,21 @@ public final class GameService {
      * unique ID, suitable for a non game manager.
      * </p>
      * <ul>
-     * <li>The collection of {@linkplain GamePlayers#getUsers() players} is
+     * <li>The collection of {@linkplain Game#getUsers() players} is
      * either empty or contains only the requesting user: non game managers may
      * not see the complete list of players of a game, but may see that they are
      * a player of a game.</li>
      * </ul>
      */
     @Nonnull
-    public Optional<GamePlayers> getGamePlayersAsNonGameManager(
+    public Optional<Game> getGameAsNonGameManager(
             @Nonnull final Game.Identifier gameId, @Nonnull final UUID user) {
         Objects.requireNonNull(user, "user");
-        final Optional<GamePlayers> gamePlayers;
+        final Optional<Game> game;
         try(var context = repository.openContext()) {
-            gamePlayers = context.findGamePlayers(gameId);
+            game = context.findGame(gameId);
         }
-        return gamePlayers.map(g -> filterForUser(g, user));
+        return game.map(g -> filterForUser(g, user));
     }
 
     private Optional<User> getUser(MCRepository.Context context, final UUID userId) {
@@ -320,11 +311,11 @@ public final class GameService {
             throw new NoSuchElementException("user");
         }
         final var user = userOptional.get();
-        final var gamePlayersOptional = context.findGamePlayers(gameId);
-        if (gamePlayersOptional.isEmpty()) {
+        final var gameOptional = context.findGame(gameId);
+        if (gameOptional.isEmpty()) {
             throw new NoSuchElementException("game");
         }
-        final var gamePlayers = gamePlayersOptional.get();
+        final var game = gameOptional.get();
         final var current = getCurrent(context, userId);
 
         if (!user.getAuthorities().contains(Authority.ROLE_PLAYER)) {
@@ -338,7 +329,7 @@ public final class GameService {
             throw new UserAlreadyPlayingException();
         } else if (current.isPresent()) {// && gameId.equals(current.get())
             alreadyJoined = true;
-            final var characterEntryOptional = gamePlayers.getUsers().entrySet().stream()
+            final var characterEntryOptional = game.getUsers().entrySet().stream()
                     .filter(entry -> userId.equals(entry.getValue())).findAny();
             if (characterEntryOptional.isEmpty()) {
                 throw new NoSuchElementException("character");
@@ -346,18 +337,18 @@ public final class GameService {
             character = characterEntryOptional.get().getKey();
             endRecruitment = false;
         } else {
-            if (!gamePlayers.isRecruiting()) {
+            if (!game.isRecruiting()) {
                 throw new IllegalGameStateException("Game is not recruiting");
             }
             alreadyJoined = false;
-            final var scenarioId = gamePlayers.getGame().getScenario();
+            final var scenarioId = game.getIdentifier().getScenario();
             final var scenarioOptional = scenarioService.getScenario(context, scenarioId);
             if (scenarioOptional.isEmpty()) {
                 throw new NoSuchElementException("scenario");
             }
             final var scenario = scenarioOptional.get();
             final var characters = scenario.getCharacters();
-            final var playedCharacters = gamePlayers.getUsers().keySet();
+            final var playedCharacters = game.getUsers().keySet();
             final var characterOptional = characters.stream().sequential()
                     .map(NamedUUID::getId)
                     .filter(c -> !playedCharacters.contains(c)).findFirst();
@@ -368,7 +359,7 @@ public final class GameService {
             endRecruitment = characters.size() - 1 <= playedCharacters.size();
         }
 
-        return new UserJoinsGameState(gamePlayers, character, alreadyJoined,
+        return new UserJoinsGameState(game, character, alreadyJoined,
                 endRecruitment);
     }
 
@@ -388,7 +379,7 @@ public final class GameService {
      * {@linkplain Authority#ROLE_PLAYER permission} to play games. Note that the
      * given user need not be the current user.</li>
      * <li>The user has already joined the game <em>or</em> the game is
-     * {@linkplain GamePlayers#isRecruiting() recruiting} players.</li>
+     * {@linkplain Game#isRecruiting() recruiting} players.</li>
      * </ul>
      */
     public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final Identifier game) {
@@ -404,7 +395,7 @@ public final class GameService {
     /**
      * <p>
      * Have a {@linkplain User user} become one of the
-     * {@linkplain GamePlayers#getUsers() players of a game}.
+     * {@linkplain Game#getUsers() players of a game}.
      * </p>
      *
      * @throws NoSuchElementException      <ul>
@@ -416,7 +407,7 @@ public final class GameService {
      *                                     have} {@linkplain Authority#ROLE_PLAYER permission} to play
      *                                     games. Note that the given user need not be the current user.
      * @throws IllegalGameStateException   <ul>
-     *                                                <li>If the game is not {@linkplain GamePlayers#isRecruiting()
+     *                                                <li>If the game is not {@linkplain Game#isRecruiting()
      *                                                recruiting} players.</li>
      *                                                <li>If the game has no characters free.</li>
      *                                                </ul>
@@ -435,28 +426,28 @@ public final class GameService {
 
             // modify:
             final var association = new UserGameAssociation(userId, gameId);
-            state.gamePlayers.addUser(state.character, userId);
+            state.game.addUser(state.character, userId);
             if (state.endRecruitment) {
-                state.gamePlayers.endRecruitment();
+                state.game.endRecruitment();
             }
 
             // write:
             context.addCurrentUserGame(userId, association);
-            context.updateGamePlayers(state.gamePlayers);
+            context.updateGame(state.game);
         }
     }
 
     @Immutable
     private static final class UserJoinsGameState {
-        final GamePlayers gamePlayers;
+        final Game game;
         final UUID character;
         final boolean alreadyJoined;
         final boolean endRecruitment;
 
-        UserJoinsGameState(final GamePlayers gamePlayers,
+        UserJoinsGameState(final Game game,
                            final UUID firstUnplayedCharacter, final boolean alreadyJoined,
                            final boolean endRecruitment) {
-            this.gamePlayers = gamePlayers;
+            this.game = game;
             this.character = firstUnplayedCharacter;
             this.alreadyJoined = alreadyJoined;
             this.endRecruitment = endRecruitment;

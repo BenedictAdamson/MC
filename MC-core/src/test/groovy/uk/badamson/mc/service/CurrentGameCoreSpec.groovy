@@ -48,32 +48,31 @@ class CurrentGameCoreSpec extends CoreSpecification {
 
     def "Examine current game"() {
         given: "has a game"
-        def game = createGame()
+        def gameId = createGame().getIdentifier()
 
         and: "has a user with the player role"
         def userDetails = world.createBasicUserDetails(EnumSet.of(Authority.ROLE_PLAYER))
-        def user = world.userService.add(userDetails)
+        def userId = world.userService.add(userDetails).getId()
 
         and: "user is playing the game"
-        world.gameService.userJoinsGame(user.id, game.identifier)
+        world.gameService.userJoinsGame(userId, gameId)
 
         when: "examine current game"
-        def currentGame = world.gameService.getCurrentGameOfUser(user.id)
+        def currentGame = world.gameService.getCurrentGameOfUser(userId)
 
         then: "indicates that the user has a current game"
         currentGame.isPresent()
-        currentGame.get() == game.identifier
+        currentGame.get() == gameId
 
         when: "examine the players of the game"
-        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
-                game.identifier, user.id)
+        def gameOptional = world.gameService.getGameAsNonGameManager(gameId, userId)
 
         then: "the game indicates which character the user is playing"
-        gamePlayersOptional.isPresent()
-        def gamePlayers = gamePlayersOptional.get()
-        def users = gamePlayers.users
+        gameOptional.isPresent()
+        def game = gameOptional.get()
+        def users = game.users
         expect(users, aMapWithSize(1))
-        expect(users.values(), contains(user.id))
+        expect(users.values(), contains(userId))
     }
 
     private Game createGame() {

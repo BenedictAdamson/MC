@@ -35,18 +35,16 @@ class GameCoreSpec extends CoreSpecification {
         given: "has a game"
         def scenarioId = getAScenarioId()
         def creationTime = world.clock.instant()
-        def gameIdentifier = world.gameService.create(scenarioId).identifier
+        def gameId = world.gameService.create(scenarioId).identifier
 
         and: "user has the player role"
         def userDetails = world.createBasicUserDetails(EnumSet.of(Authority.ROLE_PLAYER))
-        def user = world.userService.add(userDetails)
+        def userId = world.userService.add(userDetails).getId()
 
         when: "examine the game"
-        def gameOptional = world.gameService.getGame(gameIdentifier)
+        def gameOptional = world.gameService.getGameAsNonGameManager(gameId, userId)
         gameOptional.isPresent()
         def game = gameOptional.get()
-        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
-                gameIdentifier, user.id)
 
         then: "the game indicates its scenario"
         game.identifier.scenario == scenarioId
@@ -55,28 +53,27 @@ class GameCoreSpec extends CoreSpecification {
         game.identifier.created == creationTime
 
         and: "the game indicates whether it has players"
-        gamePlayersOptional.isPresent()
-        def gamePlayers = gamePlayersOptional.get()
+        expect(game.getUsers(), Matchers.any(Map.class))
 
         and: "the game indicates whether it is recruiting players"
-        expect(gamePlayers.recruiting, Matchers.any(Boolean.class))
+        expect(game.recruiting, Matchers.any(Boolean.class))
 
         and: "the game indicates whether the user may join the game"
-        expect(world.gameService.mayUserJoinGame(user.id, gameIdentifier), Matchers.any(Boolean.class))
+        expect(world.gameService.mayUserJoinGame(userId, gameId), Matchers.any(Boolean.class))
 
         and: "the game indicates whether the user is playing the game"
-        expect(gamePlayers.users, Matchers.notNullValue())
+        expect(game.users, Matchers.notNullValue())
 
         and: "the game indicates whether it is running"
         expect(game.runState, Matchers.notNullValue())
 
         and: "the game indicates which character (if any) the user is playing"
-        expect(gamePlayers.users, Matchers.any(Map.class))
+        expect(game.users, Matchers.any(Map.class))
 
         and: "the game does not indicate which characters are played by which (other) users"
-        def users = gamePlayers.users.values()
+        def users = game.users.values()
         users != null
-        users.stream().map(userId -> !(userId == user.id)).count() == 0
+        users.stream().map(u -> !(u == userId)).count() == 0
     }
 
     def "Examine game as game manager"() {
@@ -90,11 +87,9 @@ class GameCoreSpec extends CoreSpecification {
         def user = world.userService.add(userDetails)
 
         when: "examine the game"
-        def gameOptional = world.gameService.getGame(gameIdentifier)
+        def gameOptional = world.gameService.getGameAsGameManager(gameIdentifier)
         gameOptional.isPresent()
         def game = gameOptional.get()
-        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
-                gameIdentifier, user.id)
 
         then: "the game indicates its scenario"
         game.identifier.scenario == scenarioId
@@ -103,26 +98,22 @@ class GameCoreSpec extends CoreSpecification {
         game.identifier.created == creationTime
 
         and: "the game indicates whether it has players"
-        gamePlayersOptional.isPresent()
-        def gamePlayers = gamePlayersOptional.get()
+        game.users != null
 
         and: "the game indicates whether it is recruiting players"
-        expect(gamePlayers.recruiting, Matchers.any(Boolean.class))
+        expect(game.recruiting, Matchers.any(Boolean.class))
 
         and: "the game indicates whether the user may join the game"
         expect(world.gameService.mayUserJoinGame(user.id, gameIdentifier), Matchers.any(Boolean.class))
-
-        and: "the game indicates whether the user is playing the game"
-        expect(gamePlayers.users, Matchers.notNullValue())
 
         and: "the game indicates whether it is running"
         expect(game.runState, Matchers.notNullValue())
 
         and: "the game indicates which character (if any) the user is playing"
-        expect(gamePlayers.users, Matchers.any(Map.class))
+        expect(game.users, Matchers.any(Map.class))
 
         and: "the game indicates which characters are played by which users"
-        def users = gamePlayers.users.values()
+        def users = game.users.values()
         expect(users, Matchers.notNullValue())
         expect(users, Matchers.any(Collection.class))
     }
@@ -130,10 +121,6 @@ class GameCoreSpec extends CoreSpecification {
     def "Add game"() {
         given: "has a scenario without any games"
         def scenarioId = getAScenarioId()
-
-        and: "user has the manage games role"
-        def userDetails = world.createBasicUserDetails(EnumSet.of(Authority.ROLE_MANAGE_GAMES))
-        def user = world.userService.add(userDetails)
 
         when: "create a game for the scenario"
         def creationTime = world.clock.instant()
@@ -143,14 +130,10 @@ class GameCoreSpec extends CoreSpecification {
         game != null
 
         and: "the game indicates that it is recruiting players"
-        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
-                game.identifier, user.id)
-        gamePlayersOptional.isPresent()
-        def gamePlayers = gamePlayersOptional.get()
-        gamePlayers.recruiting
+        game.recruiting
 
         and: "the game indicates that it has no players"
-        expect(gamePlayers.users, Matchers.anEmptyMap())
+        expect(game.users, Matchers.anEmptyMap())
 
         and: "the game indicates that it is not running"
         game.runState != Game.RunState.RUNNING
@@ -185,16 +168,15 @@ class GameCoreSpec extends CoreSpecification {
         def user = world.userService.add(userDetails)
 
         when: "examine the game"
-        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
-                gameIdentifier, user.id)
-        gamePlayersOptional.isPresent()
-        def gamePlayers = gamePlayersOptional.get()
+        def gameOptional = world.gameService.getGameAsNonGameManager(gameIdentifier, user.id)
+        gameOptional.isPresent()
+        def game = gameOptional.get()
 
         then: "the game indicates that the user may join the game"
         world.gameService.mayUserJoinGame(user.id, gameIdentifier)
 
         and: "the game indicates that the user is not playing the game"
-        expect(gamePlayers.users.values(), Matchers.not(Matchers.hasItem(user.id)))
+        expect(game.users.values(), Matchers.not(Matchers.hasItem(user.id)))
     }
 
     def "Join a game"() {
@@ -210,10 +192,9 @@ class GameCoreSpec extends CoreSpecification {
         world.gameService.userJoinsGame(user.id, gameIdentifier)
 
         then: "the game indicates that the user is playing the game"
-        def gamePlayersOptional = world.gameService.getGamePlayersAsNonGameManager(
-                gameIdentifier, user.id)
-        gamePlayersOptional.isPresent()
-        def users = gamePlayersOptional.get().users
+        def gameOptional = world.gameService.getGameAsNonGameManager(gameIdentifier, user.id)
+        gameOptional.isPresent()
+        def users = gameOptional.get().users
         expect(users.values(), Matchers.hasItem(user.id))
 
         and: "the game indicates which character the user is playing"
@@ -258,7 +239,7 @@ class GameCoreSpec extends CoreSpecification {
         world.gameService.stopGame(gameIdentifier)
 
         then: "the game indicates that it is not running"
-        def gameOptional = world.gameService.getGame(gameIdentifier)
+        def gameOptional = world.gameService.getGameAsGameManager(gameIdentifier)
         gameOptional.isPresent()
         def game = gameOptional.get()
         game.runState == Game.RunState.STOPPED

@@ -44,7 +44,7 @@ public class Scenario {
     /**
      * <p>
      * Whether a given list of named IDs is a valid list of persons in a scenario
-     * that {@linkplain GamePlayers players} can play.
+     * that players can play.
      * </p>
      * A valid list meets all these constraints:
      * <ul>
@@ -75,7 +75,7 @@ public class Scenario {
      * @param title       A short human-readable identifier for this scenario.
      * @param description A human-readable description for the scenario.
      * @param characters  The names of the persons in this scenario that
-     *                    {@linkplain GamePlayers players} can play.
+     *                    players can play.
      * @throws NullPointerException     <ul>
      *                                             <li>If {@code identifier} is null</li>
      *                                             <li>If {@code title} is null</li>
@@ -136,7 +136,7 @@ public class Scenario {
     /**
      * <p>
      * The names and IDs of the persons in this scenario that
-     * {@linkplain GamePlayers players} can play.
+     * players can play.
      * </p>
      * <ul>
      * <li>The list of characters is in descending order of selection priority:
