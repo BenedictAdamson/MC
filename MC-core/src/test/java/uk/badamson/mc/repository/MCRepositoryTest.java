@@ -19,12 +19,18 @@ public class MCRepositoryTest {
 
         @Nullable
         private static Game copy(@Nullable Game game) {
-            return game == null? null: new Game(game);
+            return game == null ? null : new Game(game);
         }
 
         @Nullable
         private static User copy(@Nullable User user) {
-            return user == null? null: new User(user.getId(), user);
+            return user == null ? null : new User(user.getId(), user);
+        }
+
+        @Nonnull
+        @Override
+        public Context openContext() {
+            return new FakeContext();
         }
 
         private class FakeContext extends Context {
@@ -93,7 +99,7 @@ public class MCRepositoryTest {
 
             @Nonnull
             @Override
-            public Iterable<Map.Entry<UUID,User>> findAllUsersUncached() {
+            public Iterable<Map.Entry<UUID, User>> findAllUsersUncached() {
                 return Set.copyOf(userStore.entrySet());
             }
 
@@ -111,12 +117,6 @@ public class MCRepositoryTest {
                 userStore.put(id, user);
             }
 
-        }
-
-        @Nonnull
-        @Override
-        public Context openContext() {
-            return new FakeContext();
         }
     }
 }

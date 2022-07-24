@@ -75,12 +75,12 @@ public class GameServiceTest {
     }
 
     private static BasicUserDetails createPlayerUserDetails(@Nonnull String userName) {
-    return new BasicUserDetails(
-            userName,
-            PASSWORD_A,
-            EnumSet.of(Authority.ROLE_PLAYER),
-                            false, false, false, false
-            );
+        return new BasicUserDetails(
+                userName,
+                PASSWORD_A,
+                EnumSet.of(Authority.ROLE_PLAYER),
+                false, false, false, false
+        );
     }
 
     private static void constructor(
@@ -371,7 +371,7 @@ public class GameServiceTest {
         public void one() {
             final var repository = repositoryA;
             final var id = IDENTIFIER_A;
-            try(final var context = repository.openContext()) {
+            try (final var context = repository.openContext()) {
                 context.addGame(id, new Game(id, Game.RunState.RUNNING, true, Map.of()));
             }
             final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repository);
@@ -434,7 +434,7 @@ public class GameServiceTest {
 
             assertAll(
                     () -> assertThat("identifier", game.getIdentifier(), is(id)),
-                    () -> assertThat("recruiting", game.isRecruiting(),  is(false)));
+                    () -> assertThat("recruiting", game.isRecruiting(), is(false)));
         }
 
         @Nested
@@ -475,7 +475,7 @@ public class GameServiceTest {
         public void unknownUserWithRecord() {
             final var userId = USER_ID_A;
             final var repository = repositoryA;
-            try(final var context = repository.openContext()) {
+            try (final var context = repository.openContext()) {
                 context.addCurrentUserGame(userId, new UserGameAssociation(userId, GAME_IDENTIFIER_A));
             }
             final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repository);
@@ -633,7 +633,7 @@ public class GameServiceTest {
                 final var game = result.get();
                 assertAll(
                         () -> assertThat("identifier", game.getIdentifier(), is(gameId)),
-                        () -> assertThat("recruiting", game.isRecruiting(),is(true)),
+                        () -> assertThat("recruiting", game.isRecruiting(), is(true)),
                         () -> assertThat("users", game.getUsers(), anEmptyMap()));
             }
 
@@ -656,7 +656,7 @@ public class GameServiceTest {
                 final var game = result.get();
                 assertAll(
                         () -> assertThat("identifier", game.getIdentifier(), is(gameId)),
-                        () -> assertThat("recruiting", game.isRecruiting(),is(false)),
+                        () -> assertThat("recruiting", game.isRecruiting(), is(false)),
                         () -> assertThat("users", game.getUsers(), anEmptyMap()));
             }
 

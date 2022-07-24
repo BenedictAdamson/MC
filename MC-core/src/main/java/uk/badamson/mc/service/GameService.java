@@ -54,6 +54,24 @@ public final class GameService {
         this.userService = Objects.requireNonNull(userService, "userService");
     }
 
+    private static Game filterForUser(
+            @Nonnull final Game fullInformation, @Nonnull final UUID user) {
+        final var allUsers = fullInformation.getUsers();
+        final Map<UUID, UUID> filteredUsers = allUsers.entrySet().stream()
+                .filter(entry -> Objects.equals(user, entry.getValue()))
+                .collect(toUnmodifiableMap(Map.Entry::getKey,
+                        Map.Entry::getValue));
+        if (allUsers.size() == filteredUsers.size()) {
+            return fullInformation;
+        } else {
+            return new Game(
+                    fullInformation.getIdentifier(),
+                    fullInformation.getRunState(),
+                    fullInformation.isRecruiting(),
+                    filteredUsers);
+        }
+    }
+
     /**
      * <p>
      * Create a new game for a given scenario.
@@ -65,7 +83,7 @@ public final class GameService {
     @Nonnull
     public Game create(@Nonnull final UUID scenario) throws NoSuchElementException {
         Objects.requireNonNull(scenario);
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             requireKnownScenario(context, scenario);
             final var identifier = new Identifier(scenario, getNow());
             final var game = new Game(identifier, Game.RunState.WAITING_TO_START, true, NO_USERS);
@@ -96,7 +114,7 @@ public final class GameService {
     public Set<Instant> getCreationTimesOfGamesOfScenario(@Nonnull final UUID scenario)
             throws NoSuchElementException {
         Objects.requireNonNull(scenario);
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             requireKnownScenario(context, scenario);// read-and-check
             return getGameIdentifiers(context).stream()// read
                     .filter(id -> scenario.equals(id.getScenario()))
@@ -112,7 +130,7 @@ public final class GameService {
 
     @Nonnull
     public Iterable<Identifier> getGameIdentifiers() {
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             return getGameIdentifiers(context);
         }
     }
@@ -120,7 +138,7 @@ public final class GameService {
     @Nonnull
     Set<Identifier> getGameIdentifiers(@Nonnull MCRepository.Context context) {
         final Set<Identifier> result = new HashSet<>();
-        for (var entry: context.findAllGames()) {
+        for (var entry : context.findAllGames()) {
             result.add(entry.getKey());
         }
         return result;
@@ -144,7 +162,7 @@ public final class GameService {
     public Game startGame(@Nonnull final Game.Identifier id)
             throws NoSuchElementException, IllegalGameStateException {
         Objects.requireNonNull(id);
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             Optional<Game> gameOptional = getGame(context, id);
             if (gameOptional.isEmpty()) {
                 throw new NoSuchElementException("game");
@@ -168,7 +186,7 @@ public final class GameService {
 
     public void stopGame(@Nonnull final Identifier id)
             throws NoSuchElementException {
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             Optional<Game> gameOptional = getGame(context, id);
             if (gameOptional.isEmpty()) {
                 throw new NoSuchElementException("game");
@@ -188,25 +206,6 @@ public final class GameService {
         }
     }
 
-
-    private static Game filterForUser(
-            @Nonnull final Game fullInformation, @Nonnull final UUID user) {
-        final var allUsers = fullInformation.getUsers();
-        final Map<UUID, UUID> filteredUsers = allUsers.entrySet().stream()
-                .filter(entry -> Objects.equals(user, entry.getValue()))
-                .collect(toUnmodifiableMap(Map.Entry::getKey,
-                        Map.Entry::getValue));
-        if (allUsers.size() == filteredUsers.size()) {
-            return fullInformation;
-        } else {
-            return new Game(
-                    fullInformation.getIdentifier(),
-                    fullInformation.getRunState(),
-                    fullInformation.isRecruiting(),
-                    filteredUsers);
-        }
-    }
-
     /**
      * <p>
      * Indicate that a game is not {@linkplain Game#isRecruiting()
@@ -223,7 +222,7 @@ public final class GameService {
     @Nonnull
     public Game endRecruitment(@Nonnull final Game.Identifier id)
             throws NoSuchElementException {
-        try(var context = repository.openContext()){
+        try (var context = repository.openContext()) {
             final var gameOptional = context.findGame(id);
             if (gameOptional.isEmpty()) {
                 throw new NoSuchElementException();
@@ -250,7 +249,7 @@ public final class GameService {
     public Optional<Identifier> getCurrentGameOfUser(
             @Nonnull final UUID userId) {
         Objects.requireNonNull(userId);
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             final var user = getUser(context, userId);
             if (user.isPresent()) {
                 return getCurrent(context, userId);
@@ -269,7 +268,7 @@ public final class GameService {
     @Nonnull
     public Optional<Game> getGameAsGameManager(
             @Nonnull final Game.Identifier id) {
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             return context.findGame(id);
         }
     }
@@ -291,7 +290,7 @@ public final class GameService {
             @Nonnull final Game.Identifier gameId, @Nonnull final UUID user) {
         Objects.requireNonNull(user, "user");
         final Optional<Game> game;
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             game = context.findGame(gameId);
         }
         return game.map(g -> filterForUser(g, user));
@@ -302,8 +301,8 @@ public final class GameService {
     }
 
     private UserJoinsGameState getUserJoinsGameState(@Nonnull MCRepository.Context context,
-                                                                        final UUID userId,
-                                                                        final Identifier gameId)
+                                                     final UUID userId,
+                                                     final Identifier gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
         final var userOptional = getUser(context, userId);
@@ -383,7 +382,7 @@ public final class GameService {
      * </ul>
      */
     public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final Identifier game) {
-        try(var context = repository.openContext()){
+        try (var context = repository.openContext()) {
             getUserJoinsGameState(context, user, game);
         } catch (UserAlreadyPlayingException | IllegalGameStateException
                  | SecurityException | NoSuchElementException e) {
@@ -399,24 +398,24 @@ public final class GameService {
      * </p>
      *
      * @throws NoSuchElementException      <ul>
-     *                                                <li>If {@code user} is not the ID of a known user.</li>
-     *                                                <li>If {@code game} is not the ID of a game.</li>
-     *                                                </ul>
+     *                                     <li>If {@code user} is not the ID of a known user.</li>
+     *                                     <li>If {@code game} is not the ID of a game.</li>
+     *                                     </ul>
      * @throws UserAlreadyPlayingException If the {@code user} is already playing a different game.
      * @throws SecurityException           If the {@code user} does not {@linkplain User#getAuthorities()
      *                                     have} {@linkplain Authority#ROLE_PLAYER permission} to play
      *                                     games. Note that the given user need not be the current user.
      * @throws IllegalGameStateException   <ul>
-     *                                                <li>If the game is not {@linkplain Game#isRecruiting()
-     *                                                recruiting} players.</li>
-     *                                                <li>If the game has no characters free.</li>
-     *                                                </ul>
+     *                                     <li>If the game is not {@linkplain Game#isRecruiting()
+     *                                     recruiting} players.</li>
+     *                                     <li>If the game has no characters free.</li>
+     *                                     </ul>
      */
     public void userJoinsGame(@Nonnull final UUID userId,
                               @Nonnull final Identifier gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
-        try(var context = repository.openContext()) {
+        try (var context = repository.openContext()) {
             // read and check:
             final var state = getUserJoinsGameState(context, userId, gameId);
             if (state.alreadyJoined) {

@@ -31,16 +31,19 @@ import java.util.*;
 @ThreadSafe
 public abstract class MCRepository {
 
+    @Nonnull
+    public abstract Context openContext();
+
     @NotThreadSafe
     public abstract class Context implements AutoCloseable {
         private final IdentityHashMap<Game, Game.Identifier> gameToIdMap = new IdentityHashMap<>();
         private final Map<Game.Identifier, Game> idToGameMap = new HashMap<>();
-        private boolean haveAllGames = false;
         private final IdentityHashMap<UserGameAssociation, UUID> userGameAssociationToIdMap = new IdentityHashMap<>();
         private final Map<UUID, UserGameAssociation> idToUserGameAssociationMap = new HashMap<>();
         private final IdentityHashMap<User, UUID> userToIdMap = new IdentityHashMap<>();
         private final Map<UUID, User> idToUserMap = new HashMap<>();
         private final Map<String, User> usernameToUserMap = new HashMap<>();
+        private boolean haveAllGames = false;
         private boolean haveAllUsers = false;
 
         public final void addGame(@Nonnull Game.Identifier id, @Nonnull Game game) {
@@ -74,7 +77,7 @@ public abstract class MCRepository {
         @Nonnull
         public final Iterable<Map.Entry<Game.Identifier, Game>> findAllGames() {
             if (!haveAllGames) {
-                findAllGamesUncached().forEach(entry -> cacheGame(entry.getKey(), entry.getValue()) );
+                findAllGamesUncached().forEach(entry -> cacheGame(entry.getKey(), entry.getValue()));
                 haveAllGames = true;
             }
             return Set.copyOf(idToGameMap.entrySet());
@@ -183,14 +186,13 @@ public abstract class MCRepository {
 
         /**
          * {@inheritDoc}
-         *
+         * <p>
          * Save operations performed through this context are not guaranteed to have been performed
          * until normal return from this method. That is, the implementation may cache save (write) operations.
          *
-         * @throws RuntimeException
-         * If not all save operations could be performed.
-         * This class is however not required to provide transaction semantics:
-         * if it throws an exception, some saves might have been performed and some might not.
+         * @throws RuntimeException If not all save operations could be performed.
+         *                          This class is however not required to provide transaction semantics:
+         *                          if it throws an exception, some saves might have been performed and some might not.
          */
         @Override
         @OverridingMethodsMustInvokeSuper
@@ -237,9 +239,6 @@ public abstract class MCRepository {
         protected abstract void updateUserUncached(@Nonnull UUID id, @Nonnull User user);
 
         @Nonnull
-        protected abstract Iterable<Map.Entry<UUID,User>> findAllUsersUncached();
+        protected abstract Iterable<Map.Entry<UUID, User>> findAllUsersUncached();
     }
-
-    @Nonnull
-    public abstract Context openContext();
 }

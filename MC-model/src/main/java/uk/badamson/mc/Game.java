@@ -30,6 +30,50 @@ import java.util.*;
  */
 public class Game {
 
+    private final Identifier identifier;
+    private final Map<UUID, UUID> users;
+    private RunState runState;
+    private boolean recruiting;
+
+    /**
+     * <p>
+     * Construct a copy of a game.
+     * </p>
+     *
+     * @throws NullPointerException If {@code that} is null
+     */
+    public Game(@Nonnull final Game that) {
+        Objects.requireNonNull(that, "that");
+        identifier = that.identifier;
+        runState = that.runState;
+        recruiting = that.recruiting;
+        this.users = new HashMap<>(that.users);
+    }
+
+    /**
+     * <p>
+     * Construct a game with given attribute values.
+     * </p>
+     *
+     * @throws NullPointerException <ul>
+     *                              <li>If {@code identifier} is null.</li>
+     *                              <li>If {@code runState} is null.</li>
+     *                              </ul>
+     */
+    public Game(@Nonnull final Identifier identifier,
+                @Nonnull final RunState runState,
+                final boolean recruiting,
+                @Nonnull final Map<UUID, UUID> users) {
+        this.identifier = Objects.requireNonNull(identifier, "identifier");
+        this.runState = Objects.requireNonNull(runState, "runState");
+        this.recruiting = recruiting;
+        this.users = new HashMap<>(Objects.requireNonNull(users, "users"));
+
+        if (!isValidUsers(this.users)) {// copy then test to avoid race hazards
+            throw new IllegalArgumentException("users");
+        }
+    }
+
     /**
      * <p>
      * Whether a given map is a valid {@linkplain #getUsers() users} map.
@@ -54,6 +98,137 @@ public class Game {
 
     /**
      * <p>
+     * Whether this object is <dfn>equivalent</dfn> to another object.
+     * </p>
+     * <ul>
+     * <li>The {@link Game} class has <i>entity semantics</i>, with the
+     * {@linkplain #getIdentifier() identifier} serving as a unique identifier:
+     * this object is equivalent to another object if, and only of, the other
+     * object is also a {@link Game} and the two have
+     * {@linkplain Identifier#equals(Object) equivalent}
+     * {@linkplain #getIdentifier() identifiers}.</li>
+     * </ul>
+     */
+    @Override
+    public final boolean equals(final Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (!(that instanceof final Game other)) {
+            return false;
+        }
+        return identifier.equals(other.getIdentifier());
+    }
+
+    /**
+     * <p>
+     * The unique identifier for this game.
+     * </p>
+     */
+    @Nonnull
+    public final Identifier getIdentifier() {
+        return identifier;
+    }
+
+    @Nonnull
+    public RunState getRunState() {
+        return runState;
+    }
+
+    public void setRunState(@Nonnull final RunState runState) {
+        this.runState = Objects.requireNonNull(runState, "runState");
+    }
+
+    /**
+     * @see #endRecruitment()
+     */
+    public final boolean isRecruiting() {
+        return recruiting;
+    }
+
+    /**
+     * <p>
+     * The ({@linkplain User#getId() unique IDs} of the {@linkplain User users}
+     * who played, or are playing, the game, and the IDs
+     * of the characters they played.
+     * </p>
+     * <ul>
+     * <li>The map maps a character ID to the ID of the user who is playing (or
+     * played, or will play) that character.</li>
+     * </ul>
+     * <ul>
+     * <li>Always returns a {@linkplain #isValidUsers(Map) valid users map}.</li>
+     * <li>The returned map of users is not modifiable.</li>
+     * </ul>
+     *
+     * @return the users
+     */
+    @Nonnull
+    public final Map<UUID, UUID> getUsers() {
+        return Collections.unmodifiableMap(users);
+    }
+
+    @Override
+    public final int hashCode() {
+        return identifier.hashCode();
+    }
+
+    /**
+     * <p>
+     * Add a {@linkplain User#getId() user ID} to the {@linkplain #getUsers() set
+     * of users who played, or are playing}, the game.
+     * </p>
+     *
+     * @param character The ID of the character that the user played.
+     * @param user      The unique ID of the user to add as a player.
+     * @throws NullPointerException  <ul>
+     *                               <li>If {@code character} is null.</li>
+     *                               <li>If {@code user} is null.</li>
+     *                               </ul>
+     * @throws IllegalStateException <ul>
+     *                               <li>If the game is not {@linkplain #isRecruiting() recruiting}
+     *                               players.</li>
+     *                               <li>If the game already has the given user, but for a different
+     *                               character.</li>
+     *                               </ul>
+     */
+    public final void addUser(@Nonnull final UUID character,
+                              @Nonnull final UUID user) {
+        Objects.requireNonNull(character, "character");
+        Objects.requireNonNull(user, "users");
+        if (!recruiting) {
+            throw new IllegalStateException("Game not recruiting players");
+        }
+        if (!user.equals(users.get(character)) && users.containsValue(user)) {
+            throw new IllegalArgumentException(
+                    "User already present with a different character");
+        }
+
+        users.put(character, user);
+    }
+
+    /**
+     * <p>
+     * Indicate that this game is not {@linkplain #isRecruiting() recruiting}
+     * players (any longer).
+     * </p>
+     * <p>
+     * This mutator is idempotent: the mutator does not have the precondition
+     * that it is recruiting.
+     * </p>
+     *
+     * @see #isRecruiting()
+     */
+    public final void endRecruitment() {
+        recruiting = false;
+    }
+
+    public enum RunState {
+        WAITING_TO_START, RUNNING, STOPPED
+    }
+
+    /**
+     * <p>
      * A unique identifier for a {@linkplain Game game} (play) of the Mission
      * Command game.
      * </p>
@@ -73,9 +248,9 @@ public class Game {
          *                 that the game is an instance of.
          * @param created  The point in time when the game was created (set up).
          * @throws NullPointerException <ul>
-         *                                         <li>If {@code scenario} is null.</li>
-         *                                         <li>If {@code created} is null.</li>
-         *                                         </ul>
+         *                              <li>If {@code scenario} is null.</li>
+         *                              <li>If {@code created} is null.</li>
+         *                              </ul>
          */
         public Identifier(@Nonnull final UUID scenario,
                           @Nonnull final Instant created) {
@@ -137,181 +312,6 @@ public class Game {
             return scenario + "@" + created;
         }
 
-    }
-
-    public enum RunState {
-        WAITING_TO_START, RUNNING, STOPPED
-    }
-
-    private final Identifier identifier;
-    private RunState runState;
-    private boolean recruiting;
-    private final Map<UUID, UUID> users;
-
-    /**
-     * <p>
-     * Construct a copy of a game.
-     * </p>
-     *
-     * @throws NullPointerException If {@code that} is null
-     */
-    public Game(@Nonnull final Game that) {
-        Objects.requireNonNull(that, "that");
-        identifier = that.identifier;
-        runState = that.runState;
-        recruiting = that.recruiting;
-        this.users = new HashMap<>(that.users);
-    }
-
-    /**
-     * <p>
-     * Construct a game with given attribute values.
-     * </p>
-     *
-     * @throws NullPointerException <ul>
-     *                                         <li>If {@code identifier} is null.</li>
-     *                                         <li>If {@code runState} is null.</li>
-     *                                         </ul>
-     */
-    public Game(@Nonnull final Identifier identifier,
-                @Nonnull final RunState runState,
-                final boolean recruiting,
-                @Nonnull final Map<UUID, UUID> users) {
-        this.identifier = Objects.requireNonNull(identifier, "identifier");
-        this.runState = Objects.requireNonNull(runState, "runState");
-        this.recruiting = recruiting;
-        this.users = new HashMap<>(Objects.requireNonNull(users, "users"));
-
-        if (!isValidUsers(this.users)) {// copy then test to avoid race hazards
-            throw new IllegalArgumentException("users");
-        }
-    }
-
-    /**
-     * <p>
-     * Whether this object is <dfn>equivalent</dfn> to another object.
-     * </p>
-     * <ul>
-     * <li>The {@link Game} class has <i>entity semantics</i>, with the
-     * {@linkplain #getIdentifier() identifier} serving as a unique identifier:
-     * this object is equivalent to another object if, and only of, the other
-     * object is also a {@link Game} and the two have
-     * {@linkplain Identifier#equals(Object) equivalent}
-     * {@linkplain #getIdentifier() identifiers}.</li>
-     * </ul>
-     */
-    @Override
-    public final boolean equals(final Object that) {
-        if (this == that) {
-            return true;
-        }
-        if (!(that instanceof final Game other)) {
-            return false;
-        }
-        return identifier.equals(other.getIdentifier());
-    }
-
-    /**
-     * <p>
-     * The unique identifier for this game.
-     * </p>
-     */
-    @Nonnull
-    public final Identifier getIdentifier() {
-        return identifier;
-    }
-
-    @Nonnull
-    public RunState getRunState() {
-        return runState;
-    }
-
-    /**
-     * @see #endRecruitment()
-     */
-    public final boolean isRecruiting() {
-        return recruiting;
-    }
-
-    /**
-     * <p>
-     * The ({@linkplain User#getId() unique IDs} of the {@linkplain User users}
-     * who played, or are playing, the game, and the IDs
-     * of the characters they played.
-     * </p>
-     * <ul>
-     * <li>The map maps a character ID to the ID of the user who is playing (or
-     * played, or will play) that character.</li>
-     * </ul>
-     * <ul>
-     * <li>Always returns a {@linkplain #isValidUsers(Map) valid users map}.</li>
-     * <li>The returned map of users is not modifiable.</li>
-     * </ul>
-     *
-     * @return the users
-     */
-    @Nonnull
-    public final Map<UUID, UUID> getUsers() {
-        return Collections.unmodifiableMap(users);
-    }
-
-    @Override
-    public final int hashCode() {
-        return identifier.hashCode();
-    }
-
-    public void setRunState(@Nonnull final RunState runState) {
-        this.runState = Objects.requireNonNull(runState, "runState");
-    }
-
-    /**
-     * <p>
-     * Add a {@linkplain User#getId() user ID} to the {@linkplain #getUsers() set
-     * of users who played, or are playing}, the game.
-     * </p>
-     *
-     * @param character The ID of the character that the user played.
-     * @param user      The unique ID of the user to add as a player.
-     * @throws NullPointerException  <ul>
-     *                                          <li>If {@code character} is null.</li>
-     *                                          <li>If {@code user} is null.</li>
-     *                                          </ul>
-     * @throws IllegalStateException <ul>
-     *                                          <li>If the game is not {@linkplain #isRecruiting() recruiting}
-     *                                          players.</li>
-     *                                          <li>If the game already has the given user, but for a different
-     *                                          character.</li>
-     *                                          </ul>
-     */
-    public final void addUser(@Nonnull final UUID character,
-                              @Nonnull final UUID user) {
-        Objects.requireNonNull(character, "character");
-        Objects.requireNonNull(user, "users");
-        if (!recruiting) {
-            throw new IllegalStateException("Game not recruiting players");
-        }
-        if (!user.equals(users.get(character)) && users.containsValue(user)) {
-            throw new IllegalArgumentException(
-                    "User already present with a different character");
-        }
-
-        users.put(character, user);
-    }
-
-    /**
-     * <p>
-     * Indicate that this game is not {@linkplain #isRecruiting() recruiting}
-     * players (any longer).
-     * </p>
-     * <p>
-     * This mutator is idempotent: the mutator does not have the precondition
-     * that it is recruiting.
-     * </p>
-     *
-     * @see #isRecruiting()
-     */
-    public final void endRecruitment() {
-        recruiting = false;
     }
 
 }

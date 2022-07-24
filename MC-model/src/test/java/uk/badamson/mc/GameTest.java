@@ -35,6 +35,172 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
 
+    private static final UUID SCENARIO_ID_A = UUID.randomUUID();
+    private static final UUID SCENARIO_ID_B = UUID.randomUUID();
+    private static final Instant CREATED_A = Instant.EPOCH;
+    private static final Instant CREATED_B = Instant.now();
+    private static final UUID USER_ID_A = UUID.randomUUID();
+    private static final UUID USER_ID_B = UUID.randomUUID();
+    private static final UUID CHARACTER_ID_A = UUID.randomUUID();
+    private static final UUID CHARACTER_ID_B = UUID.randomUUID();
+    private static final Map<UUID, UUID> USERS_A = Map.of();
+    private static final Map<UUID, UUID> USERS_B = Map.of(CHARACTER_ID_B,
+            USER_ID_B);
+
+    public static void assertInvariants(final Game game) {
+        ObjectVerifier.assertInvariants(game);
+
+        assertAll("Not null",
+                () -> assertNotNull(game.getIdentifier(), "identifier"));
+    }
+
+    public static void assertInvariants(final Game gameA, final Game gameB) {
+        ObjectVerifier.assertInvariants(gameA, gameB);
+        EqualsSemanticsVerifier.assertEntitySemantics(gameA, gameB, Game::getIdentifier);
+    }
+
+    private static void constructor(@Nonnull final Game that) {
+        final var copy = new Game(that);
+
+        assertInvariants(copy);
+        assertInvariants(that, copy);
+        assertAll("Copied", () -> assertEquals(that, copy),
+                () -> assertSame(that.getIdentifier(), copy.getIdentifier(),
+                        "identifier"),
+                () -> assertSame(that.getRunState(), copy.getRunState(),
+                        "runState"),
+                () -> assertEquals(that.isRecruiting(), copy.isRecruiting(),
+                        "recruiting"),
+                () -> assertEquals(that.getUsers(), copy.getUsers(),
+                        "users"));
+
+    }
+
+    private static void constructor(@Nonnull final Game.Identifier identifier,
+                                    @Nonnull final Game.RunState runState,
+                                    final boolean recruiting,
+                                    @Nonnull final Map<UUID, UUID> users) {
+        final var game = new Game(identifier, runState, recruiting, users);
+
+        assertInvariants(game);
+        assertAll("Has the given attribute values",
+                () -> assertSame(identifier, game.getIdentifier(), "identifier"),
+                () -> assertSame(runState, game.getRunState(), "runState"));
+    }
+
+    private static void addUser(final Game game, final UUID character,
+                                final UUID user) {
+        final var users0 = Map.copyOf(game.getUsers());
+        final var otherCharacters0 = users0.keySet().stream()
+                .filter(c -> !character.equals(c)).collect(toUnmodifiableSet());
+
+        game.addUser(character, user);
+
+        assertInvariants(game);
+        final var users = game.getUsers();
+        assertAll(() -> assertThat(
+                        "The map of users contains an entry that maps the given character name to the given user ID.",
+                        users, hasEntry(character, user)),
+                () -> assertTrue(
+                        otherCharacters0.stream().allMatch(
+                                c -> users.get(c).equals(users0.get(c))),
+                        "The method does not alter any other entries of the map of users."),
+                () -> assertTrue(users.size() <= users0.size() + 1,
+                        "The method adds at most one entry to the map of users."));
+    }
+
+    private static void endRecruitment(final Game game) {
+        game.endRecruitment();
+
+        assertInvariants(game);
+        assertFalse(game.isRecruiting(), "This game is not recruiting.");
+    }
+
+    public static class IdentifierTest {
+
+        public static void assertInvariants(final Game.Identifier identifier) {
+            // inherited
+            ObjectVerifier.assertInvariants(identifier);
+
+            final var scenario = identifier.getScenario();
+            final var created = identifier.getCreated();
+            assertAll("Not null", () -> assertNotNull(scenario, "scenario"),
+                    () -> assertNotNull(created, "created"));
+        }
+
+        public static void assertInvariants(final Game.Identifier identifierA,
+                                            final Game.Identifier identifierB) {
+            // inherited
+            ObjectVerifier.assertInvariants(identifierA, identifierB);
+
+            final var equals = identifierA.equals(identifierB);
+            assertAll("Equality requires equal attributes",
+                    () -> assertFalse(equals && !identifierA.getScenario()
+                            .equals(identifierB.getScenario()), "scenario identifier"),
+                    () -> assertFalse(equals && !identifierA.getCreated()
+                            .equals(identifierB.getCreated()), "creation time"));
+        }
+
+        private static void constructor(final UUID scenario,
+                                        final Instant created) {
+            final var identifier = new Game.Identifier(scenario, created);
+
+            IdentifierTest.assertInvariants(identifier);
+            assertAll("Attributes have the given values",
+                    () -> assertSame(scenario, identifier.getScenario(),
+                            "scenario"),
+                    () -> assertSame(created, identifier.getCreated(),
+                            "created"));
+        }
+
+        @Nested
+        public class Construct2 {
+            @Test
+            public void differentCreated() {
+                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
+                        CREATED_A);
+                final var identifierB = new Game.Identifier(SCENARIO_ID_A,
+                        CREATED_B);
+                assertInvariants(identifierA, identifierB);
+                assertNotEquals(identifierA, identifierB);
+            }
+
+            @Test
+            public void differentScenarios() {
+                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
+                        CREATED_A);
+                final var identifierB = new Game.Identifier(SCENARIO_ID_B,
+                        CREATED_A);
+                assertInvariants(identifierA, identifierB);
+                assertNotEquals(identifierA, identifierB);
+            }
+
+            @Test
+            public void equal() {
+                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
+                        CREATED_A);
+                final var identifierB = new Game.Identifier(SCENARIO_ID_A,
+                        CREATED_A);
+                assertInvariants(identifierA, identifierB);
+                assertEquals(identifierA, identifierB);
+            }
+        }
+
+        @Nested
+        public class Constructor {
+
+            @Test
+            public void a() {
+                constructor(SCENARIO_ID_A, CREATED_A);
+            }
+
+            @Test
+            public void b() {
+                constructor(SCENARIO_ID_B, CREATED_B);
+            }
+        }
+    }
+
     @Nested
     public class Construct2 {
 
@@ -159,8 +325,6 @@ public class GameTest {
         }
     }
 
-
-
     @Nested
     public class IsValidUsers {
 
@@ -182,173 +346,5 @@ public class GameTest {
                     CHARACTER_ID_B, USER_ID_B);
             assertTrue(Game.isValidUsers(users));
         }
-    }
-
-    public static class IdentifierTest {
-
-        @Nested
-        public class Construct2 {
-            @Test
-            public void differentCreated() {
-                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
-                        CREATED_A);
-                final var identifierB = new Game.Identifier(SCENARIO_ID_A,
-                        CREATED_B);
-                assertInvariants(identifierA, identifierB);
-                assertNotEquals(identifierA, identifierB);
-            }
-
-            @Test
-            public void differentScenarios() {
-                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
-                        CREATED_A);
-                final var identifierB = new Game.Identifier(SCENARIO_ID_B,
-                        CREATED_A);
-                assertInvariants(identifierA, identifierB);
-                assertNotEquals(identifierA, identifierB);
-            }
-
-            @Test
-            public void equal() {
-                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
-                        CREATED_A);
-                final var identifierB = new Game.Identifier(SCENARIO_ID_A,
-                        CREATED_A);
-                assertInvariants(identifierA, identifierB);
-                assertEquals(identifierA, identifierB);
-            }
-        }
-
-        @Nested
-        public class Constructor {
-
-            @Test
-            public void a() {
-                constructor(SCENARIO_ID_A, CREATED_A);
-            }
-
-            @Test
-            public void b() {
-                constructor(SCENARIO_ID_B, CREATED_B);
-            }
-        }
-
-        public static void assertInvariants(final Game.Identifier identifier) {
-            // inherited
-            ObjectVerifier.assertInvariants(identifier);
-
-            final var scenario = identifier.getScenario();
-            final var created = identifier.getCreated();
-            assertAll("Not null", () -> assertNotNull(scenario, "scenario"),
-                    () -> assertNotNull(created, "created"));
-        }
-
-        public static void assertInvariants(final Game.Identifier identifierA,
-                                            final Game.Identifier identifierB) {
-            // inherited
-            ObjectVerifier.assertInvariants(identifierA, identifierB);
-
-            final var equals = identifierA.equals(identifierB);
-            assertAll("Equality requires equal attributes",
-                    () -> assertFalse(equals && !identifierA.getScenario()
-                            .equals(identifierB.getScenario()), "scenario identifier"),
-                    () -> assertFalse(equals && !identifierA.getCreated()
-                            .equals(identifierB.getCreated()), "creation time"));
-        }
-
-        private static void constructor(final UUID scenario,
-                                        final Instant created) {
-            final var identifier = new Game.Identifier(scenario, created);
-
-            IdentifierTest.assertInvariants(identifier);
-            assertAll("Attributes have the given values",
-                    () -> assertSame(scenario, identifier.getScenario(),
-                            "scenario"),
-                    () -> assertSame(created, identifier.getCreated(),
-                            "created"));
-        }
-    }
-
-    private static final UUID SCENARIO_ID_A = UUID.randomUUID();
-    private static final UUID SCENARIO_ID_B = UUID.randomUUID();
-    private static final Instant CREATED_A = Instant.EPOCH;
-    private static final Instant CREATED_B = Instant.now();
-
-    private static final UUID USER_ID_A = UUID.randomUUID();
-    private static final UUID USER_ID_B = UUID.randomUUID();
-    private static final UUID CHARACTER_ID_A = UUID.randomUUID();
-    private static final UUID CHARACTER_ID_B = UUID.randomUUID();
-
-    private static final Map<UUID, UUID> USERS_A = Map.of();
-    private static final Map<UUID, UUID> USERS_B = Map.of(CHARACTER_ID_B,
-            USER_ID_B);
-
-    public static void assertInvariants(final Game game) {
-        ObjectVerifier.assertInvariants(game);
-
-        assertAll("Not null",
-                () -> assertNotNull(game.getIdentifier(), "identifier"));
-    }
-
-    public static void assertInvariants(final Game gameA, final Game gameB) {
-        ObjectVerifier.assertInvariants(gameA, gameB);
-        EqualsSemanticsVerifier.assertEntitySemantics(gameA, gameB, Game::getIdentifier);
-    }
-
-    private static void constructor(@Nonnull final Game that) {
-        final var copy = new Game(that);
-
-        assertInvariants(copy);
-        assertInvariants(that, copy);
-        assertAll("Copied", () -> assertEquals(that, copy),
-                () -> assertSame(that.getIdentifier(), copy.getIdentifier(),
-                        "identifier"),
-                () -> assertSame(that.getRunState(), copy.getRunState(),
-                        "runState"),
-                () -> assertEquals(that.isRecruiting(), copy.isRecruiting(),
-                        "recruiting"),
-                () -> assertEquals(that.getUsers(), copy.getUsers(),
-                        "users"));
-
-    }
-
-    private static void constructor(@Nonnull final Game.Identifier identifier,
-                                    @Nonnull final Game.RunState runState,
-                                    final boolean recruiting,
-                                    @Nonnull final Map<UUID, UUID> users) {
-        final var game = new Game(identifier, runState, recruiting, users);
-
-        assertInvariants(game);
-        assertAll("Has the given attribute values",
-                () -> assertSame(identifier, game.getIdentifier(), "identifier"),
-                () -> assertSame(runState, game.getRunState(), "runState"));
-    }
-
-    private static void addUser(final Game game, final UUID character,
-                               final UUID user) {
-        final var users0 = Map.copyOf(game.getUsers());
-        final var otherCharacters0 = users0.keySet().stream()
-                .filter(c -> !character.equals(c)).collect(toUnmodifiableSet());
-
-        game.addUser(character, user);
-
-        assertInvariants(game);
-        final var users = game.getUsers();
-        assertAll(() -> assertThat(
-                        "The map of users contains an entry that maps the given character name to the given user ID.",
-                        users, hasEntry(character, user)),
-                () -> assertTrue(
-                        otherCharacters0.stream().allMatch(
-                                c -> users.get(c).equals(users0.get(c))),
-                        "The method does not alter any other entries of the map of users."),
-                () -> assertTrue(users.size() <= users0.size() + 1,
-                        "The method adds at most one entry to the map of users."));
-    }
-
-    private static void endRecruitment(final Game game) {
-        game.endRecruitment();
-
-        assertInvariants(game);
-        assertFalse(game.isRecruiting(), "This game is not recruiting.");
     }
 }
