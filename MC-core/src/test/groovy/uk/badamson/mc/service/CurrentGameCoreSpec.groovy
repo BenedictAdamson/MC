@@ -3,6 +3,7 @@ package uk.badamson.mc.service
 import uk.badamson.mc.Authority
 import uk.badamson.mc.Game
 import uk.badamson.mc.GameIdentifier
+import uk.badamson.mc.IdentifiedValue
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.aMapWithSize
@@ -76,7 +77,7 @@ class CurrentGameCoreSpec extends CoreSpecification {
         expect(users.values(), contains(userId))
     }
 
-    private Game createGame() {
+    private IdentifiedValue<GameIdentifier, Game> createGame() {
         def scenarioIdOptional = world.scenarioService.scenarioIdentifiers.findAny()
         assertThat('has a scenario', scenarioIdOptional.isPresent())
         def scenarioId = scenarioIdOptional.get()

@@ -94,18 +94,18 @@ public class GameServiceTest {
         assertSame(clock, service.getClock(), "clock");
     }
 
-    public static Game create(final GameService service, final UUID scenario)
+    public static IdentifiedValue<GameIdentifier, Game> create(final GameService service, final UUID scenario)
             throws NoSuchElementException {
-        final Game game;
+        final IdentifiedValue<GameIdentifier, Game> result;
         try {
-            game = service.create(scenario);
+            result = service.create(scenario);
         } catch (NoSuchElementException e) {
             assertInvariants(service);
             throw e;
         }
         assertInvariants(service);
-        assertThat(game, notNullValue());
-        return game;
+        assertThat(result, notNullValue());
+        return result;
     }
 
     public static Set<Instant> getCreationTimesOfGamesOfScenario(
@@ -296,9 +296,9 @@ public class GameServiceTest {
                 final var service = new GameService(clock, scenarioService, userServiceA, repositoryA);
                 final var truncatedNow = service.getNow();
 
-                final var game = create(service, scenario);
+                final var identifiedValue = create(service, scenario);
 
-                final var identifier = game.getIdentifier();
+                final var identifier = identifiedValue.getIdentifier();
                 assertThat(
                         "The returned game has the current time as the creation time of its identifier.",
                         identifier.getCreated(), is(truncatedNow));

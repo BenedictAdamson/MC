@@ -81,14 +81,14 @@ public final class GameService {
      *                                That is, if {@code scenario} is not a known scenario ID.
      */
     @Nonnull
-    public Game create(@Nonnull final UUID scenario) throws NoSuchElementException {
+    public IdentifiedValue<GameIdentifier, Game> create(@Nonnull final UUID scenario) throws NoSuchElementException {
         Objects.requireNonNull(scenario);
         try (var context = repository.openContext()) {
             requireKnownScenario(context, scenario);
             final var identifier = new GameIdentifier(scenario, getNow());
             final var game = new Game(identifier, Game.RunState.WAITING_TO_START, true, NO_USERS);
             context.addGame(identifier, game);
-            return game;
+            return new IdentifiedValue<>(identifier, game);
         }
     }
 

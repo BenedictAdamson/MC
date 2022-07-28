@@ -124,7 +124,7 @@ class GameCoreSpec extends CoreSpecification {
 
         when: "create a game for the scenario"
         def creationTime = world.clock.instant()
-        def game = world.gameService.create(scenarioId)
+        def game = world.gameService.create(scenarioId).value
 
         then: "accepts the creation of the game"
         game != null
