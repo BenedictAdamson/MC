@@ -24,7 +24,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
@@ -65,35 +64,9 @@ public class Scenario {
     private final String description;
     private final List<NamedUUID> characters;
 
-    /**
-     * <p>
-     * Construct a game scenario with given attributes and aggregates.
-     * </p>
-     *
-     * @param identifier  The identifier for this scenario.
-     * @param title       A short human-readable identifier for this scenario.
-     * @param description A human-readable description for the scenario.
-     * @param characters  The names of the persons in this scenario that
-     *                    players can play.
-     * @throws NullPointerException     <ul>
-     *                                             <li>If {@code identifier} is null</li>
-     *                                             <li>If {@code title} is null</li>
-     *                                             <li>If {@code description} is null</li>
-     *                                             <li>If {@code description} is characters</li>
-     *                                             </ul>
-     * @throws IllegalArgumentException <ul>
-     *                                             <li>If the {@code title} is not
-     *                                             {@linkplain NamedUUID#isValidTitle(String) valid}.</li>
-     *                                             <li>If the {@code characters} are not a
-     *                                             {@linkplain #isValidCharacters(List) valid list of
-     *                                             characters}.</li>
-     *                                             </ul>
-     */
-    public Scenario(@Nonnull final UUID identifier,
-                    @Nonnull final String title,
+    public Scenario(@Nonnull final String title,
                     @Nonnull final String description,
                     @Nonnull final List<NamedUUID> characters) {
-        Objects.requireNonNull(identifier, "identifier");
         this.title = Objects.requireNonNull(title, "title");
         this.description = Objects.requireNonNull(description, "description");
         // Can not use List.copyOf() because does not copy unmodifiable lists

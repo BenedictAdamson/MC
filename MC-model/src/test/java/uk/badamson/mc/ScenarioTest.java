@@ -38,12 +38,12 @@ public class ScenarioTest {
 
         @Test
         public void a() {
-            constructor(ID_A, TITLE_A, DESCRIPTION_A, CHARACTERS_A);
+            constructor(TITLE_A, DESCRIPTION_A, CHARACTERS_A);
         }
 
         @Test
         public void b() {
-            constructor(ID_B, TITLE_B, DESCRIPTION_B, CHARACTERS_B);
+            constructor(TITLE_B, DESCRIPTION_B, CHARACTERS_B);
         }
     }
 
@@ -53,10 +53,8 @@ public class ScenarioTest {
     private static final String TITLE_B = "0123456789012345678901234567890123456789012345678901234567890123";// longest
     private static final String DESCRIPTION_A = "";// shortest
     private static final String DESCRIPTION_B = "Simple training scenario.";
-    private static final NamedUUID CHARACTER_A = new NamedUUID(ID_A,
-            "Lt. Winters");
-    private static final NamedUUID CHARACTER_B = new NamedUUID(ID_B,
-            "Sgt. Summer");
+    private static final NamedUUID CHARACTER_A = new NamedUUID(ID_A, "Lt. Winters");
+    private static final NamedUUID CHARACTER_B = new NamedUUID(ID_B, "Sgt. Summer");
     private static final List<NamedUUID> CHARACTERS_A = List.of(CHARACTER_A);
     private static final List<NamedUUID> CHARACTERS_B = List.of(CHARACTER_A,
             CHARACTER_B);
@@ -98,11 +96,9 @@ public class ScenarioTest {
         ObjectVerifier.assertInvariants(scenarioA, scenarioB);
     }
 
-    private static void constructor(@Nonnull final UUID identifier,
-                                    @Nonnull final String title, @Nonnull final String description,
+    private static void constructor(@Nonnull final String title, @Nonnull final String description,
                                     @Nonnull final List<NamedUUID> characters) {
-        final var scenario = new Scenario(identifier, title, description,
-                characters);
+        final var scenario = new Scenario(title, description, characters);
 
         assertInvariants(scenario);
         assertAll(
