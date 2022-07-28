@@ -1,6 +1,7 @@
 package uk.badamson.mc.repository;
 
 import uk.badamson.mc.Game;
+import uk.badamson.mc.GameIdentifier;
 import uk.badamson.mc.User;
 import uk.badamson.mc.UserGameAssociation;
 
@@ -13,7 +14,7 @@ public class MCRepositoryTest {
 
     public static class Fake extends MCRepository {
 
-        private final Map<Game.Identifier, Game> gameStore = new ConcurrentHashMap<>();
+        private final Map<GameIdentifier, Game> gameStore = new ConcurrentHashMap<>();
         private final Map<UUID, UserGameAssociation> currentUserGameStore = new ConcurrentHashMap<>();
         private final Map<UUID, User> userStore = new ConcurrentHashMap<>();
 
@@ -36,26 +37,26 @@ public class MCRepositoryTest {
         private class FakeContext extends Context {
 
             @Override
-            public void addGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game) {
+            public void addGameUncached(@Nonnull GameIdentifier id, @Nonnull Game game) {
                 Objects.requireNonNull(id);
                 gameStore.put(id, copy(game));
             }
 
             @Override
-            public void updateGameUncached(@Nonnull Game.Identifier id, @Nonnull Game game) {
+            public void updateGameUncached(@Nonnull GameIdentifier id, @Nonnull Game game) {
                 Objects.requireNonNull(id);
                 gameStore.put(id, copy(game));
             }
 
             @Nonnull
             @Override
-            public Optional<Game> findGameUncached(@Nonnull Game.Identifier id) {
+            public Optional<Game> findGameUncached(@Nonnull GameIdentifier id) {
                 return Optional.ofNullable(gameStore.get(id)).map(Fake::copy);
             }
 
             @Nonnull
             @Override
-            public Iterable<Map.Entry<Game.Identifier, Game>> findAllGamesUncached() {
+            public Iterable<Map.Entry<GameIdentifier, Game>> findAllGamesUncached() {
                 return Set.copyOf(gameStore.entrySet());
             }
 

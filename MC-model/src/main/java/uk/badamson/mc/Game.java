@@ -19,8 +19,6 @@ package uk.badamson.mc;
  */
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.time.Instant;
 import java.util.*;
 
 /**
@@ -30,7 +28,7 @@ import java.util.*;
  */
 public class Game {
 
-    private final Identifier identifier;
+    private final GameIdentifier gameIdentifier;
     private final Map<UUID, UUID> users;
     private RunState runState;
     private boolean recruiting;
@@ -44,7 +42,7 @@ public class Game {
      */
     public Game(@Nonnull final Game that) {
         Objects.requireNonNull(that, "that");
-        identifier = that.identifier;
+        gameIdentifier = that.gameIdentifier;
         runState = that.runState;
         recruiting = that.recruiting;
         this.users = new HashMap<>(that.users);
@@ -56,15 +54,15 @@ public class Game {
      * </p>
      *
      * @throws NullPointerException <ul>
-     *                              <li>If {@code identifier} is null.</li>
+     *                              <li>If {@code gameIdentifier} is null.</li>
      *                              <li>If {@code runState} is null.</li>
      *                              </ul>
      */
-    public Game(@Nonnull final Identifier identifier,
+    public Game(@Nonnull final GameIdentifier gameIdentifier,
                 @Nonnull final RunState runState,
                 final boolean recruiting,
                 @Nonnull final Map<UUID, UUID> users) {
-        this.identifier = Objects.requireNonNull(identifier, "identifier");
+        this.gameIdentifier = Objects.requireNonNull(gameIdentifier, "gameIdentifier");
         this.runState = Objects.requireNonNull(runState, "runState");
         this.recruiting = recruiting;
         this.users = new HashMap<>(Objects.requireNonNull(users, "users"));
@@ -102,10 +100,10 @@ public class Game {
      * </p>
      * <ul>
      * <li>The {@link Game} class has <i>entity semantics</i>, with the
-     * {@linkplain #getIdentifier() identifier} serving as a unique identifier:
+     * {@linkplain #getIdentifier() gameIdentifier} serving as a unique gameIdentifier:
      * this object is equivalent to another object if, and only of, the other
      * object is also a {@link Game} and the two have
-     * {@linkplain Identifier#equals(Object) equivalent}
+     * {@linkplain GameIdentifier#equals(Object) equivalent}
      * {@linkplain #getIdentifier() identifiers}.</li>
      * </ul>
      */
@@ -117,17 +115,17 @@ public class Game {
         if (!(that instanceof final Game other)) {
             return false;
         }
-        return identifier.equals(other.getIdentifier());
+        return gameIdentifier.equals(other.getIdentifier());
     }
 
     /**
      * <p>
-     * The unique identifier for this game.
+     * The unique gameIdentifier for this game.
      * </p>
      */
     @Nonnull
-    public final Identifier getIdentifier() {
-        return identifier;
+    public final GameIdentifier getIdentifier() {
+        return gameIdentifier;
     }
 
     @Nonnull
@@ -170,7 +168,7 @@ public class Game {
 
     @Override
     public final int hashCode() {
-        return identifier.hashCode();
+        return gameIdentifier.hashCode();
     }
 
     /**
@@ -225,93 +223,6 @@ public class Game {
 
     public enum RunState {
         WAITING_TO_START, RUNNING, STOPPED
-    }
-
-    /**
-     * <p>
-     * A unique identifier for a {@linkplain Game game} (play) of the Mission
-     * Command game.
-     * </p>
-     */
-    @Immutable
-    public static final class Identifier {
-
-        private final UUID scenario;
-        private final Instant created;
-
-        /**
-         * <p>
-         * Create an object with given attribute values.
-         * </p>
-         *
-         * @param scenario The unique identifier for the {@linkplain Scenario scenario}
-         *                 that the game is an instance of.
-         * @param created  The point in time when the game was created (set up).
-         * @throws NullPointerException <ul>
-         *                              <li>If {@code scenario} is null.</li>
-         *                              <li>If {@code created} is null.</li>
-         *                              </ul>
-         */
-        public Identifier(@Nonnull final UUID scenario,
-                          @Nonnull final Instant created) {
-            this.scenario = Objects.requireNonNull(scenario, "scenario");
-            this.created = Objects.requireNonNull(created, "created");
-
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (!(obj instanceof final Identifier other)) {
-                return false;
-            }
-            /*
-             * Two Identifiers are unlikely to have the same created value, so
-             * check those values first.
-             */
-            return created.equals(other.created)
-                    && scenario.equals(other.scenario);
-        }
-
-        /**
-         * <p>
-         * The point in time when the game was created (set up).
-         * </p>
-         * <p>
-         * This will usually be not long before playing of the game started. This
-         * type uses the creation time as an identifier, rather than the game
-         * start time, so it can represent games that have not yet been started,
-         * but are in the process of being set up.
-         * </p>
-         */
-        @Nonnull
-        public Instant getCreated() {
-            return created;
-        }
-
-        /**
-         * <p>
-         * The unique identifier for the {@linkplain Scenario scenario} that the
-         * game is an instance of.
-         * </p>
-         */
-        @Nonnull
-        public UUID getScenario() {
-            return scenario;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(created, scenario);
-        }
-
-        @Override
-        public String toString() {
-            return scenario + "@" + created;
-        }
-
     }
 
 }

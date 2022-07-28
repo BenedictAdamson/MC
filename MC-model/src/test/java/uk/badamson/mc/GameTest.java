@@ -76,15 +76,15 @@ public class GameTest {
 
     }
 
-    private static void constructor(@Nonnull final Game.Identifier identifier,
+    private static void constructor(@Nonnull final GameIdentifier gameIdentifier,
                                     @Nonnull final Game.RunState runState,
                                     final boolean recruiting,
                                     @Nonnull final Map<UUID, UUID> users) {
-        final var game = new Game(identifier, runState, recruiting, users);
+        final var game = new Game(gameIdentifier, runState, recruiting, users);
 
         assertInvariants(game);
         assertAll("Has the given attribute values",
-                () -> assertSame(identifier, game.getIdentifier(), "identifier"),
+                () -> assertSame(gameIdentifier, game.getIdentifier(), "gameIdentifier"),
                 () -> assertSame(runState, game.getRunState(), "runState"));
     }
 
@@ -116,36 +116,36 @@ public class GameTest {
         assertFalse(game.isRecruiting(), "This game is not recruiting.");
     }
 
-    public static class IdentifierTest {
+    public static class GameIdentifierTest {
 
-        public static void assertInvariants(final Game.Identifier identifier) {
+        public static void assertInvariants(final GameIdentifier gameIdentifier) {
             // inherited
-            ObjectVerifier.assertInvariants(identifier);
+            ObjectVerifier.assertInvariants(gameIdentifier);
 
-            final var scenario = identifier.getScenario();
-            final var created = identifier.getCreated();
+            final var scenario = gameIdentifier.getScenario();
+            final var created = gameIdentifier.getCreated();
             assertAll("Not null", () -> assertNotNull(scenario, "scenario"),
                     () -> assertNotNull(created, "created"));
         }
 
-        public static void assertInvariants(final Game.Identifier identifierA,
-                                            final Game.Identifier identifierB) {
+        public static void assertInvariants(final GameIdentifier gameIdentifierA,
+                                            final GameIdentifier gameIdentifierB) {
             // inherited
-            ObjectVerifier.assertInvariants(identifierA, identifierB);
+            ObjectVerifier.assertInvariants(gameIdentifierA, gameIdentifierB);
 
-            final var equals = identifierA.equals(identifierB);
+            final var equals = gameIdentifierA.equals(gameIdentifierB);
             assertAll("Equality requires equal attributes",
-                    () -> assertFalse(equals && !identifierA.getScenario()
-                            .equals(identifierB.getScenario()), "scenario identifier"),
-                    () -> assertFalse(equals && !identifierA.getCreated()
-                            .equals(identifierB.getCreated()), "creation time"));
+                    () -> assertFalse(equals && !gameIdentifierA.getScenario()
+                            .equals(gameIdentifierB.getScenario()), "scenario identifier"),
+                    () -> assertFalse(equals && !gameIdentifierA.getCreated()
+                            .equals(gameIdentifierB.getCreated()), "creation time"));
         }
 
         private static void constructor(final UUID scenario,
                                         final Instant created) {
-            final var identifier = new Game.Identifier(scenario, created);
+            final var identifier = new GameIdentifier(scenario, created);
 
-            IdentifierTest.assertInvariants(identifier);
+            GameIdentifierTest.assertInvariants(identifier);
             assertAll("Attributes have the given values",
                     () -> assertSame(scenario, identifier.getScenario(),
                             "scenario"),
@@ -157,9 +157,9 @@ public class GameTest {
         public class Construct2 {
             @Test
             public void differentCreated() {
-                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
+                final var identifierA = new GameIdentifier(SCENARIO_ID_A,
                         CREATED_A);
-                final var identifierB = new Game.Identifier(SCENARIO_ID_A,
+                final var identifierB = new GameIdentifier(SCENARIO_ID_A,
                         CREATED_B);
                 assertInvariants(identifierA, identifierB);
                 assertNotEquals(identifierA, identifierB);
@@ -167,9 +167,9 @@ public class GameTest {
 
             @Test
             public void differentScenarios() {
-                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
+                final var identifierA = new GameIdentifier(SCENARIO_ID_A,
                         CREATED_A);
-                final var identifierB = new Game.Identifier(SCENARIO_ID_B,
+                final var identifierB = new GameIdentifier(SCENARIO_ID_B,
                         CREATED_A);
                 assertInvariants(identifierA, identifierB);
                 assertNotEquals(identifierA, identifierB);
@@ -177,9 +177,9 @@ public class GameTest {
 
             @Test
             public void equal() {
-                final var identifierA = new Game.Identifier(SCENARIO_ID_A,
+                final var identifierA = new GameIdentifier(SCENARIO_ID_A,
                         CREATED_A);
-                final var identifierB = new Game.Identifier(SCENARIO_ID_A,
+                final var identifierB = new GameIdentifier(SCENARIO_ID_A,
                         CREATED_A);
                 assertInvariants(identifierA, identifierB);
                 assertEquals(identifierA, identifierB);
@@ -206,8 +206,8 @@ public class GameTest {
 
         @Test
         public void differentIdentifiers() {
-            final var identifierA = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
-            final var identifierB = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+            final var identifierA = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
+            final var identifierB = new GameIdentifier(SCENARIO_ID_B, CREATED_B);
             final var gameA = new Game(identifierA, Game.RunState.RUNNING, true, USERS_A);
             final var gameB = new Game(identifierB, Game.RunState.RUNNING, true, USERS_A);
 
@@ -217,7 +217,7 @@ public class GameTest {
 
         @Test
         public void equalAttributes() {
-            final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+            final var identifier = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
             final var gameA = new Game(identifier, Game.RunState.RUNNING, true, USERS_A);
             final var gameB = new Game(identifier, Game.RunState.RUNNING, true, USERS_A);
 
@@ -231,21 +231,21 @@ public class GameTest {
 
         @Test
         public void a() {
-            final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+            final var identifier = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
             test(identifier, Game.RunState.WAITING_TO_START, false, USERS_A);
         }
 
         @Test
         public void b() {
-            final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+            final var identifier = new GameIdentifier(SCENARIO_ID_B, CREATED_B);
             test(identifier, Game.RunState.RUNNING, true, USERS_B);
         }
 
-        private void test(final Game.Identifier identifier,
+        private void test(final GameIdentifier gameIdentifier,
                           final Game.RunState runState,
                           final boolean recruiting,
                           final Map<UUID, UUID> users) {
-            final var game0 = new Game(identifier, runState, recruiting, users);
+            final var game0 = new Game(gameIdentifier, runState, recruiting, users);
 
             constructor(game0);
         }
@@ -256,13 +256,13 @@ public class GameTest {
 
         @Test
         public void a() {
-            final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+            final var identifier = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
             constructor(identifier, Game.RunState.WAITING_TO_START, false, USERS_A);
         }
 
         @Test
         public void b() {
-            final var identifier = new Game.Identifier(SCENARIO_ID_B, CREATED_B);
+            final var identifier = new GameIdentifier(SCENARIO_ID_B, CREATED_B);
             constructor(identifier, Game.RunState.RUNNING, true, USERS_B);
         }
     }
@@ -297,7 +297,7 @@ public class GameTest {
 
         private void test(final Map<UUID, UUID> users0, final UUID character,
                           final UUID user) {
-            final var players = new Game(new Game.Identifier(SCENARIO_ID_A, CREATED_A), Game.RunState.WAITING_TO_START, true, users0);
+            final var players = new Game(new GameIdentifier(SCENARIO_ID_A, CREATED_A), Game.RunState.WAITING_TO_START, true, users0);
 
             addUser(players, character, user);
         }
@@ -318,7 +318,7 @@ public class GameTest {
         }
 
         private void test(final boolean recruitment0) {
-            final var identifier = new Game.Identifier(SCENARIO_ID_A, CREATED_A);
+            final var identifier = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
             final var players = new Game(identifier, Game.RunState.WAITING_TO_START, recruitment0, USERS_A);
 
             endRecruitment(players);

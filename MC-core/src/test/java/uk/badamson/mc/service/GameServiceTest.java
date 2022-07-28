@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.*;
-import uk.badamson.mc.Game.Identifier;
+import uk.badamson.mc.GameIdentifier;
 import uk.badamson.mc.repository.MCRepository;
 import uk.badamson.mc.repository.MCRepositoryTest;
 
@@ -48,12 +48,12 @@ public class GameServiceTest {
     private static final String USERNAME_B = "Paul";
     private static final String PASSWORD_A = "secret";
     private static final String PASSWORD_B = "password123";
-    private static final Identifier GAME_IDENTIFIER_A = new Identifier(
+    private static final GameIdentifier GAME_IDENTIFIER_A = new GameIdentifier(
             UUID.randomUUID(), Instant.EPOCH);
-    private static final Identifier GAME_IDENTIFIER_B = new Identifier(
+    private static final GameIdentifier GAME_IDENTIFIER_B = new GameIdentifier(
             UUID.randomUUID(), Instant.now());
     private static final UUID SCENARIO_ID_A = UUID.randomUUID();
-    private static final Identifier IDENTIFIER_A = new Identifier(
+    private static final GameIdentifier IDENTIFIER_A = new GameIdentifier(
             SCENARIO_ID_A, Instant.now());
     private MCRepository repositoryA;
     private MCRepository repositoryB;
@@ -124,7 +124,7 @@ public class GameServiceTest {
         return times;
     }
 
-    public static Iterable<Identifier> getGameIdentifiers(
+    public static Iterable<GameIdentifier> getGameIdentifiers(
             final GameService service) {
         final var games = service.getGameIdentifiers();
 
@@ -140,7 +140,7 @@ public class GameServiceTest {
     }
 
     private static Game endRecruitment(
-            final GameService service, final Identifier id)
+            final GameService service, final GameIdentifier id)
             throws NoSuchElementException {
         final Game result;
         try {
@@ -161,7 +161,7 @@ public class GameServiceTest {
         return result;
     }
 
-    public static Optional<Identifier> getCurrentGameOfUser(
+    public static Optional<GameIdentifier> getCurrentGameOfUser(
             final GameService service, final UUID user) {
         final var result = service.getCurrentGameOfUser(user);
         assertNotNull(result, "Returns a (non null) optional value.");
@@ -170,7 +170,7 @@ public class GameServiceTest {
     }
 
     public static Optional<Game> getGameAsGameManager(
-            final GameService service, final Identifier id) {
+            final GameService service, final GameIdentifier id) {
 
         final var result = service.getGameAsGameManager(id);
 
@@ -181,7 +181,7 @@ public class GameServiceTest {
     }
 
     private static Optional<Game> getGameAsNonGameManager(
-            final GameService service, final Identifier id,
+            final GameService service, final GameIdentifier id,
             final UUID user) {
         final var result = service.getGameAsNonGameManager(id, user);
 
@@ -198,22 +198,22 @@ public class GameServiceTest {
     }
 
     public static boolean mayUserJoinGame(final GameService service,
-                                          final UUID user, final Identifier game) {
+                                          final UUID user, final GameIdentifier game) {
         final var result = service.mayUserJoinGame(user, game);
         assertInvariants(service);
         return result;
     }
 
     public static void userJoinsGame(final GameService service,
-                                     final UUID user, final Game.Identifier identifier)
+                                     final UUID user, final GameIdentifier gameIdentifier)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
-        final var game0 = service.getGameAsGameManager(identifier);
+        final var game0 = service.getGameAsGameManager(gameIdentifier);
         final Map<UUID, UUID> users0 = game0.map(Game::getUsers).orElseGet(Map::of);
         final var alreadyPlaying = users0.containsValue(user);
 
         try {
-            service.userJoinsGame(user, identifier);
+            service.userJoinsGame(user, gameIdentifier);
         } catch (UserAlreadyPlayingException | IllegalGameStateException
                  | SecurityException | NoSuchElementException e) {
             assertInvariants(service);
@@ -222,7 +222,7 @@ public class GameServiceTest {
 
         assertInvariants(service);
         final var currentGame = service.getCurrentGameOfUser(user);
-        final Optional<Game> gameOptional = service.getGameAsGameManager(identifier);
+        final Optional<Game> gameOptional = service.getGameAsGameManager(gameIdentifier);
         assertThat("game", gameOptional.isPresent());
         final var game = gameOptional.get();
         final var users = game.getUsers();
@@ -233,7 +233,7 @@ public class GameServiceTest {
                 characterPlayed.isPresent());// guard
         assertAll(
                 () -> assertThat("The current game of the user is the given game.", currentGame,
-                        is(Optional.of(identifier))),
+                        is(Optional.of(gameIdentifier))),
                 () -> assertThat(
                         "The user is already a player, or the character played by the player did not previously have a player.",
                         alreadyPlaying || !users0.containsKey(characterPlayed.get()))
@@ -449,7 +449,7 @@ public class GameServiceTest {
                 test(GAME_IDENTIFIER_B);
             }
 
-            private void test(final Identifier id) {
+            private void test(final GameIdentifier id) {
                 final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repositoryA);
 
                 assertThrows(NoSuchElementException.class,
@@ -563,7 +563,7 @@ public class GameServiceTest {
                 test(GAME_IDENTIFIER_B);
             }
 
-            private void test(final Identifier id) {
+            private void test(final GameIdentifier id) {
                 final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repositoryA);
 
                 final var result = getGameAsGameManager(service, id);
@@ -695,7 +695,7 @@ public class GameServiceTest {
                 test(GAME_IDENTIFIER_B, USER_ID_B);
             }
 
-            private void test(final Identifier id, final UUID user) {
+            private void test(final GameIdentifier id, final UUID user) {
                 final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repositoryA);
 
                 final var result = getGameAsNonGameManager(service, id,
@@ -887,7 +887,7 @@ public class GameServiceTest {
 
             userJoinsGame(service, user, id);
 
-            final Optional<Identifier> currentGameOptional = service.getCurrentGameOfUser(user);
+            final Optional<GameIdentifier> currentGameOptional = service.getCurrentGameOfUser(user);
             assertThat("currentGame", currentGameOptional.isPresent());
             final var currentGame = currentGameOptional.get();
             final Optional<Game> gameOptional = service.getGameAsGameManager(id);
@@ -966,7 +966,7 @@ public class GameServiceTest {
             }
 
             private void test(final ScenarioService scenarioService, final GameService service,
-                              final UUID user, final Identifier id) {
+                              final UUID user, final GameIdentifier id) {
                 final Optional<Scenario> scenarioOptional = scenarioService.getScenario(id.getScenario());
                 assertThat("scenario", scenarioOptional.isPresent());
                 final var scenario = scenarioOptional.get();
@@ -984,7 +984,7 @@ public class GameServiceTest {
 
                 userJoinsGame(service, user, id);
 
-                final Optional<Identifier> currentGameOptional = service
+                final Optional<GameIdentifier> currentGameOptional = service
                         .getCurrentGameOfUser(user);
                 assertThat("currentGame", currentGameOptional.isPresent());
                 final var currentGame = currentGameOptional.get();

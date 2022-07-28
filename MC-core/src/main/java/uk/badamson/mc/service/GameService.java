@@ -19,7 +19,7 @@ package uk.badamson.mc.service;
  */
 
 import uk.badamson.mc.*;
-import uk.badamson.mc.Game.Identifier;
+import uk.badamson.mc.GameIdentifier;
 import uk.badamson.mc.repository.MCRepository;
 
 import javax.annotation.Nonnull;
@@ -85,7 +85,7 @@ public final class GameService {
         Objects.requireNonNull(scenario);
         try (var context = repository.openContext()) {
             requireKnownScenario(context, scenario);
-            final var identifier = new Identifier(scenario, getNow());
+            final var identifier = new GameIdentifier(scenario, getNow());
             final var game = new Game(identifier, Game.RunState.WAITING_TO_START, true, NO_USERS);
             context.addGame(identifier, game);
             return game;
@@ -118,26 +118,26 @@ public final class GameService {
             requireKnownScenario(context, scenario);// read-and-check
             return getGameIdentifiers(context).stream()// read
                     .filter(id -> scenario.equals(id.getScenario()))
-                    .map(Identifier::getCreated)
+                    .map(GameIdentifier::getCreated)
                     .collect(Collectors.toUnmodifiableSet());
         }
     }
 
     @Nonnull
-    Optional<Game> getGame(@Nonnull MCRepository.Context context, @Nonnull final Identifier id) {
+    Optional<Game> getGame(@Nonnull MCRepository.Context context, @Nonnull final GameIdentifier id) {
         return context.findGame(id);
     }
 
     @Nonnull
-    public Iterable<Identifier> getGameIdentifiers() {
+    public Iterable<GameIdentifier> getGameIdentifiers() {
         try (var context = repository.openContext()) {
             return getGameIdentifiers(context);
         }
     }
 
     @Nonnull
-    Set<Identifier> getGameIdentifiers(@Nonnull MCRepository.Context context) {
-        final Set<Identifier> result = new HashSet<>();
+    Set<GameIdentifier> getGameIdentifiers(@Nonnull MCRepository.Context context) {
+        final Set<GameIdentifier> result = new HashSet<>();
         for (var entry : context.findAllGames()) {
             result.add(entry.getKey());
         }
@@ -159,7 +159,7 @@ public final class GameService {
     }
 
     @Nonnull
-    public Game startGame(@Nonnull final Game.Identifier id)
+    public Game startGame(@Nonnull final GameIdentifier id)
             throws NoSuchElementException, IllegalGameStateException {
         Objects.requireNonNull(id);
         try (var context = repository.openContext()) {
@@ -184,7 +184,7 @@ public final class GameService {
         }
     }
 
-    public void stopGame(@Nonnull final Identifier id)
+    public void stopGame(@Nonnull final GameIdentifier id)
             throws NoSuchElementException {
         try (var context = repository.openContext()) {
             Optional<Game> gameOptional = getGame(context, id);
@@ -220,7 +220,7 @@ public final class GameService {
      * @throws NoSuchElementException If a game with the given ID does not exist.
      */
     @Nonnull
-    public Game endRecruitment(@Nonnull final Game.Identifier id)
+    public Game endRecruitment(@Nonnull final GameIdentifier id)
             throws NoSuchElementException {
         try (var context = repository.openContext()) {
             final var gameOptional = context.findGame(id);
@@ -235,7 +235,7 @@ public final class GameService {
     }
 
     @Nonnull
-    private Optional<Game.Identifier> getCurrent(@Nonnull MCRepository.Context context, @Nonnull final UUID user) {
+    private Optional<GameIdentifier> getCurrent(@Nonnull MCRepository.Context context, @Nonnull final UUID user) {
         return context.findCurrentUserGame(user).map(UserGameAssociation::getGame);
     }
 
@@ -246,7 +246,7 @@ public final class GameService {
      * </p>
      */
     @Nonnull
-    public Optional<Identifier> getCurrentGameOfUser(
+    public Optional<GameIdentifier> getCurrentGameOfUser(
             @Nonnull final UUID userId) {
         Objects.requireNonNull(userId);
         try (var context = repository.openContext()) {
@@ -267,7 +267,7 @@ public final class GameService {
      */
     @Nonnull
     public Optional<Game> getGameAsGameManager(
-            @Nonnull final Game.Identifier id) {
+            @Nonnull final GameIdentifier id) {
         try (var context = repository.openContext()) {
             return context.findGame(id);
         }
@@ -287,7 +287,7 @@ public final class GameService {
      */
     @Nonnull
     public Optional<Game> getGameAsNonGameManager(
-            @Nonnull final Game.Identifier gameId, @Nonnull final UUID user) {
+            @Nonnull final GameIdentifier gameId, @Nonnull final UUID user) {
         Objects.requireNonNull(user, "user");
         final Optional<Game> game;
         try (var context = repository.openContext()) {
@@ -302,7 +302,7 @@ public final class GameService {
 
     private UserJoinsGameState getUserJoinsGameState(@Nonnull MCRepository.Context context,
                                                      final UUID userId,
-                                                     final Identifier gameId)
+                                                     final GameIdentifier gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
         final var userOptional = getUser(context, userId);
@@ -364,7 +364,7 @@ public final class GameService {
 
     /**
      * <p>
-     * Whether the {@link #userJoinsGame(UUID, Identifier)} operation would
+     * Whether the {@link #userJoinsGame(UUID, GameIdentifier)} operation would
      * succeed
      * </p>
      * <p>
@@ -381,7 +381,7 @@ public final class GameService {
      * {@linkplain Game#isRecruiting() recruiting} players.</li>
      * </ul>
      */
-    public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final Identifier game) {
+    public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final GameIdentifier game) {
         try (var context = repository.openContext()) {
             getUserJoinsGameState(context, user, game);
         } catch (UserAlreadyPlayingException | IllegalGameStateException
@@ -412,7 +412,7 @@ public final class GameService {
      *                                     </ul>
      */
     public void userJoinsGame(@Nonnull final UUID userId,
-                              @Nonnull final Identifier gameId)
+                              @Nonnull final GameIdentifier gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
         try (var context = repository.openContext()) {

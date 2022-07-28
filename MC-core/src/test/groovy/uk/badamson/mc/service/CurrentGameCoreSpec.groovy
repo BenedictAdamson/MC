@@ -2,6 +2,7 @@ package uk.badamson.mc.service
 
 import uk.badamson.mc.Authority
 import uk.badamson.mc.Game
+import uk.badamson.mc.GameIdentifier
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.aMapWithSize
@@ -40,7 +41,7 @@ class CurrentGameCoreSpec extends CoreSpecification {
         def user = world.userService.add(world.createBasicUserDetails(EnumSet.of(Authority.ROLE_PLAYER)))
 
         when: "examine current-game of the user"
-        final Optional<Game.Identifier> currentGame = world.gameService.getCurrentGameOfUser(user.id)
+        final Optional<GameIdentifier> currentGame = world.gameService.getCurrentGameOfUser(user.id)
 
         then: "does not indicate that the user has a current game"
         currentGame.isEmpty()

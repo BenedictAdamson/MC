@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
 import uk.badamson.dbc.assertions.ObjectVerifier;
-import uk.badamson.mc.GameTest.IdentifierTest;
+import uk.badamson.mc.GameTest.GameIdentifierTest;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -47,7 +47,7 @@ public class UserGameAssociationTest {
                 test(USER_B, GAME_B);
             }
 
-            private void test(final UUID user, final Game.Identifier game) {
+            private void test(final UUID user, final GameIdentifier game) {
                 final var association1 = new UserGameAssociation(user, game);
                 // Tough test: equivalent but not same attribute objects
                 final var association2 = new UserGameAssociation(copy(user),
@@ -106,10 +106,10 @@ public class UserGameAssociationTest {
 
     private static final UUID USER_B = UUID.randomUUID();
 
-    private static final Game.Identifier GAME_A = new Game.Identifier(
+    private static final GameIdentifier GAME_A = new GameIdentifier(
             UUID.randomUUID(), Instant.EPOCH);
 
-    private static final Game.Identifier GAME_B = new Game.Identifier(
+    private static final GameIdentifier GAME_B = new GameIdentifier(
             UUID.randomUUID(), Instant.now());
 
     public static void assertInvariants(final UserGameAssociation association) {
@@ -118,7 +118,7 @@ public class UserGameAssociationTest {
         final var game = association.getGame();
         assertAll("Not null", () -> assertNotNull(association.getUser(), "user"),
                 () -> assertNotNull(game, "game"));
-        IdentifierTest.assertInvariants(game);
+        GameIdentifierTest.assertInvariants(game);
     }
 
     public static void assertInvariants(final UserGameAssociation association1,
@@ -133,7 +133,7 @@ public class UserGameAssociationTest {
     }
 
     private static void constructor(final UUID user,
-                                    final Game.Identifier game) {
+                                    final GameIdentifier game) {
         final var association = new UserGameAssociation(user, game);
 
         assertInvariants(association);
@@ -142,8 +142,8 @@ public class UserGameAssociationTest {
                 () -> assertSame(game, association.getGame(), "game"));
     }
 
-    private static Game.Identifier copy(final Game.Identifier id) {
-        return new Game.Identifier(copy(id.getScenario()), copy(id.getCreated()));
+    private static GameIdentifier copy(final GameIdentifier id) {
+        return new GameIdentifier(copy(id.getScenario()), copy(id.getCreated()));
     }
 
     private static Instant copy(final Instant t) {
