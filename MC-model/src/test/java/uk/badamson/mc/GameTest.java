@@ -31,6 +31,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
@@ -49,9 +50,6 @@ public class GameTest {
 
     public static void assertInvariants(final Game game) {
         ObjectVerifier.assertInvariants(game);
-
-        assertAll("Not null",
-                () -> assertNotNull(game.getIdentifier(), "identifier"));
     }
 
     public static void assertInvariants(final Game gameA, final Game gameB) {
@@ -65,8 +63,6 @@ public class GameTest {
         assertInvariants(copy);
         assertInvariants(that, copy);
         assertAll("Copied", () -> assertEquals(that, copy),
-                () -> assertSame(that.getIdentifier(), copy.getIdentifier(),
-                        "identifier"),
                 () -> assertSame(that.getRunState(), copy.getRunState(),
                         "runState"),
                 () -> assertEquals(that.isRecruiting(), copy.isRecruiting(),
@@ -83,9 +79,7 @@ public class GameTest {
         final var game = new Game(gameIdentifier, runState, recruiting, users);
 
         assertInvariants(game);
-        assertAll("Has the given attribute values",
-                () -> assertSame(gameIdentifier, game.getIdentifier(), "gameIdentifier"),
-                () -> assertSame(runState, game.getRunState(), "runState"));
+        assertThat("runState", game.getRunState(), sameInstance(runState));
     }
 
     private static void addUser(final Game game, final UUID character,

@@ -151,8 +151,7 @@ public class GameServiceTest {
         }
         assertInvariants(service);
         assertNotNull(result, "Returns a (non null) value.");
-        assertAll(() -> assertThat("identifier", result.getIdentifier(), is(id)),
-                () -> assertFalse(result.isRecruiting(), "recruiting"));
+        assertFalse(result.isRecruiting(), "recruiting");
         final Optional<Game> gameOptional = service.getGameAsGameManager(id);
         assertThat(gameOptional.isPresent(), is(true));
         assertFalse(gameOptional.get().isRecruiting(),
@@ -411,14 +410,11 @@ public class GameServiceTest {
 
             final var scenario = getAScenarioId(scenarioService);
             final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repositoryA);
-            final var game0 = service.create(scenario);
-            final var id = game0.getIdentifier();
+            final var id = service.create(scenario).getIdentifier();
 
             final var game = endRecruitment(service, id);
 
-            assertAll(
-                    () -> assertThat("identifier", game.getIdentifier(), is(id)),
-                    () -> assertThat("recruiting", game.isRecruiting(), is(false)));
+            assertThat("recruiting", game.isRecruiting(), is(false));
         }
 
         @Test
@@ -432,9 +428,7 @@ public class GameServiceTest {
 
             final var game = endRecruitment(service, id);
 
-            assertAll(
-                    () -> assertThat("identifier", game.getIdentifier(), is(id)),
-                    () -> assertThat("recruiting", game.isRecruiting(), is(false)));
+            assertThat("recruiting", game.isRecruiting(), is(false));
         }
 
         @Nested
@@ -519,7 +513,6 @@ public class GameServiceTest {
                 assertThat("present", result.isPresent());
                 final var game = result.get();
                 assertAll(
-                        () -> assertThat("identifier", game.getIdentifier(), is(gameId)),
                         () -> assertThat("recruiting", game.isRecruiting(), is(true)),
                         () -> assertThat("users", game.getUsers(), anEmptyMap()));
             }
@@ -543,7 +536,6 @@ public class GameServiceTest {
                 assertThat("present", result.isPresent());
                 final var game = result.get();
                 assertAll(
-                        () -> assertThat("identifier", game.getIdentifier(), is(gameId)),
                         () -> assertThat("recruiting", game.isRecruiting(), is(false)),
                         () -> assertThat("users",
                                 game.getUsers().values(), containsInAnyOrder(userIdA, userIdB)));
@@ -610,7 +602,6 @@ public class GameServiceTest {
                 assertTrue(result.isPresent(), "present");// guard
                 final var game = result.get();
                 assertAll(
-                        () -> assertThat("identifier", game.getIdentifier(), is(gameId)),
                         () -> assertThat("recruiting", game.isRecruiting(), is(true)),
                         () -> assertThat("users", game.getUsers(), anEmptyMap()));
             }
@@ -632,7 +623,6 @@ public class GameServiceTest {
                 assertThat("present", result.isPresent());
                 final var game = result.get();
                 assertAll(
-                        () -> assertThat("identifier", game.getIdentifier(), is(gameId)),
                         () -> assertThat("recruiting", game.isRecruiting(), is(true)),
                         () -> assertThat("users", game.getUsers(), anEmptyMap()));
             }
@@ -655,7 +645,6 @@ public class GameServiceTest {
                 assertThat("present", result.isPresent());
                 final var game = result.get();
                 assertAll(
-                        () -> assertThat("identifier", game.getIdentifier(), is(gameId)),
                         () -> assertThat("recruiting", game.isRecruiting(), is(false)),
                         () -> assertThat("users", game.getUsers(), anEmptyMap()));
             }

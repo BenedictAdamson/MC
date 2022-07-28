@@ -340,7 +340,7 @@ public final class GameService {
                 throw new IllegalGameStateException("Game is not recruiting");
             }
             alreadyJoined = false;
-            final var scenarioId = game.getIdentifier().getScenario();
+            final var scenarioId = gameId.getScenario();
             final var scenarioOptional = scenarioService.getScenario(context, scenarioId);
             if (scenarioOptional.isEmpty()) {
                 throw new NoSuchElementException("scenario");

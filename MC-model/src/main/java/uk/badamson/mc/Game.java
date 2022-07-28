@@ -115,7 +115,7 @@ public class Game {
         if (!(that instanceof final Game other)) {
             return false;
         }
-        return gameIdentifier.equals(other.getIdentifier());
+        return gameIdentifier.equals(other.gameIdentifier);
     }
 
     /**
