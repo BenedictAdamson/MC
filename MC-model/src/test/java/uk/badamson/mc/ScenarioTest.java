@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScenarioTest {
@@ -82,20 +81,15 @@ public class ScenarioTest {
 
         final var title = scenario.getTitle();
         final var description = scenario.getDescription();
-        final var namedUUID = scenario.getNamedUUID();
         final var characters = scenario.getCharacters();
         assertAll("Non null attributes and aggregates",
                 () -> assertNotNull(title, "title"), // guard
                 () -> assertNotNull(description, "description"),
-                () -> assertNotNull(namedUUID, "namedUUID"), // guard
                 () -> assertNotNull(characters, "characters") // guard
         );
 
-        assertAll(() -> NamedUUIDTest.assertInvariants(namedUUID),
-                () -> assertTrue(NamedUUID.isValidTitle(title),
+        assertAll(() -> assertTrue(NamedUUID.isValidTitle(title),
                         "title is valid"),
-                () -> assertThat("namedUUID.title", title,
-                        is(namedUUID.getTitle())),
                 () -> assertCharactersInvariants(characters));
     }
 

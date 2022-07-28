@@ -61,7 +61,6 @@ public class Scenario {
                 && !hasDuplicateIds(characters);
     }
 
-    private final UUID identifier;
     private final String title;
     private final String description;
     private final List<NamedUUID> characters;
@@ -94,7 +93,7 @@ public class Scenario {
                     @Nonnull final String title,
                     @Nonnull final String description,
                     @Nonnull final List<NamedUUID> characters) {
-        this.identifier = Objects.requireNonNull(identifier, "identifier");
+        Objects.requireNonNull(identifier, "identifier");
         this.title = Objects.requireNonNull(title, "title");
         this.description = Objects.requireNonNull(description, "description");
         // Can not use List.copyOf() because does not copy unmodifiable lists
@@ -140,16 +139,6 @@ public class Scenario {
     @Nonnull
     public final String getDescription() {
         return description;
-    }
-
-    /**
-     * <p>
-     * A unique ID with a human readable title, for this scenario.
-     * </p>
-     */
-    @Nonnull
-    public final NamedUUID getNamedUUID() {
-        return new NamedUUID(identifier, title);
     }
 
     /**

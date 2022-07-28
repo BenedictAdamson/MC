@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 public final class ScenarioService {
 
     // TODO have useful scenarios.
-    private static UUID SCENARIO_ID = UUID.randomUUID();
+    private static final UUID SCENARIO_ID = UUID.randomUUID();
     private static final Scenario SCENARIO = new Scenario(SCENARIO_ID,
             "Section assault", "Basic fire and movement tactics.",
             List.of(new NamedUUID(UUID.randomUUID(), "Lt. Winters"),
@@ -48,7 +48,9 @@ public final class ScenarioService {
     @Nonnull
     public Set<NamedUUID> getNamedScenarioIdentifiers() {
         try(var ignored = repository.openContext()) {
-            return SCENARIOS.values().stream().map(Scenario::getNamedUUID).collect(Collectors.toUnmodifiableSet());
+            return SCENARIOS.entrySet().stream()
+                    .map(e -> new NamedUUID(e.getKey(), e.getValue().getTitle()))
+                    .collect(Collectors.toUnmodifiableSet());
         }
     }
 
