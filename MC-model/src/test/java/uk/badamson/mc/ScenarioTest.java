@@ -22,7 +22,6 @@ import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import javax.annotation.Nonnull;
@@ -34,32 +33,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScenarioTest {
-
-    @Nested
-    public class Construct2 {
-        @Test
-        public void differentIdentifiers() {
-            // Tough test: all else equal
-            final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A,
-                    CHARACTERS_A);
-            final var scenarioB = new Scenario(ID_B, TITLE_A, DESCRIPTION_A,
-                    CHARACTERS_A);
-            assertInvariants(scenarioA, scenarioB);
-            assertNotEquals(scenarioA, scenarioB);
-        }
-
-        @Test
-        public void equalIdentifiers() {
-            // Tough test: have different attributes and aggregates
-            final var scenarioA = new Scenario(ID_A, TITLE_A, DESCRIPTION_A,
-                    CHARACTERS_A);
-            final var scenarioB = new Scenario(ID_A, TITLE_B, DESCRIPTION_B,
-                    CHARACTERS_B);
-            assertInvariants(scenarioA, scenarioB);
-            assertEquals(scenarioA, scenarioB);
-        }
-
-    }
 
     @Nested
     public class Constructor {
@@ -107,13 +80,11 @@ public class ScenarioTest {
     public static void assertInvariants(final Scenario scenario) {
         ObjectVerifier.assertInvariants(scenario);
 
-        final var identifier = scenario.getIdentifier();
         final var title = scenario.getTitle();
         final var description = scenario.getDescription();
         final var namedUUID = scenario.getNamedUUID();
         final var characters = scenario.getCharacters();
         assertAll("Non null attributes and aggregates",
-                () -> assertNotNull(identifier, "identifier"), // guard
                 () -> assertNotNull(title, "title"), // guard
                 () -> assertNotNull(description, "description"),
                 () -> assertNotNull(namedUUID, "namedUUID"), // guard
@@ -131,7 +102,6 @@ public class ScenarioTest {
     public static void assertInvariants(final Scenario scenarioA,
                                         final Scenario scenarioB) {
         ObjectVerifier.assertInvariants(scenarioA, scenarioB);
-        EqualsSemanticsVerifier.assertEntitySemantics(scenarioA, scenarioB, Scenario::getIdentifier);
     }
 
     private static void constructor(@Nonnull final UUID identifier,
@@ -142,8 +112,6 @@ public class ScenarioTest {
 
         assertInvariants(scenario);
         assertAll(
-                () -> assertSame(identifier, scenario.getIdentifier(),
-                        "identifier"),
                 () -> assertSame(title, scenario.getTitle(), "title"),
                 () -> assertSame(description, scenario.getDescription(),
                         "description"),

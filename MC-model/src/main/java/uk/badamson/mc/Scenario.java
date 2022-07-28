@@ -111,30 +111,6 @@ public class Scenario {
 
     /**
      * <p>
-     * Whether this object is <dfn>equivalent</dfn> to another object.
-     * </p>
-     * <ul>
-     * <li>The {@link Scenario} class has <i>entity semantics</i>, with the
-     * {@linkplain #getIdentifier() identifier} serving as a unique identifier:
-     * this object is equivalent to another object if, and only of, the other
-     * object is also a {@link Scenario} and the two have
-     * {@linkplain UUID#equals(Object) equivalent} {@linkplain #getIdentifier()
-     * identifiers}.</li>
-     * </ul>
-     */
-    @Override
-    public final boolean equals(final Object that) {
-        if (this == that) {
-            return true;
-        }
-        if (!(that instanceof final Scenario other)) {
-            return false;
-        }
-        return identifier.equals(other.getIdentifier());
-    }
-
-    /**
-     * <p>
      * The names and IDs of the persons in this scenario that
      * players can play.
      * </p>
@@ -168,21 +144,6 @@ public class Scenario {
 
     /**
      * <p>
-     * The unique identifier for this scenario.
-     * </p>
-     * <ul>
-     * <li>Not null.</li>
-     * </ul>
-     *
-     * @return the identifier.
-     */
-    @Nonnull
-    public final UUID getIdentifier() {
-        return identifier;
-    }
-
-    /**
-     * <p>
      * A unique ID with a human readable title, for this scenario.
      * </p>
      */
@@ -203,11 +164,6 @@ public class Scenario {
     @Nonnull
     public final String getTitle() {
         return title;
-    }
-
-    @Override
-    public final int hashCode() {
-        return identifier.hashCode();
     }
 
 }
