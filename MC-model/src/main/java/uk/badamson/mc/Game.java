@@ -19,6 +19,7 @@ package uk.badamson.mc;
  */
 
 import javax.annotation.Nonnull;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -126,6 +127,34 @@ public class Game {
     @Nonnull
     public final GameIdentifier getIdentifier() {
         return gameIdentifier;
+    }
+
+
+    /**
+     * <p>
+     * The point in time when the game was created (set up).
+     * </p>
+     * <p>
+     * This will usually be not long before playing of the game started. This
+     * type uses the creation time as an gameIdentifier, rather than the game
+     * start time, so it can represent games that have not yet been started,
+     * but are in the process of being set up.
+     * </p>
+     */
+    @Nonnull
+    public Instant getCreated() {
+        return gameIdentifier.getCreated();
+    }
+
+    /**
+     * <p>
+     * The unique gameIdentifier for the {@linkplain Scenario scenario} that the
+     * game is an instance of.
+     * </p>
+     */
+    @Nonnull
+    public UUID getScenario() {
+        return gameIdentifier.getScenario();
     }
 
     @Nonnull

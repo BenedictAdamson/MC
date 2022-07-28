@@ -54,7 +54,6 @@ public class GameTest {
 
     public static void assertInvariants(final Game gameA, final Game gameB) {
         ObjectVerifier.assertInvariants(gameA, gameB);
-        EqualsSemanticsVerifier.assertEntitySemantics(gameA, gameB, Game::getIdentifier);
     }
 
     private static void constructor(@Nonnull final Game that) {

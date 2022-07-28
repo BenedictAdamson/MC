@@ -55,7 +55,8 @@ public final class GameService {
     }
 
     private static Game filterForUser(
-            @Nonnull final Game fullInformation, @Nonnull final UUID user) {
+            @Nonnull final Game fullInformation,
+            @Nonnull final UUID user) {
         final var allUsers = fullInformation.getUsers();
         final Map<UUID, UUID> filteredUsers = allUsers.entrySet().stream()
                 .filter(entry -> Objects.equals(user, entry.getValue()))

@@ -47,10 +47,10 @@ class GameCoreSpec extends CoreSpecification {
         def game = gameOptional.get()
 
         then: "the game indicates its scenario"
-        game.identifier.scenario == scenarioId
+        game.scenario == scenarioId
 
         and: "the game includes the date and time that the game was set up"
-        game.identifier.created == creationTime
+        game.created == creationTime
 
         and: "the game indicates whether it has players"
         expect(game.getUsers(), Matchers.any(Map.class))
@@ -92,10 +92,10 @@ class GameCoreSpec extends CoreSpecification {
         def game = gameOptional.get()
 
         then: "the game indicates its scenario"
-        game.identifier.scenario == scenarioId
+        game.scenario == scenarioId
 
         and: "the game includes the date and time that the game was set up"
-        game.identifier.created == creationTime
+        game.created == creationTime
 
         and: "the game indicates whether it has players"
         game.users != null
@@ -243,13 +243,6 @@ class GameCoreSpec extends CoreSpecification {
         gameOptional.isPresent()
         def game = gameOptional.get()
         game.runState == Game.RunState.STOPPED
-    }
-
-    private Game createGame() {
-        def scenarioIdOptional = world.scenarioService.scenarioIdentifiers.findAny()
-        assertThat('has a scenario', scenarioIdOptional.isPresent())
-        def scenarioId = scenarioIdOptional.get()
-        world.gameService.create(scenarioId)
     }
 
     private UUID getAScenarioId() {

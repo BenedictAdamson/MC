@@ -301,17 +301,17 @@ public class GameServiceTest {
                 assertThat(
                         "The returned game has the current time as the creation time of its identifier.",
                         identifier.getCreated(), is(truncatedNow));
-                final var retrievedGame = service.getGameAsGameManager(identifier);
-                assertNotNull(retrievedGame,
+                final var retrievedGameOptional = service.getGameAsGameManager(identifier);
+                assertNotNull(retrievedGameOptional,
                         "can retrieve something using the ID (not null)");// guard
-                assertTrue(retrievedGame.isPresent(),
+                assertTrue(retrievedGameOptional.isPresent(),
                         "can retrieve something using the ID");// guard
-                final var retrievedIdentifier = retrievedGame.get().getIdentifier();
+                final var retrievedGame = retrievedGameOptional.get();
                 assertAll("can retrieve the created game using the ID",
                         () -> assertThat("scenario",
-                                retrievedIdentifier.getScenario(), is(scenario)),
+                                retrievedGame.getScenario(), is(scenario)),
                         () -> assertThat("created",
-                                retrievedIdentifier.getCreated(),
+                                retrievedGame.getCreated(),
                                 is(truncatedNow)));
             }
         }
@@ -665,7 +665,6 @@ public class GameServiceTest {
                 assertTrue(result.isPresent(), "present");// guard
                 final var game = result.get();
                 assertAll(
-                        () -> assertThat("identifier", game.getIdentifier(), is(gameId)),
                         () -> assertThat("recruiting", game.isRecruiting(), is(true)),
                         () -> assertThat("users", game.getUsers().values(), contains(userId)));
             }
