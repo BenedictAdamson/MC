@@ -21,6 +21,11 @@ public class MCRepositoryTest {
         }
 
         @Nullable
+        private static FindGameResult copy(@Nullable FindGameResult result) {
+            return result == null? null: new FindGameResult(copy(result.game()), result.scenarioId()) ;
+        }
+
+        @Nullable
         private static User copy(@Nullable User user) {
             return user == null ? null : new User(user.getId(), user);
         }
@@ -54,10 +59,10 @@ public class MCRepositoryTest {
 
             @Nonnull
             @Override
-            public Iterable<Map.Entry<GameIdentifier, Game>> findAllGamesUncached() {
+            public Iterable<Map.Entry<GameIdentifier, FindGameResult>> findAllGamesUncached() {
                 return gameStore.entrySet().stream()
-                        .map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), entry.getValue().game()))
-                        .map(entry -> (Map.Entry<GameIdentifier, Game>) entry)
+                        .map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), copy(entry.getValue())))
+                        .map(entry -> (Map.Entry<GameIdentifier, FindGameResult>) entry)
                         .toList();
             }
 

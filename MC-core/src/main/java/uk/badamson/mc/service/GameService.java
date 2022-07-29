@@ -19,7 +19,6 @@ package uk.badamson.mc.service;
  */
 
 import uk.badamson.mc.*;
-import uk.badamson.mc.GameIdentifier;
 import uk.badamson.mc.repository.MCRepository;
 
 import javax.annotation.Nonnull;
@@ -67,11 +66,11 @@ public final class GameService {
             return fullInformation;
         } else {
             final var filteredGame = new Game(
-                    game.getScenario(),
                     game.getCreated(),
                     game.getRunState(),
                     game.isRecruiting(),
                     filteredUsers);
+            filteredGame.setScenario(game.getScenario());
             return new FindGameResult(filteredGame, fullInformation.scenarioId());
         }
     }
@@ -85,13 +84,17 @@ public final class GameService {
      *                                That is, if {@code scenario} is not a known scenario ID.
      */
     @Nonnull
-    public IdentifiedValue<GameIdentifier, Game> create(@Nonnull final UUID scenario) throws NoSuchElementException {
-        Objects.requireNonNull(scenario);
+    public IdentifiedValue<GameIdentifier, Game> create(@Nonnull final UUID scenarioId) throws NoSuchElementException {
+        Objects.requireNonNull(scenarioId);
         try (var context = repository.openContext()) {
-            requireKnownScenario(context, scenario);
+            final var scenarioOptional = scenarioService.getScenario(scenarioId);
+            if (scenarioOptional.isEmpty()) {
+                throw new NoSuchElementException("scenario");
+            }
             final var created = getNow();
-            final var identifier = new GameIdentifier(scenario, created);
-            final var game = new Game(scenario, created, Game.RunState.WAITING_TO_START, true, NO_USERS);
+            final var identifier = new GameIdentifier(scenarioId, created);
+            final var game = new Game(created, Game.RunState.WAITING_TO_START, true, NO_USERS);
+            game.setScenario(scenarioOptional.get());
             context.addGame(identifier, game);
             return new IdentifiedValue<>(identifier, game);
         }
@@ -163,7 +166,7 @@ public final class GameService {
             throws NoSuchElementException, IllegalGameStateException {
         Objects.requireNonNull(id);
         try (var context = repository.openContext()) {
-            Optional<FindGameResult> gameOptional = context.findGame(id);
+            Optional<FindGameResult> gameOptional = getGame(id, context);
             if (gameOptional.isEmpty()) {
                 throw new NoSuchElementException("game");
             }
@@ -187,7 +190,7 @@ public final class GameService {
     public void stopGame(@Nonnull final GameIdentifier id)
             throws NoSuchElementException {
         try (var context = repository.openContext()) {
-            Optional<FindGameResult> gameOptional = context.findGame(id);
+            Optional<FindGameResult> gameOptional = getGame(id, context);
             if (gameOptional.isEmpty()) {
                 throw new NoSuchElementException("game");
             }
@@ -223,7 +226,7 @@ public final class GameService {
     public FindGameResult endRecruitment(@Nonnull final GameIdentifier id)
             throws NoSuchElementException {
         try (var context = repository.openContext()) {
-            final var resultOptional = context.findGame(id);
+            final var resultOptional = getGame(id, context);
             if (resultOptional.isEmpty()) {
                 throw new NoSuchElementException();
             }
@@ -270,8 +273,22 @@ public final class GameService {
     public Optional<FindGameResult> getGameAsGameManager(
             @Nonnull final GameIdentifier id) {
         try (var context = repository.openContext()) {
-            return context.findGame(id);
+            return getGame(id, context);
         }
+    }
+
+    private Optional<FindGameResult> getGame(@Nonnull GameIdentifier id, @Nonnull MCRepository.Context context) {
+        Optional<FindGameResult> resultOptional = context.findGame(id);
+        if (resultOptional.isPresent()) {
+            final var result = resultOptional.get();
+            final var scenarioOptional = scenarioService.getScenario(result.scenarioId());
+            if (scenarioOptional.isPresent()) {
+                result.game().setScenario(scenarioOptional.get());
+            } else {
+                resultOptional = Optional.empty();
+            }
+        }
+        return resultOptional;
     }
 
     /**
@@ -292,7 +309,7 @@ public final class GameService {
         Objects.requireNonNull(user, "user");
         final Optional<FindGameResult> result;
         try (var context = repository.openContext()) {
-            result = context.findGame(gameId);
+            result = getGame(gameId, context);
         }
         return result.map(r -> filterForUser(r, user));
     }
@@ -311,7 +328,7 @@ public final class GameService {
             throw new NoSuchElementException("user");
         }
         final var user = userOptional.get();
-        final var gameOptional = context.findGame(gameId);
+        final var gameOptional = getGame(gameId, context);
         if (gameOptional.isEmpty()) {
             throw new NoSuchElementException("game");
         }

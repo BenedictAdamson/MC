@@ -128,4 +128,18 @@ public class Scenario {
         return title;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Scenario scenario = (Scenario) o;
+        return title.equals(scenario.title) &&
+                description.equals(scenario.description) &&
+                characters.equals(scenario.characters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, description, characters);
+    }
 }

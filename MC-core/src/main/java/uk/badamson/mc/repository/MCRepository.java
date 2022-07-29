@@ -36,7 +36,7 @@ public abstract class MCRepository {
     public abstract class Context implements AutoCloseable {
 
         private final IdentityHashMap<Game, GameIdentifier> gameToIdMap = new IdentityHashMap<>();
-        private final Map<GameIdentifier, Game> idToGameMap = new HashMap<>();
+        private final Map<GameIdentifier, FindGameResult> idToGameMap = new HashMap<>();
         private final IdentityHashMap<UserGameAssociation, UUID> userGameAssociationToIdMap = new IdentityHashMap<>();
         private final Map<UUID, UserGameAssociation> idToUserGameAssociationMap = new HashMap<>();
         private final IdentityHashMap<User, UUID> userToIdMap = new IdentityHashMap<>();
@@ -50,7 +50,7 @@ public abstract class MCRepository {
                 throw new IllegalStateException("already present");
             }
             gameToIdMap.put(game, id);
-            idToGameMap.put(id, game);
+            idToGameMap.put(id, new FindGameResult(game, id.getScenario()));
             addGameUncached(id, game);
         }
 
@@ -64,17 +64,16 @@ public abstract class MCRepository {
 
         @Nonnull
         public final Optional<FindGameResult> findGame(@Nonnull GameIdentifier id) {
-            var game = idToGameMap.get(id);
-            if (game != null) {
-                return Optional.of(new FindGameResult(game, game.getScenario()));
+            Optional<FindGameResult> result = Optional.ofNullable(idToGameMap.get(id));
+            if (result.isEmpty()) {
+                result = findGameUncached(id);
+                result.ifPresent(value -> cacheGame(id, value));
             }
-            final var result = findGameUncached(id);
-            result.ifPresent(value -> cacheGame(id, value.game()));
             return result;
         }
 
         @Nonnull
-        public final Iterable<Map.Entry<GameIdentifier, Game>> findAllGames() {
+        public final Iterable<Map.Entry<GameIdentifier, FindGameResult>> findAllGames() {
             if (!haveAllGames) {
                 findAllGamesUncached().forEach(entry -> cacheGame(entry.getKey(), entry.getValue()));
                 haveAllGames = true;
@@ -82,9 +81,9 @@ public abstract class MCRepository {
             return Set.copyOf(idToGameMap.entrySet());
         }
 
-        private void cacheGame(@Nonnull GameIdentifier id, @Nonnull Game game) {
-            gameToIdMap.put(game, id);
-            idToGameMap.put(id, game);
+        private void cacheGame(@Nonnull GameIdentifier id, @Nonnull FindGameResult findGameResult) {
+            gameToIdMap.put(findGameResult.game(), id);
+            idToGameMap.put(id, findGameResult);
         }
 
         @Nonnull
@@ -218,7 +217,7 @@ public abstract class MCRepository {
         protected abstract Optional<FindGameResult> findGameUncached(@Nonnull GameIdentifier id);
 
         @Nonnull
-        protected abstract Iterable<Map.Entry<GameIdentifier, Game>> findAllGamesUncached();
+        protected abstract Iterable<Map.Entry<GameIdentifier, FindGameResult>> findAllGamesUncached();
 
         protected abstract void addCurrentUserGameUncached(@Nonnull UUID id, @Nonnull UserGameAssociation entry);
 

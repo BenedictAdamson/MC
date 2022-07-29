@@ -29,11 +29,11 @@ import java.util.*;
  */
 public class Game {
 
-    private final UUID scenario;
     private final Instant created;
     private final Map<UUID, UUID> users;
     private RunState runState;
     private boolean recruiting;
+    private Scenario scenario;
 
     /**
      * <p>
@@ -51,22 +51,10 @@ public class Game {
         this.users = new HashMap<>(that.users);
     }
 
-    /**
-     * <p>
-     * Construct a game with given attribute values.
-     * </p>
-     *
-     * @throws NullPointerException <ul>
-     *                              <li>If {@code gameIdentifier} is null.</li>
-     *                              <li>If {@code runState} is null.</li>
-     *                              </ul>
-     */
-    public Game(@Nonnull final UUID scenario,
-                @Nonnull final Instant created,
+    public Game(@Nonnull final Instant created,
                 @Nonnull final RunState runState,
                 final boolean recruiting,
                 @Nonnull final Map<UUID, UUID> users) {
-        this.scenario = Objects.requireNonNull(scenario, "scenario");
         this.created = Objects.requireNonNull(created, "created");
         this.runState = Objects.requireNonNull(runState, "runState");
         this.recruiting = recruiting;
@@ -117,12 +105,12 @@ public class Game {
 
     /**
      * <p>
-     * The unique gameIdentifier for the {@linkplain Scenario scenario} that the
+     * The {@linkplain Scenario scenario} that the
      * game is an instance of.
      * </p>
      */
     @Nonnull
-    public UUID getScenario() {
+    public Scenario getScenario() {
         return scenario;
     }
 
@@ -212,6 +200,10 @@ public class Game {
      */
     public final void endRecruitment() {
         recruiting = false;
+    }
+
+    public void setScenario(Scenario scenario) {
+        this.scenario = scenario;
     }
 
     public enum RunState {

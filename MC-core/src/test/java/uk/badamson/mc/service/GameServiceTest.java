@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 import uk.badamson.mc.*;
-import uk.badamson.mc.GameIdentifier;
 import uk.badamson.mc.repository.MCRepository;
 import uk.badamson.mc.repository.MCRepositoryTest;
 
@@ -52,9 +51,6 @@ public class GameServiceTest {
             UUID.randomUUID(), Instant.EPOCH);
     private static final GameIdentifier GAME_IDENTIFIER_B = new GameIdentifier(
             UUID.randomUUID(), Instant.now());
-    private static final UUID SCENARIO_ID_A = UUID.randomUUID();
-    private static final GameIdentifier IDENTIFIER_A = new GameIdentifier(
-            SCENARIO_ID_A, Instant.now());
     private MCRepository repositoryA;
     private MCRepository repositoryB;
     private ScenarioService scenarioServiceA;
@@ -105,7 +101,7 @@ public class GameServiceTest {
         }
         assertInvariants(service);
         assertThat(result, notNullValue());
-        assertThat("scenario", result.getValue().getScenario(), is(scenario));
+        assertThat(result.getValue().getScenario(), notNullValue());
         return result;
     }
 
@@ -169,7 +165,7 @@ public class GameServiceTest {
         return result;
     }
 
-    public static Optional<FindGameResult> getGameAsGameManager(
+    private static Optional<FindGameResult> getGameAsGameManager(
             final GameService service, final GameIdentifier id) {
 
         final var result = service.getGameAsGameManager(id);
@@ -189,10 +185,13 @@ public class GameServiceTest {
         assertNotNull(result, "Returns a (non null) optional value.");// guard
         if (result.isPresent()) {
             final var game = result.get().game();
-            assertThat(
+            assertAll(
+                    () -> assertThat(
                     "The collection of players is either empty or contains the requesting user.",
                     Set.copyOf(game.getUsers().values()),
-                    either(empty()).or(is(Set.of(user))));
+                    either(empty()).or(is(Set.of(user)))),
+                    () -> assertThat("game.scenario", game.getScenario(), notNullValue())
+            );
         }
         return result;
     }
@@ -292,11 +291,14 @@ public class GameServiceTest {
             private void test(final Instant now) {
                 final var clock = Clock.fixed(now, UTC);
                 final var scenarioService = scenarioServiceA;
-                final var scenario = getAScenarioId(scenarioService);
+                final var scenarioId = getAScenarioId(scenarioService);
+                final var scenarioOptional = scenarioService.getScenario(scenarioId);
+                assert scenarioOptional.isPresent();
+                final var scenario = scenarioOptional.get();
                 final var service = new GameService(clock, scenarioService, userServiceA, repositoryA);
                 final var truncatedNow = service.getNow();
 
-                final var identifiedValue = create(service, scenario);
+                final var identifiedValue = create(service, scenarioId);
 
                 final var identifier = identifiedValue.getIdentifier();
                 assertThat(
@@ -370,14 +372,9 @@ public class GameServiceTest {
         @Test
         public void one() {
             final var repository = repositoryA;
-            final var id = IDENTIFIER_A;
-            try (final var context = repository.openContext()) {
-                context.addGame(
-                        id,
-                        new Game(id.getScenario(), id.getCreated(), Game.RunState.RUNNING, true, Map.of())
-                );
-            }
-            final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repository);
+            final var scenarioService = scenarioServiceA;
+            final var service = new GameService(CLOCK_A, scenarioService, userServiceA, repository);
+            final var id = service.create(getAScenarioId(scenarioService)).getIdentifier();
 
             final var result = getGameIdentifiers(service);
 
@@ -508,9 +505,12 @@ public class GameServiceTest {
             public void recruitingNoPlayers() {
                 final var repository = repositoryA;
                 final var scenarioService = scenarioServiceA;
-                final var scenario = getAScenarioId(scenarioService);
+                final var scenarioId = getAScenarioId(scenarioService);
+                final var scenarioOptional = scenarioService.getScenario(scenarioId);
+                assert scenarioOptional.isPresent();
+                final var scenario = scenarioOptional.get();
                 final var service = new GameService(CLOCK_A, scenarioService, userServiceA, repository);
-                final var gameId = service.create(scenario).getIdentifier();
+                final var gameId = service.create(scenarioId).getIdentifier();
 
                 final var result = getGameAsGameManager(service, gameId);
 
@@ -518,7 +518,9 @@ public class GameServiceTest {
                 final var game = result.get().game();
                 assertAll(
                         () -> assertThat("recruiting", game.isRecruiting(), is(true)),
-                        () -> assertThat("users", game.getUsers(), anEmptyMap()));
+                        () -> assertThat("users", game.getUsers(), anEmptyMap()),
+                        () -> assertThat("scenario", game.getScenario(), is(scenario))
+                );
             }
 
             @Test
@@ -526,11 +528,14 @@ public class GameServiceTest {
                 final var repository = repositoryA;
                 final var scenarioService = scenarioServiceA;
                 final var userService = userServiceA;
-                final var scenario = getAScenarioId(scenarioService);
+                final var scenarioId = getAScenarioId(scenarioService);
+                final var scenarioOptional = scenarioService.getScenario(scenarioId);
+                assert scenarioOptional.isPresent();
+                final var scenario = scenarioOptional.get();
                 final var userIdA = userService.add(createPlayerUserDetails(USERNAME_A)).getId();
                 final var userIdB = userService.add(createPlayerUserDetails(USERNAME_B)).getId();
                 final var service = new GameService(CLOCK_A, scenarioService, userService, repository);
-                final var gameId = service.create(scenario).getIdentifier();
+                final var gameId = service.create(scenarioId).getIdentifier();
                 service.userJoinsGame(userIdA, gameId);
                 service.userJoinsGame(userIdB, gameId);
                 service.endRecruitment(gameId);
@@ -542,7 +547,9 @@ public class GameServiceTest {
                 assertAll(
                         () -> assertThat("recruiting", game.isRecruiting(), is(false)),
                         () -> assertThat("users",
-                                game.getUsers().values(), containsInAnyOrder(userIdA, userIdB)));
+                                game.getUsers().values(), containsInAnyOrder(userIdA, userIdB)),
+                        () -> assertThat("scenario", game.getScenario(), is(scenario))
+                );
             }
 
         }
@@ -614,11 +621,14 @@ public class GameServiceTest {
                 final var repository = repositoryA;
                 final var scenarioService = scenarioServiceA;
                 final var userService = userServiceA;
-                final var scenario = getAScenarioId(scenarioService);
+                final var scenarioId = getAScenarioId(scenarioService);
+                final var scenarioOptional = scenarioService.getScenario(scenarioId);
+                assert scenarioOptional.isPresent();
+                final var scenario = scenarioOptional.get();
                 final var service = new GameService(CLOCK_A, scenarioService, userService, repository);
                 final var userId = userService.add(createPlayerUserDetails(USERNAME_A)).getId();
                 final var playerUserId = userService.add(createPlayerUserDetails(USERNAME_B)).getId();
-                final var gameId = service.create(scenario).getIdentifier();
+                final var gameId = service.create(scenarioId).getIdentifier();
                 service.userJoinsGame(playerUserId, gameId);
 
                 final var result = getGameAsNonGameManager(service, gameId, userId);
@@ -627,7 +637,9 @@ public class GameServiceTest {
                 final var game = result.get().game();
                 assertAll(
                         () -> assertThat("recruiting", game.isRecruiting(), is(true)),
-                        () -> assertThat("users", game.getUsers(), anEmptyMap()));
+                        () -> assertThat("users", game.getUsers(), anEmptyMap()),
+                        () -> assertThat("scenario", game.getScenario(), is(scenario))
+                );
             }
 
             @Test
@@ -635,11 +647,14 @@ public class GameServiceTest {
                 final var repository = repositoryA;
                 final var scenarioService = scenarioServiceA;
                 final var userService = userServiceA;
-                final var scenario = getAScenarioId(scenarioService);
+                final var scenarioId = getAScenarioId(scenarioService);
+                final var scenarioOptional = scenarioService.getScenario(scenarioId);
+                assert scenarioOptional.isPresent();
+                final var scenario = scenarioOptional.get();
                 final var service = new GameService(CLOCK_A, scenarioService, userService, repository);
                 final var userId = userService.add(createPlayerUserDetails(USERNAME_A)).getId();
                 final var playerUserId = userService.add(createPlayerUserDetails(USERNAME_B)).getId();
-                final var gameId = service.create(scenario).getIdentifier();
+                final var gameId = service.create(scenarioId).getIdentifier();
                 service.userJoinsGame(playerUserId, gameId);
                 service.endRecruitment(gameId);
 
@@ -649,7 +664,9 @@ public class GameServiceTest {
                 final var game = result.get().game();
                 assertAll(
                         () -> assertThat("recruiting", game.isRecruiting(), is(false)),
-                        () -> assertThat("users", game.getUsers(), anEmptyMap()));
+                        () -> assertThat("users", game.getUsers(), anEmptyMap()),
+                        () -> assertThat("scenario", game.getScenario(), is(scenario))
+                );
             }
 
             @Test
@@ -657,9 +674,12 @@ public class GameServiceTest {
                 final var repository = repositoryA;
                 final var scenarioService = scenarioServiceA;
                 final var userService = userServiceA;
-                final var scenario = getAScenarioId(scenarioService);
+                final var scenarioId = getAScenarioId(scenarioService);
+                final var scenarioOptional = scenarioService.getScenario(scenarioId);
+                assert scenarioOptional.isPresent();
+                final var scenario = scenarioOptional.get();
                 final var service = new GameService(CLOCK_A, scenarioService, userService, repository);
-                final var gameId = service.create(scenario).getIdentifier();
+                final var gameId = service.create(scenarioId).getIdentifier();
                 final var userId = userService.add(createPlayerUserDetails(USERNAME_A)).getId();
                 service.userJoinsGame(userId, gameId);
 
@@ -669,7 +689,9 @@ public class GameServiceTest {
                 final var game = result.get().game();
                 assertAll(
                         () -> assertThat("recruiting", game.isRecruiting(), is(true)),
-                        () -> assertThat("users", game.getUsers().values(), contains(userId)));
+                        () -> assertThat("users", game.getUsers().values(), contains(userId)),
+                        () -> assertThat("scenario", game.getScenario(), is(scenario))
+                );
             }
 
         }

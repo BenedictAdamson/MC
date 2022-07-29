@@ -24,17 +24,16 @@ import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import javax.annotation.Nonnull;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
-
     private static final UUID SCENARIO_ID_A = UUID.randomUUID();
     private static final UUID SCENARIO_ID_B = UUID.randomUUID();
     private static final Instant CREATED_A = Instant.EPOCH;
@@ -46,6 +45,14 @@ public class GameTest {
     private static final Map<UUID, UUID> USERS_A = Map.of();
     private static final Map<UUID, UUID> USERS_B = Map.of(CHARACTER_ID_B,
             USER_ID_B);
+
+    private static final Scenario SCENARIO_A = new Scenario(
+            "Beach Assault", "", List.of(new NamedUUID(UUID.randomUUID(), "Lt. Winters"))
+    );
+    private static final Scenario SCENARIO_B = new Scenario(
+            "Fire and Movement", "", List.of(new NamedUUID(UUID.randomUUID(), "Sgt. Summer"))
+    );
+
 
     public static void assertInvariants(final Game game) {
         ObjectVerifier.assertInvariants(game);
@@ -72,16 +79,15 @@ public class GameTest {
 
     }
 
-    private static void constructor(@Nonnull final UUID scenario,
-                                    @Nonnull final Instant created,
+    private static void constructor(@Nonnull final Instant created,
                                     @Nonnull final Game.RunState runState,
                                     final boolean recruiting,
                                     @Nonnull final Map<UUID, UUID> users) {
-        final var game = new Game(scenario, created, runState, recruiting, users);
+        final var game = new Game(created, runState, recruiting, users);
 
         assertInvariants(game);
         assertAll(
-                () -> assertThat("scenario", game.getScenario(), sameInstance(scenario)),
+                () -> assertThat("scenario", game.getScenario(), nullValue()),
                 () -> assertThat("created", game.getCreated(), sameInstance(created)),
                 () -> assertThat("runState", game.getRunState(), sameInstance(runState)));
     }
@@ -201,23 +207,28 @@ public class GameTest {
 
     @Nested
     public class ConstructCopy {
-
         @Test
         public void a() {
-            test(SCENARIO_ID_A, CREATED_A, Game.RunState.WAITING_TO_START, false, USERS_A);
+            test(SCENARIO_A, CREATED_A, Game.RunState.WAITING_TO_START, false, USERS_A);
         }
 
         @Test
         public void b() {
-            test(SCENARIO_ID_B, CREATED_B, Game.RunState.RUNNING, true, USERS_B);
+            test(SCENARIO_B, CREATED_B, Game.RunState.RUNNING, true, USERS_B);
         }
 
-        private void test(final UUID scenario,
+        @Test
+        public void nullScenario() {
+            test(null, CREATED_A, Game.RunState.WAITING_TO_START, false, USERS_A);
+        }
+
+        private void test(final Scenario scenario,
                           final Instant created,
                           final Game.RunState runState,
                           final boolean recruiting,
                           final Map<UUID, UUID> users) {
-            final var game0 = new Game(scenario, created, runState, recruiting, users);
+            final var game0 = new Game(created, runState, recruiting, users);
+            game0.setScenario(scenario);
 
             constructor(game0);
         }
@@ -228,12 +239,12 @@ public class GameTest {
 
         @Test
         public void a() {
-            constructor(SCENARIO_ID_A, CREATED_A, Game.RunState.WAITING_TO_START, false, USERS_A);
+            constructor(CREATED_A, Game.RunState.WAITING_TO_START, false, USERS_A);
         }
 
         @Test
         public void b() {
-            constructor(SCENARIO_ID_B, CREATED_B, Game.RunState.RUNNING, true, USERS_B);
+            constructor(CREATED_B, Game.RunState.RUNNING, true, USERS_B);
         }
     }
 
@@ -265,9 +276,8 @@ public class GameTest {
             test(Map.of(CHARACTER_ID_A, USER_ID_A), CHARACTER_ID_A, USER_ID_B);
         }
 
-        private void test(final Map<UUID, UUID> users0, final UUID character,
-                          final UUID user) {
-            final var players = new Game(SCENARIO_ID_A, CREATED_A, Game.RunState.WAITING_TO_START, true, users0);
+        private void test(final Map<UUID, UUID> users0, final UUID character, final UUID user) {
+            final var players = new Game(CREATED_A, Game.RunState.WAITING_TO_START, true, users0);
 
             addUser(players, character, user);
         }
@@ -288,7 +298,7 @@ public class GameTest {
         }
 
         private void test(final boolean recruitment0) {
-            final var players = new Game(SCENARIO_ID_A, CREATED_A, Game.RunState.WAITING_TO_START, recruitment0, USERS_A);
+            final var players = new Game(CREATED_A, Game.RunState.WAITING_TO_START, recruitment0, USERS_A);
 
             endRecruitment(players);
         }
