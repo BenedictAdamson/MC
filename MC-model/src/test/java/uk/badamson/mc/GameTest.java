@@ -20,7 +20,6 @@ package uk.badamson.mc;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import javax.annotation.Nonnull;
@@ -61,7 +60,9 @@ public class GameTest {
 
         assertInvariants(copy);
         assertInvariants(that, copy);
-        assertAll("Copied", () -> assertEquals(that, copy),
+        assertAll(
+                () -> assertThat("scenario", copy.getScenario(), sameInstance(that.getScenario())),
+                () -> assertThat("created", copy.getCreated(), sameInstance(that.getCreated())),
                 () -> assertSame(that.getRunState(), copy.getRunState(),
                         "runState"),
                 () -> assertEquals(that.isRecruiting(), copy.isRecruiting(),
@@ -71,14 +72,18 @@ public class GameTest {
 
     }
 
-    private static void constructor(@Nonnull final GameIdentifier gameIdentifier,
+    private static void constructor(@Nonnull final UUID scenario,
+                                    @Nonnull final Instant created,
                                     @Nonnull final Game.RunState runState,
                                     final boolean recruiting,
                                     @Nonnull final Map<UUID, UUID> users) {
-        final var game = new Game(gameIdentifier, runState, recruiting, users);
+        final var game = new Game(scenario, created, runState, recruiting, users);
 
         assertInvariants(game);
-        assertThat("runState", game.getRunState(), sameInstance(runState));
+        assertAll(
+                () -> assertThat("scenario", game.getScenario(), sameInstance(scenario)),
+                () -> assertThat("created", game.getCreated(), sameInstance(created)),
+                () -> assertThat("runState", game.getRunState(), sameInstance(runState)));
     }
 
     private static void addUser(final Game game, final UUID character,
@@ -195,50 +200,24 @@ public class GameTest {
     }
 
     @Nested
-    public class Construct2 {
-
-        @Test
-        public void differentIdentifiers() {
-            final var identifierA = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
-            final var identifierB = new GameIdentifier(SCENARIO_ID_B, CREATED_B);
-            final var gameA = new Game(identifierA, Game.RunState.RUNNING, true, USERS_A);
-            final var gameB = new Game(identifierB, Game.RunState.RUNNING, true, USERS_A);
-
-            assertInvariants(gameA, gameB);
-            assertNotEquals(gameA, gameB);
-        }
-
-        @Test
-        public void equalAttributes() {
-            final var identifier = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
-            final var gameA = new Game(identifier, Game.RunState.RUNNING, true, USERS_A);
-            final var gameB = new Game(identifier, Game.RunState.RUNNING, true, USERS_A);
-
-            assertInvariants(gameA, gameB);
-            assertEquals(gameA, gameB);
-        }
-    }
-
-    @Nested
     public class ConstructCopy {
 
         @Test
         public void a() {
-            final var identifier = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
-            test(identifier, Game.RunState.WAITING_TO_START, false, USERS_A);
+            test(SCENARIO_ID_A, CREATED_A, Game.RunState.WAITING_TO_START, false, USERS_A);
         }
 
         @Test
         public void b() {
-            final var identifier = new GameIdentifier(SCENARIO_ID_B, CREATED_B);
-            test(identifier, Game.RunState.RUNNING, true, USERS_B);
+            test(SCENARIO_ID_B, CREATED_B, Game.RunState.RUNNING, true, USERS_B);
         }
 
-        private void test(final GameIdentifier gameIdentifier,
+        private void test(final UUID scenario,
+                          final Instant created,
                           final Game.RunState runState,
                           final boolean recruiting,
                           final Map<UUID, UUID> users) {
-            final var game0 = new Game(gameIdentifier, runState, recruiting, users);
+            final var game0 = new Game(scenario, created, runState, recruiting, users);
 
             constructor(game0);
         }
@@ -249,14 +228,12 @@ public class GameTest {
 
         @Test
         public void a() {
-            final var identifier = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
-            constructor(identifier, Game.RunState.WAITING_TO_START, false, USERS_A);
+            constructor(SCENARIO_ID_A, CREATED_A, Game.RunState.WAITING_TO_START, false, USERS_A);
         }
 
         @Test
         public void b() {
-            final var identifier = new GameIdentifier(SCENARIO_ID_B, CREATED_B);
-            constructor(identifier, Game.RunState.RUNNING, true, USERS_B);
+            constructor(SCENARIO_ID_B, CREATED_B, Game.RunState.RUNNING, true, USERS_B);
         }
     }
 
@@ -290,7 +267,7 @@ public class GameTest {
 
         private void test(final Map<UUID, UUID> users0, final UUID character,
                           final UUID user) {
-            final var players = new Game(new GameIdentifier(SCENARIO_ID_A, CREATED_A), Game.RunState.WAITING_TO_START, true, users0);
+            final var players = new Game(SCENARIO_ID_A, CREATED_A, Game.RunState.WAITING_TO_START, true, users0);
 
             addUser(players, character, user);
         }
@@ -311,8 +288,7 @@ public class GameTest {
         }
 
         private void test(final boolean recruitment0) {
-            final var identifier = new GameIdentifier(SCENARIO_ID_A, CREATED_A);
-            final var players = new Game(identifier, Game.RunState.WAITING_TO_START, recruitment0, USERS_A);
+            final var players = new Game(SCENARIO_ID_A, CREATED_A, Game.RunState.WAITING_TO_START, recruitment0, USERS_A);
 
             endRecruitment(players);
         }

@@ -29,7 +29,8 @@ import java.util.*;
  */
 public class Game {
 
-    private final GameIdentifier gameIdentifier;
+    private final UUID scenario;
+    private final Instant created;
     private final Map<UUID, UUID> users;
     private RunState runState;
     private boolean recruiting;
@@ -43,7 +44,8 @@ public class Game {
      */
     public Game(@Nonnull final Game that) {
         Objects.requireNonNull(that, "that");
-        gameIdentifier = that.gameIdentifier;
+        scenario = that.scenario;
+        created = that.created;
         runState = that.runState;
         recruiting = that.recruiting;
         this.users = new HashMap<>(that.users);
@@ -59,11 +61,13 @@ public class Game {
      *                              <li>If {@code runState} is null.</li>
      *                              </ul>
      */
-    public Game(@Nonnull final GameIdentifier gameIdentifier,
+    public Game(@Nonnull final UUID scenario,
+                @Nonnull final Instant created,
                 @Nonnull final RunState runState,
                 final boolean recruiting,
                 @Nonnull final Map<UUID, UUID> users) {
-        this.gameIdentifier = Objects.requireNonNull(gameIdentifier, "gameIdentifier");
+        this.scenario = Objects.requireNonNull(scenario, "scenario");
+        this.created = Objects.requireNonNull(created, "created");
         this.runState = Objects.requireNonNull(runState, "runState");
         this.recruiting = recruiting;
         this.users = new HashMap<>(Objects.requireNonNull(users, "users"));
@@ -97,41 +101,6 @@ public class Game {
 
     /**
      * <p>
-     * Whether this object is <dfn>equivalent</dfn> to another object.
-     * </p>
-     * <ul>
-     * <li>The {@link Game} class has <i>entity semantics</i>, with the
-     * {@linkplain #getIdentifier() gameIdentifier} serving as a unique gameIdentifier:
-     * this object is equivalent to another object if, and only of, the other
-     * object is also a {@link Game} and the two have
-     * {@linkplain GameIdentifier#equals(Object) equivalent}
-     * {@linkplain #getIdentifier() identifiers}.</li>
-     * </ul>
-     */
-    @Override
-    public final boolean equals(final Object that) {
-        if (this == that) {
-            return true;
-        }
-        if (!(that instanceof final Game other)) {
-            return false;
-        }
-        return gameIdentifier.equals(other.gameIdentifier);
-    }
-
-    /**
-     * <p>
-     * The unique gameIdentifier for this game.
-     * </p>
-     */
-    @Nonnull
-    public final GameIdentifier getIdentifier() {
-        return gameIdentifier;
-    }
-
-
-    /**
-     * <p>
      * The point in time when the game was created (set up).
      * </p>
      * <p>
@@ -143,7 +112,7 @@ public class Game {
      */
     @Nonnull
     public Instant getCreated() {
-        return gameIdentifier.getCreated();
+        return created;
     }
 
     /**
@@ -154,7 +123,7 @@ public class Game {
      */
     @Nonnull
     public UUID getScenario() {
-        return gameIdentifier.getScenario();
+        return scenario;
     }
 
     @Nonnull
@@ -193,11 +162,6 @@ public class Game {
     @Nonnull
     public final Map<UUID, UUID> getUsers() {
         return Collections.unmodifiableMap(users);
-    }
-
-    @Override
-    public final int hashCode() {
-        return gameIdentifier.hashCode();
     }
 
     /**

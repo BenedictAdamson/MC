@@ -66,7 +66,8 @@ public final class GameService {
             return fullInformation;
         } else {
             return new Game(
-                    fullInformation.getIdentifier(),
+                    fullInformation.getScenario(),
+                    fullInformation.getCreated(),
                     fullInformation.getRunState(),
                     fullInformation.isRecruiting(),
                     filteredUsers);
@@ -86,8 +87,9 @@ public final class GameService {
         Objects.requireNonNull(scenario);
         try (var context = repository.openContext()) {
             requireKnownScenario(context, scenario);
-            final var identifier = new GameIdentifier(scenario, getNow());
-            final var game = new Game(identifier, Game.RunState.WAITING_TO_START, true, NO_USERS);
+            final var created = getNow();
+            final var identifier = new GameIdentifier(scenario, created);
+            final var game = new Game(scenario, created, Game.RunState.WAITING_TO_START, true, NO_USERS);
             context.addGame(identifier, game);
             return new IdentifiedValue<>(identifier, game);
         }
@@ -242,7 +244,7 @@ public final class GameService {
 
     /**
      * <p>
-     * The {@linkplain Game#getIdentifier() unique ID} of the <i>current game</i>
+     * The unique ID of the <i>current game</i>
      * of a user who has a given {@linkplain User#getId() unique ID}.
      * </p>
      */

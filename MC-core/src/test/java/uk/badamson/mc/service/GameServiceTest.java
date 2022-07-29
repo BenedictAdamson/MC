@@ -105,6 +105,7 @@ public class GameServiceTest {
         }
         assertInvariants(service);
         assertThat(result, notNullValue());
+        assertThat("scenario", result.getValue().getScenario(), is(scenario));
         return result;
     }
 
@@ -371,7 +372,10 @@ public class GameServiceTest {
             final var repository = repositoryA;
             final var id = IDENTIFIER_A;
             try (final var context = repository.openContext()) {
-                context.addGame(id, new Game(id, Game.RunState.RUNNING, true, Map.of()));
+                context.addGame(
+                        id,
+                        new Game(id.getScenario(), id.getCreated(), Game.RunState.RUNNING, true, Map.of())
+                );
             }
             final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repository);
 

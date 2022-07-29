@@ -46,7 +46,7 @@ public final class UserGameAssociation {
      *
      * @param user The {@linkplain User#getId() unique ID} of the {@linkplain User
      *             user} associated with the game.
-     * @param game The {@linkplain Game#getIdentifier() unique ID} of the
+     * @param game The unique ID of the
      *             {@linkplain Game game} associated with the user.
      * @throws NullPointerException <ul>
      *                                         <li>If {@code user} is null.</li>
@@ -81,8 +81,7 @@ public final class UserGameAssociation {
 
     /**
      * <p>
-     * The {@linkplain Game#getIdentifier() unique ID} of the {@linkplain Game
-     * game} associated with the user.
+     * The unique ID of the {@linkplain Game game} associated with the user.
      * </p>
      */
     @Nonnull
