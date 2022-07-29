@@ -67,11 +67,11 @@ class CurrentGameCoreSpec extends CoreSpecification {
         currentGame.get() == gameId
 
         when: "examine the players of the game"
-        def gameOptional = world.gameService.getGameAsNonGameManager(gameId, userId)
+        def result = world.gameService.getGameAsNonGameManager(gameId, userId)
 
         then: "the game indicates which character the user is playing"
-        gameOptional.isPresent()
-        def game = gameOptional.get()
+        result.isPresent()
+        def game = result.map(r -> r.game()).get()
         def users = game.users
         expect(users, aMapWithSize(1))
         expect(users.values(), contains(userId))

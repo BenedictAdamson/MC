@@ -6,7 +6,6 @@ import uk.badamson.mc.Game
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static spock.util.matcher.HamcrestSupport.expect
-
 /**
  * © Copyright Benedict Adamson 2020-22.
  *
@@ -42,9 +41,9 @@ class GameCoreSpec extends CoreSpecification {
         def userId = world.userService.add(userDetails).getId()
 
         when: "examine the game"
-        def gameOptional = world.gameService.getGameAsNonGameManager(gameId, userId)
-        gameOptional.isPresent()
-        def game = gameOptional.get()
+        def findGameResultOptional = world.gameService.getGameAsNonGameManager(gameId, userId)
+        findGameResultOptional.isPresent()
+        def game = findGameResultOptional.map(r -> r.game()).get()
 
         then: "the game indicates its scenario"
         game.scenario == scenarioId
@@ -87,9 +86,9 @@ class GameCoreSpec extends CoreSpecification {
         def user = world.userService.add(userDetails)
 
         when: "examine the game"
-        def gameOptional = world.gameService.getGameAsGameManager(gameIdentifier)
-        gameOptional.isPresent()
-        def game = gameOptional.get()
+        def findGameResultOptional = world.gameService.getGameAsGameManager(gameIdentifier)
+        findGameResultOptional.isPresent()
+        def game = findGameResultOptional.map(r -> r.game()).get()
 
         then: "the game indicates its scenario"
         game.scenario == scenarioId
@@ -152,10 +151,10 @@ class GameCoreSpec extends CoreSpecification {
         def gameIdentifier = world.gameService.create(scenarioId).identifier
 
         when: "user ends recruitment for the game"
-        def gamePlayers = world.gameService.endRecruitment(gameIdentifier)
+        def result = world.gameService.endRecruitment(gameIdentifier)
 
         then: "the game indicates that it is not recruiting players"
-        !gamePlayers.recruiting
+        !result.game().recruiting
     }
 
     def "Players may join a game"() {
@@ -168,9 +167,9 @@ class GameCoreSpec extends CoreSpecification {
         def user = world.userService.add(userDetails)
 
         when: "examine the game"
-        def gameOptional = world.gameService.getGameAsNonGameManager(gameIdentifier, user.id)
-        gameOptional.isPresent()
-        def game = gameOptional.get()
+        def result = world.gameService.getGameAsNonGameManager(gameIdentifier, user.id)
+        result.isPresent()
+        def game = result.map(r -> r.game()).get()
 
         then: "the game indicates that the user may join the game"
         world.gameService.mayUserJoinGame(user.id, gameIdentifier)
@@ -192,9 +191,10 @@ class GameCoreSpec extends CoreSpecification {
         world.gameService.userJoinsGame(user.id, gameIdentifier)
 
         then: "the game indicates that the user is playing the game"
-        def gameOptional = world.gameService.getGameAsNonGameManager(gameIdentifier, user.id)
-        gameOptional.isPresent()
-        def users = gameOptional.get().users
+        def findGameResultOptional =
+                world.gameService.getGameAsNonGameManager(gameIdentifier, user.id)
+        findGameResultOptional.isPresent()
+        def users = findGameResultOptional.map(r -> r.game()).get().users
         expect(users.values(), Matchers.hasItem(user.id))
 
         and: "the game indicates which character the user is playing"
@@ -239,9 +239,9 @@ class GameCoreSpec extends CoreSpecification {
         world.gameService.stopGame(gameIdentifier)
 
         then: "the game indicates that it is not running"
-        def gameOptional = world.gameService.getGameAsGameManager(gameIdentifier)
-        gameOptional.isPresent()
-        def game = gameOptional.get()
+        def findGameResultOptional = world.gameService.getGameAsGameManager(gameIdentifier)
+        findGameResultOptional.isPresent()
+        def game = findGameResultOptional.map(r -> r.game()).get()
         game.runState == Game.RunState.STOPPED
     }
 

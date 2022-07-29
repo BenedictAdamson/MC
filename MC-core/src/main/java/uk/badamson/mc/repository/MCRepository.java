@@ -18,10 +18,7 @@ package uk.badamson.mc.repository;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import uk.badamson.mc.Game;
-import uk.badamson.mc.GameIdentifier;
-import uk.badamson.mc.User;
-import uk.badamson.mc.UserGameAssociation;
+import uk.badamson.mc.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -37,6 +34,7 @@ public abstract class MCRepository {
 
     @NotThreadSafe
     public abstract class Context implements AutoCloseable {
+
         private final IdentityHashMap<Game, GameIdentifier> gameToIdMap = new IdentityHashMap<>();
         private final Map<GameIdentifier, Game> idToGameMap = new HashMap<>();
         private final IdentityHashMap<UserGameAssociation, UUID> userGameAssociationToIdMap = new IdentityHashMap<>();
@@ -65,13 +63,13 @@ public abstract class MCRepository {
         }
 
         @Nonnull
-        public final Optional<Game> findGame(@Nonnull GameIdentifier id) {
+        public final Optional<FindGameResult> findGame(@Nonnull GameIdentifier id) {
             var game = idToGameMap.get(id);
             if (game != null) {
-                return Optional.of(game);
+                return Optional.of(new FindGameResult(game, game.getScenario()));
             }
             final var result = findGameUncached(id);
-            result.ifPresent(value -> cacheGame(id, value));
+            result.ifPresent(value -> cacheGame(id, value.game()));
             return result;
         }
 
@@ -217,7 +215,7 @@ public abstract class MCRepository {
         protected abstract void updateGameUncached(@Nonnull GameIdentifier id, @Nonnull Game game);
 
         @Nonnull
-        protected abstract Optional<Game> findGameUncached(@Nonnull GameIdentifier id);
+        protected abstract Optional<FindGameResult> findGameUncached(@Nonnull GameIdentifier id);
 
         @Nonnull
         protected abstract Iterable<Map.Entry<GameIdentifier, Game>> findAllGamesUncached();
@@ -242,4 +240,5 @@ public abstract class MCRepository {
         @Nonnull
         protected abstract Iterable<Map.Entry<UUID, User>> findAllUsersUncached();
     }
+
 }
