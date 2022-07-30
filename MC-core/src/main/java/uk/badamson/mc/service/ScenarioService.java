@@ -24,19 +24,10 @@ import uk.badamson.mc.repository.MCRepository;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public final class ScenarioService {
-
-    // TODO have useful scenarios.
-    private static final UUID SCENARIO_ID = UUID.randomUUID();
-    private static final Scenario SCENARIO = new Scenario(
-            "Section assault", "Basic fire and movement tactics.",
-            List.of(new NamedUUID(UUID.randomUUID(), "Lt. Winters"),
-                    new NamedUUID(UUID.randomUUID(), "Sgt. Summer"))) {
-    };
-    private static final Map<UUID, Scenario> SCENARIOS = Map.of(SCENARIO_ID, SCENARIO);
 
     private final MCRepository repository;
 
@@ -46,11 +37,13 @@ public final class ScenarioService {
 
     @Nonnull
     public Set<NamedUUID> getNamedScenarioIdentifiers() {
-        try(var ignored = repository.openContext()) {
-            return SCENARIOS.entrySet().stream()
-                    .map(e -> new NamedUUID(e.getKey(), e.getValue().getTitle()))
-                    .collect(Collectors.toUnmodifiableSet());
+        final Set<NamedUUID> result = new HashSet<>();
+        try(var context = repository.openContext()) {
+            for (var entry: context.findAllScenarios()) {
+                result.add(new NamedUUID(entry.getKey(), entry.getValue().getTitle()));
+            }
         }
+        return result;
     }
 
     @Nonnull
@@ -63,8 +56,7 @@ public final class ScenarioService {
 
     @Nonnull
     Optional<Scenario> getScenario(@Nonnull MCRepository.Context context, @Nonnull final UUID id) {
-        Objects.requireNonNull(id, "id");
-        return Optional.ofNullable(SCENARIOS.get(id));
+        return context.findScenario(id);
     }
 
     @Nonnull
@@ -76,7 +68,8 @@ public final class ScenarioService {
 
     @Nonnull
     Stream<UUID> getScenarioIdentifiers(@Nonnull MCRepository.Context context) {
-        return SCENARIOS.keySet().stream();
+        return StreamSupport.stream(context.findAllScenarios().spliterator(), false)
+                .map(Map.Entry::getKey);
     }
 
 }

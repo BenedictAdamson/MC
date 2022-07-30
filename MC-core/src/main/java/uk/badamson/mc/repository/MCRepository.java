@@ -29,6 +29,15 @@ import java.util.*;
 @ThreadSafe
 public abstract class MCRepository {
 
+    // TODO have useful scenarios.
+    private static final UUID SCENARIO_ID = UUID.randomUUID();
+    private static final Scenario SCENARIO = new Scenario(
+            "Section assault", "Basic fire and movement tactics.",
+            List.of(new NamedUUID(UUID.randomUUID(), "Lt. Winters"),
+                    new NamedUUID(UUID.randomUUID(), "Sgt. Summer"))) {
+    };
+    private static final Map<UUID, Scenario> SCENARIOS = Map.of(SCENARIO_ID, SCENARIO);
+
     @Nonnull
     public abstract Context openContext();
 
@@ -44,6 +53,21 @@ public abstract class MCRepository {
         private final Map<String, User> usernameToUserMap = new HashMap<>();
         private boolean haveAllGames = false;
         private boolean haveAllUsers = false;
+
+
+
+        @Nonnull
+        public final Optional<Scenario> findScenario(@Nonnull UUID id) {
+            Objects.requireNonNull(id);
+            return Optional.ofNullable(SCENARIOS.get(id));
+        }
+
+        @Nonnull
+        public final Iterable<Map.Entry<UUID, Scenario>> findAllScenarios() {
+            return SCENARIOS.entrySet();
+        }
+
+
 
         public final void addGame(@Nonnull GameIdentifier id, @Nonnull Game game) {
             if (gameToIdMap.containsKey(game) || idToGameMap.containsKey(id)) {
