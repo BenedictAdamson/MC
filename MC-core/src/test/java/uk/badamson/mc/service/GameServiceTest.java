@@ -105,20 +105,20 @@ public class GameServiceTest {
         return result;
     }
 
-    public static Set<Instant> getCreationTimesOfGamesOfScenario(
+    public static Set<GameIdentifier> getGameIdentifiersOfScenario(
             final GameService service, final UUID scenario)
             throws NoSuchElementException {
-        final Set<Instant> times;
+        final Set<GameIdentifier> identifiers;
         try {
-            times = service.getCreationTimesOfGamesOfScenario(scenario);
+            identifiers = service.getGameIdentifiersOfScenario(scenario);
         } catch (final NoSuchElementException e) {
             assertInvariants(service);
             throw e;
         }
 
         assertInvariants(service);
-        assertNotNull(times, "Always returns a (non null) set.");
-        return times;
+        assertNotNull(identifiers, "Always returns a (non null) set.");
+        return identifiers;
     }
 
     public static Iterable<GameIdentifier> getGameIdentifiers(
@@ -325,22 +325,20 @@ public class GameServiceTest {
             final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repositoryA);
             final var scenario = getAScenarioId(scenarioServiceA);
 
-            final var result = getCreationTimesOfGamesOfScenario(service,
-                    scenario);
+            final var gameIds = getGameIdentifiersOfScenario(service, scenario);
 
-            assertThat(result, empty());
+            assertThat(gameIds, empty());
         }
 
         @Test
         public void one() {
             final var scenario = getAScenarioId(scenarioServiceA);
             final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repositoryA);
-            final var created = service.create(scenario).getIdentifier().getCreated();
+            final var gameId = service.create(scenario).getIdentifier();
 
-            final var result = getCreationTimesOfGamesOfScenario(service,
-                    scenario);
+            final var gameIds = getGameIdentifiersOfScenario(service, scenario);
 
-            assertThat(result, contains(created));
+            assertThat(gameIds, contains(gameId));
         }
 
         @Test
@@ -349,7 +347,7 @@ public class GameServiceTest {
             final var scenario = UUID.randomUUID();
 
             assertThrows(NoSuchElementException.class,
-                    () -> getCreationTimesOfGamesOfScenario(service, scenario));
+                    () -> getGameIdentifiersOfScenario(service, scenario));
         }
     }
 

@@ -110,23 +110,17 @@ public final class GameService {
      * The creation times of the games that are for a given
      * scenario.
      * </p>
-     * <p>
-     * The given {@code scenario} ID could be combined with the returned creation
-     * times to create the identifiers of the games for the given scenario.
-     * </p>
      *
      * @throws NoSuchElementException If {@code scenario} is not the ID of a recognised scenario.
-     *                                That is, if {@code scenario} is a recognised scenario ID.
      */
     @Nonnull
-    public Set<Instant> getCreationTimesOfGamesOfScenario(@Nonnull final UUID scenario)
+    public Set<GameIdentifier> getGameIdentifiersOfScenario(@Nonnull final UUID scenario)
             throws NoSuchElementException {
         Objects.requireNonNull(scenario);
         try (var context = repository.openContext()) {
             requireKnownScenario(context, scenario);// read-and-check
             return getGameIdentifiers(context).stream()// read
                     .filter(id -> scenario.equals(id.getScenario()))
-                    .map(GameIdentifier::getCreated)
                     .collect(Collectors.toUnmodifiableSet());
         }
     }

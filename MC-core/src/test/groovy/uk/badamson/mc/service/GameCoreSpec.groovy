@@ -123,7 +123,9 @@ class GameCoreSpec extends CoreSpecification {
 
         when: "create a game for the scenario"
         def creationTime = world.clock.instant()
-        def game = world.gameService.create(scenarioId).value
+        def identifiedValue = world.gameService.create(scenarioId)
+        def gameId = identifiedValue.identifier
+        def game = identifiedValue.value
 
         then: "accepts the creation of the game"
         game != null
@@ -138,11 +140,11 @@ class GameCoreSpec extends CoreSpecification {
         game.runState != Game.RunState.RUNNING
 
         and: "can get the list of games"
-        def gameCreationTimes = world.gameService.getCreationTimesOfGamesOfScenario(scenarioId)
-        gameCreationTimes != null
+        def gameIds = world.gameService.getGameIdentifiersOfScenario(scenarioId)
+        gameIds != null
 
         and: "the list of games includes the new game"
-        expect(gameCreationTimes, Matchers.hasItem(creationTime))
+        expect(gameIds, Matchers.hasItem(gameId))
     }
 
     def "End game recruitment"() {

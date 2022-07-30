@@ -47,8 +47,8 @@ class ScenarioCoreSpec extends CoreSpecification {
         expect(scenario.characters, Matchers.any(List.class))
 
         and: "the scenario has a collection of games of that scenario"
-        def gameCreationTimes = world.gameService.getCreationTimesOfGamesOfScenario(scenarioId)
-        expect(gameCreationTimes, Matchers.any(Collection.class))
-        expect(gameCreationTimes, Matchers.hasItem(gameIdentifier.created))
+        def gameIdentifiers = world.gameService.getGameIdentifiersOfScenario(scenarioId)
+        expect(gameIdentifiers, Matchers.any(Collection.class))
+        expect(gameIdentifiers, Matchers.hasItem(gameIdentifier))
     }
 }
