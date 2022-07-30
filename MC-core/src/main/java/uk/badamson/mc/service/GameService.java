@@ -27,7 +27,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toUnmodifiableMap;
 
@@ -117,12 +116,16 @@ public final class GameService {
     public Set<GameIdentifier> getGameIdentifiersOfScenario(@Nonnull final UUID scenario)
             throws NoSuchElementException {
         Objects.requireNonNull(scenario);
+        final Set<GameIdentifier> result = new HashSet<>();
         try (var context = repository.openContext()) {
-            requireKnownScenario(context, scenario);// read-and-check
-            return getGameIdentifiers(context).stream()// read
-                    .filter(id -> scenario.equals(id.getScenario()))
-                    .collect(Collectors.toUnmodifiableSet());
+            requireKnownScenario(context, scenario);
+            for (var entry : context.findAllGames()) {
+                if (scenario.equals(entry.getValue().scenarioId())) {
+                    result.add(entry.getKey());
+                }
+            }
         }
+        return result;
     }
 
     @Nonnull
