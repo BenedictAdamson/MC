@@ -36,7 +36,11 @@ public abstract class MCRepository {
             List.of(new NamedUUID(UUID.randomUUID(), "Lt. Winters"),
                     new NamedUUID(UUID.randomUUID(), "Sgt. Summer"))) {
     };
-    private static final Map<UUID, Scenario> SCENARIOS = Map.of(SCENARIO_ID, SCENARIO);
+    private static final Map<UUID, Scenario> ID_TO_SCENARIO_MAP  = Map.of(SCENARIO_ID, SCENARIO);
+    private static final IdentityHashMap<Scenario, UUID> SCENARIO_TO_ID_MAP = new IdentityHashMap<>();
+    static {
+        ID_TO_SCENARIO_MAP.forEach((id, scenario) -> SCENARIO_TO_ID_MAP.put(scenario, id));
+    }
 
     @Nonnull
     public abstract Context openContext();
@@ -59,12 +63,12 @@ public abstract class MCRepository {
         @Nonnull
         public final Optional<Scenario> findScenario(@Nonnull UUID id) {
             Objects.requireNonNull(id);
-            return Optional.ofNullable(SCENARIOS.get(id));
+            return Optional.ofNullable(ID_TO_SCENARIO_MAP.get(id));
         }
 
         @Nonnull
         public final Iterable<Map.Entry<UUID, Scenario>> findAllScenarios() {
-            return SCENARIOS.entrySet();
+            return ID_TO_SCENARIO_MAP.entrySet();
         }
 
 
@@ -73,17 +77,23 @@ public abstract class MCRepository {
             if (gameToIdMap.containsKey(game) || idToGameMap.containsKey(id)) {
                 throw new IllegalStateException("already present");
             }
+            final var scenario = game.getScenario();
+            Objects.requireNonNull(scenario);
+            final var scenarioId = SCENARIO_TO_ID_MAP.get(scenario);
+            Objects.requireNonNull(scenarioId);
             gameToIdMap.put(game, id);
-            idToGameMap.put(id, new FindGameResult(game, id.getScenario()));
-            addGameUncached(id, game);
+            idToGameMap.put(id, new FindGameResult(game, scenarioId));
+            addGameUncached(id, scenarioId, game);
         }
 
         public final void updateGame(@Nonnull Game game) {
+            final var scenario = game.getScenario();
             final var id = gameToIdMap.get(game);
             if (id == null) {
                 throw new IllegalStateException("not present");
             }
-            updateGameUncached(id, game);
+            Objects.requireNonNull(scenario);
+            updateGameUncached(id, SCENARIO_TO_ID_MAP.get(scenario), game);
         }
 
         @Nonnull
@@ -233,9 +243,9 @@ public abstract class MCRepository {
             haveAllUsers = false;
         }
 
-        protected abstract void addGameUncached(@Nonnull GameIdentifier id, @Nonnull Game game);
+        protected abstract void addGameUncached(@Nonnull GameIdentifier id, @Nonnull UUID scenarioId, @Nonnull Game game);
 
-        protected abstract void updateGameUncached(@Nonnull GameIdentifier id, @Nonnull Game game);
+        protected abstract void updateGameUncached(@Nonnull GameIdentifier id, @Nonnull UUID scenarioId, @Nonnull Game game);
 
         @Nonnull
         protected abstract Optional<FindGameResult> findGameUncached(@Nonnull GameIdentifier id);

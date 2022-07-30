@@ -39,15 +39,15 @@ public class MCRepositoryTest {
         private class FakeContext extends Context {
 
             @Override
-            public void addGameUncached(@Nonnull GameIdentifier id, @Nonnull Game game) {
+            public void addGameUncached(@Nonnull GameIdentifier id, @Nonnull UUID scenarioId, @Nonnull Game game) {
                 Objects.requireNonNull(id);
-                gameStore.put(id, new FindGameResult(copy(game), id.getScenario()));
+                gameStore.put(id, new FindGameResult(copy(game), scenarioId));
             }
 
             @Override
-            public void updateGameUncached(@Nonnull GameIdentifier id, @Nonnull Game game) {
+            public void updateGameUncached(@Nonnull GameIdentifier id, @Nonnull UUID scenarioId, @Nonnull Game game) {
                 Objects.requireNonNull(id);
-                gameStore.put(id, new FindGameResult(copy(game), id.getScenario()));
+                gameStore.put(id, new FindGameResult(copy(game), scenarioId));
             }
 
             @Nonnull

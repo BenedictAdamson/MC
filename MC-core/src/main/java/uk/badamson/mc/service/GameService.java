@@ -328,11 +328,13 @@ public final class GameService {
             throw new NoSuchElementException("user");
         }
         final var user = userOptional.get();
-        final var gameOptional = getGame(gameId, context);
-        if (gameOptional.isEmpty()) {
+        final var findGameResultOptional = getGame(gameId, context);
+        if (findGameResultOptional.isEmpty()) {
             throw new NoSuchElementException("game");
         }
-        final var game = gameOptional.get().game();
+        final var findGameResult = findGameResultOptional.get();
+        final var game = findGameResult.game();
+        final var scenarioId = findGameResult.scenarioId();
         final var current = getCurrent(context, userId);
 
         if (!user.getAuthorities().contains(Authority.ROLE_PLAYER)) {
@@ -358,7 +360,6 @@ public final class GameService {
                 throw new IllegalGameStateException("Game is not recruiting");
             }
             alreadyJoined = false;
-            final var scenarioId = gameId.getScenario();
             final var scenarioOptional = scenarioService.getScenario(context, scenarioId);
             if (scenarioOptional.isEmpty()) {
                 throw new NoSuchElementException("scenario");

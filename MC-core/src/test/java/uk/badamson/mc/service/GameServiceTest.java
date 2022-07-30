@@ -955,7 +955,7 @@ public class GameServiceTest {
                         PASSWORD_B, Set.of(Authority.ROLE_PLAYER), true, true,
                         true, true)).getId();
 
-                test(scenarioService, service, user, id);
+                test(scenarioService, service, user, scenarioId, id);
 
                 final Optional<FindGameResult> findGameResultOptional = service.getGameAsGameManager(id);
                 assertThat("present", findGameResultOptional.isPresent());
@@ -974,17 +974,20 @@ public class GameServiceTest {
                         PASSWORD_A, Set.of(Authority.ROLE_PLAYER), true, true,
                         true, true)).getId();
 
-                test(scenarioService, service, user, game);
+                test(scenarioService, service, user, scenarioId, game);
             }
 
-            private void test(final ScenarioService scenarioService, final GameService service,
-                              final UUID user, final GameIdentifier id) {
-                final Optional<Scenario> scenarioOptional = scenarioService.getScenario(id.getScenario());
+            private void test(final ScenarioService scenarioService,
+                              final GameService service,
+                              final UUID user,
+                              final UUID scenarioId,
+                              final GameIdentifier gameId) {
+                final Optional<Scenario> scenarioOptional = scenarioService.getScenario(scenarioId);
                 assertThat("scenario", scenarioOptional.isPresent());
                 final var scenario = scenarioOptional.get();
                 final var characterIds = scenario.getCharacters().stream()
                         .sequential().map(NamedUUID::getId).toList();
-                final Optional<Game> game0Optional = service.getGameAsGameManager(id).map(FindGameResult::game);
+                final Optional<Game> game0Optional = service.getGameAsGameManager(gameId).map(FindGameResult::game);
                 assertThat("game", game0Optional.isPresent());
                 final var game0 = game0Optional.get();
                 final var playedCharacters0 = game0.getUsers().keySet();
@@ -994,17 +997,17 @@ public class GameServiceTest {
                 assertThat("firstUnPlayedCharacter", firstUnPlayedCharacter0Optional.isPresent());
                 final var firstUnPlayedCharacter0 = firstUnPlayedCharacter0Optional.get();
 
-                userJoinsGame(service, user, id);
+                userJoinsGame(service, user, gameId);
 
                 final Optional<GameIdentifier> currentGameOptional = service
                         .getCurrentGameOfUser(user);
                 assertThat("currentGame", currentGameOptional.isPresent());
                 final var currentGame = currentGameOptional.get();
-                final Optional<Game> gameOptional = service.getGameAsGameManager(id).map(FindGameResult::game);
+                final Optional<Game> gameOptional = service.getGameAsGameManager(gameId).map(FindGameResult::game);
                 assertThat("game", gameOptional.isPresent());
                 final var game = gameOptional.get();
                 final var users = game.getUsers();
-                assertThat("The current game of the user becomes the given game.", currentGame, is(id));
+                assertThat("The current game of the user becomes the given game.", currentGame, is(gameId));
                 assertAll("The played characters of the game",
                         () -> assertTrue(characterIds.containsAll(users.keySet()),
                                 "is a subset of the characters of the scenario."),
@@ -1034,7 +1037,7 @@ public class GameServiceTest {
                         true, true)).getId();
                 service.userJoinsGame(userA, id);
 
-                test(scenarioService, service, userB, id);
+                test(scenarioService, service, userB, scenarioId, id);
 
                 final Optional<Game> gameOptional = service.getGameAsGameManager(id).map(FindGameResult::game);
                 assertThat("game", gameOptional.isPresent());
