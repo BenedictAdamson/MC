@@ -301,9 +301,6 @@ public class GameServiceTest {
                 final var identifiedValue = create(service, scenarioId);
 
                 final var identifier = identifiedValue.getIdentifier();
-                assertThat(
-                        "The returned game has the current time as the creation time of its identifier.",
-                        identifier.getCreated(), is(truncatedNow));
                 final var retrievedGameOptional = service.getGameAsGameManager(identifier);
                 assertNotNull(retrievedGameOptional,
                         "can retrieve something using the ID (not null)");// guard
@@ -338,8 +335,7 @@ public class GameServiceTest {
         public void one() {
             final var scenario = getAScenarioId(scenarioServiceA);
             final var service = new GameService(CLOCK_A, scenarioServiceA, userServiceA, repositoryA);
-            final var created = service.create(scenario).getIdentifier()
-                    .getCreated();
+            final var created = service.create(scenario).getIdentifier().getCreated();
 
             final var result = getCreationTimesOfGamesOfScenario(service,
                     scenario);
