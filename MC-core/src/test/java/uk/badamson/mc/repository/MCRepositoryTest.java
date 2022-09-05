@@ -11,7 +11,7 @@ public class MCRepositoryTest {
 
     public static class Fake extends MCRepository {
 
-        private final Map<GameIdentifier, FindGameResult> gameStore = new ConcurrentHashMap<>();
+        private final Map<UUID, FindGameResult> gameStore = new ConcurrentHashMap<>();
         private final Map<UUID, UserGameAssociation> currentUserGameStore = new ConcurrentHashMap<>();
         private final Map<UUID, User> userStore = new ConcurrentHashMap<>();
 
@@ -39,30 +39,30 @@ public class MCRepositoryTest {
         private class FakeContext extends Context {
 
             @Override
-            public void addGameUncached(@Nonnull GameIdentifier id, @Nonnull UUID scenarioId, @Nonnull Game game) {
+            public void addGameUncached(@Nonnull UUID id, @Nonnull UUID scenarioId, @Nonnull Game game) {
                 Objects.requireNonNull(id);
                 gameStore.put(id, new FindGameResult(copy(game), scenarioId));
             }
 
             @Override
-            public void updateGameUncached(@Nonnull GameIdentifier id, @Nonnull UUID scenarioId, @Nonnull Game game) {
+            public void updateGameUncached(@Nonnull UUID id, @Nonnull UUID scenarioId, @Nonnull Game game) {
                 Objects.requireNonNull(id);
                 gameStore.put(id, new FindGameResult(copy(game), scenarioId));
             }
 
             @Nonnull
             @Override
-            public Optional<FindGameResult> findGameUncached(@Nonnull GameIdentifier id) {
+            public Optional<FindGameResult> findGameUncached(@Nonnull UUID id) {
                 return Optional.ofNullable(gameStore.get(id))
                         .map(r -> new FindGameResult(copy(r.game()), r.scenarioId()));
             }
 
             @Nonnull
             @Override
-            public Iterable<Map.Entry<GameIdentifier, FindGameResult>> findAllGamesUncached() {
+            public Iterable<Map.Entry<UUID, FindGameResult>> findAllGamesUncached() {
                 return gameStore.entrySet().stream()
                         .map(entry -> new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), copy(entry.getValue())))
-                        .map(entry -> (Map.Entry<GameIdentifier, FindGameResult>) entry)
+                        .map(entry -> (Map.Entry<UUID, FindGameResult>) entry)
                         .toList();
             }
 

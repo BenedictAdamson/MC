@@ -3,6 +3,7 @@ package uk.badamson.mc.service
 import org.hamcrest.Matchers
 import uk.badamson.mc.Authority
 import uk.badamson.mc.Game
+import uk.badamson.mc.NamedUUID
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static spock.util.matcher.HamcrestSupport.expect
@@ -122,10 +123,10 @@ class GameCoreSpec extends CoreSpecification {
         def scenarioId = getAScenarioId()
 
         when: "create a game for the scenario"
-        def creationTime = world.clock.instant()
         def identifiedValue = world.gameService.create(scenarioId)
         def gameId = identifiedValue.identifier
         def game = identifiedValue.value
+        def created = game.created
 
         then: "accepts the creation of the game"
         game != null
@@ -144,7 +145,7 @@ class GameCoreSpec extends CoreSpecification {
         gameIds != null
 
         and: "the list of games includes the new game"
-        expect(gameIds, Matchers.hasItem(gameId))
+        expect(gameIds, Matchers.hasItem(new NamedUUID(gameId, created.toString())))
     }
 
     def "End game recruitment"() {

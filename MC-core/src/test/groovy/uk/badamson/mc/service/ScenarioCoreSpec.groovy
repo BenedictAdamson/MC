@@ -1,10 +1,10 @@
 package uk.badamson.mc.service
 
 import org.hamcrest.Matchers
+import uk.badamson.mc.NamedUUID
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static spock.util.matcher.HamcrestSupport.expect
-
 /** © Copyright Benedict Adamson 2019,20,22.
  *
  * This file is part of MC.
@@ -33,7 +33,10 @@ class ScenarioCoreSpec extends CoreSpecification {
         def scenarioIdOptional = world.scenarioService.scenarioIdentifiers.findAny()
         assertThat('has a scenario', scenarioIdOptional.isPresent())
         def scenarioId = scenarioIdOptional.get()
-        def gameIdentifier = world.gameService.create(scenarioId).identifier
+        def identifiedGame = world.gameService.create(scenarioId)
+        def gameId = identifiedGame.identifier
+        def game = identifiedGame.value
+        def created = game.created
 
         when: "examine the scenario"
         def scenarioOptional = world.scenarioService.getScenario(scenarioId)
@@ -49,6 +52,6 @@ class ScenarioCoreSpec extends CoreSpecification {
         and: "the scenario has a collection of games of that scenario"
         def gameIdentifiers = world.gameService.getGameIdentifiersOfScenario(scenarioId)
         expect(gameIdentifiers, Matchers.any(Collection.class))
-        expect(gameIdentifiers, Matchers.hasItem(gameIdentifier))
+        expect(gameIdentifiers, Matchers.hasItem(new NamedUUID(gameId, created.toString())))
     }
 }

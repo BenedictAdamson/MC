@@ -83,7 +83,7 @@ public final class GameService {
      *                                That is, if {@code scenario} is not a known scenario ID.
      */
     @Nonnull
-    public IdentifiedValue<GameIdentifier, Game> create(@Nonnull final UUID scenarioId) throws NoSuchElementException {
+    public IdentifiedValue<UUID, Game> create(@Nonnull final UUID scenarioId) throws NoSuchElementException {
         Objects.requireNonNull(scenarioId);
         try (var context = repository.openContext()) {
             final var scenarioOptional = scenarioService.getScenario(scenarioId);
@@ -91,7 +91,7 @@ public final class GameService {
                 throw new NoSuchElementException("scenario");
             }
             final var created = getNow();
-            final var identifier = new GameIdentifier(scenarioId, created);
+            final var identifier = UUID.randomUUID();
             final var game = new Game(created, Game.RunState.WAITING_TO_START, true, NO_USERS);
             game.setScenario(scenarioOptional.get());
             context.addGame(identifier, game);
@@ -113,15 +113,18 @@ public final class GameService {
      * @throws NoSuchElementException If {@code scenario} is not the ID of a recognised scenario.
      */
     @Nonnull
-    public Set<GameIdentifier> getGameIdentifiersOfScenario(@Nonnull final UUID scenario)
+    public Set<NamedUUID> getGameIdentifiersOfScenario(@Nonnull final UUID scenario)
             throws NoSuchElementException {
         Objects.requireNonNull(scenario);
-        final Set<GameIdentifier> result = new HashSet<>();
+        final Set<NamedUUID> result = new HashSet<>();
         try (var context = repository.openContext()) {
             requireKnownScenario(context, scenario);
             for (var entry : context.findAllGames()) {
-                if (scenario.equals(entry.getValue().scenarioId())) {
-                    result.add(entry.getKey());
+                final FindGameResult findGameResult = entry.getValue();
+                if (scenario.equals(findGameResult.scenarioId())) {
+                    final var gameId = entry.getKey();
+                    final var gameName = findGameResult.game().getCreated().toString();
+                    result.add(new NamedUUID(gameId, gameName));
                 }
             }
         }
@@ -129,15 +132,15 @@ public final class GameService {
     }
 
     @Nonnull
-    public Iterable<GameIdentifier> getGameIdentifiers() {
+    public Iterable<UUID> getGameIdentifiers() {
         try (var context = repository.openContext()) {
             return getGameIdentifiers(context);
         }
     }
 
     @Nonnull
-    Set<GameIdentifier> getGameIdentifiers(@Nonnull MCRepository.Context context) {
-        final Set<GameIdentifier> result = new HashSet<>();
+    Set<UUID> getGameIdentifiers(@Nonnull MCRepository.Context context) {
+        final Set<UUID> result = new HashSet<>();
         for (var entry : context.findAllGames()) {
             result.add(entry.getKey());
         }
@@ -159,7 +162,7 @@ public final class GameService {
     }
 
     @Nonnull
-    public Game startGame(@Nonnull final GameIdentifier id)
+    public Game startGame(@Nonnull final UUID id)
             throws NoSuchElementException, IllegalGameStateException {
         Objects.requireNonNull(id);
         try (var context = repository.openContext()) {
@@ -184,7 +187,7 @@ public final class GameService {
         }
     }
 
-    public void stopGame(@Nonnull final GameIdentifier id)
+    public void stopGame(@Nonnull final UUID id)
             throws NoSuchElementException {
         try (var context = repository.openContext()) {
             Optional<FindGameResult> gameOptional = getGame(id, context);
@@ -220,7 +223,7 @@ public final class GameService {
      * @throws NoSuchElementException If a game with the given ID does not exist.
      */
     @Nonnull
-    public FindGameResult endRecruitment(@Nonnull final GameIdentifier id)
+    public FindGameResult endRecruitment(@Nonnull final UUID id)
             throws NoSuchElementException {
         try (var context = repository.openContext()) {
             final var resultOptional = getGame(id, context);
@@ -236,7 +239,7 @@ public final class GameService {
     }
 
     @Nonnull
-    private Optional<GameIdentifier> getCurrent(@Nonnull MCRepository.Context context, @Nonnull final UUID user) {
+    private Optional<UUID> getCurrent(@Nonnull MCRepository.Context context, @Nonnull final UUID user) {
         return context.findCurrentUserGame(user).map(UserGameAssociation::getGame);
     }
 
@@ -247,7 +250,7 @@ public final class GameService {
      * </p>
      */
     @Nonnull
-    public Optional<GameIdentifier> getCurrentGameOfUser(
+    public Optional<UUID> getCurrentGameOfUser(
             @Nonnull final UUID userId) {
         Objects.requireNonNull(userId);
         try (var context = repository.openContext()) {
@@ -268,13 +271,13 @@ public final class GameService {
      */
     @Nonnull
     public Optional<FindGameResult> getGameAsGameManager(
-            @Nonnull final GameIdentifier id) {
+            @Nonnull final UUID id) {
         try (var context = repository.openContext()) {
             return getGame(id, context);
         }
     }
 
-    private Optional<FindGameResult> getGame(@Nonnull GameIdentifier id, @Nonnull MCRepository.Context context) {
+    private Optional<FindGameResult> getGame(@Nonnull UUID id, @Nonnull MCRepository.Context context) {
         Optional<FindGameResult> resultOptional = context.findGame(id);
         if (resultOptional.isPresent()) {
             final var result = resultOptional.get();
@@ -302,7 +305,7 @@ public final class GameService {
      */
     @Nonnull
     public Optional<FindGameResult> getGameAsNonGameManager(
-            @Nonnull final GameIdentifier gameId, @Nonnull final UUID user) {
+            @Nonnull final UUID gameId, @Nonnull final UUID user) {
         Objects.requireNonNull(user, "user");
         final Optional<FindGameResult> result;
         try (var context = repository.openContext()) {
@@ -317,7 +320,7 @@ public final class GameService {
 
     private UserJoinsGameState getUserJoinsGameState(@Nonnull MCRepository.Context context,
                                                      final UUID userId,
-                                                     final GameIdentifier gameId)
+                                                     final UUID gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
         final var userOptional = getUser(context, userId);
@@ -380,7 +383,7 @@ public final class GameService {
 
     /**
      * <p>
-     * Whether the {@link #userJoinsGame(UUID, GameIdentifier)} operation would
+     * Whether the {@link #userJoinsGame(UUID, UUID)} operation would
      * succeed
      * </p>
      * <p>
@@ -397,7 +400,7 @@ public final class GameService {
      * {@linkplain Game#isRecruiting() recruiting} players.</li>
      * </ul>
      */
-    public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final GameIdentifier game) {
+    public boolean mayUserJoinGame(@Nonnull final UUID user, @Nonnull final UUID game) {
         try (var context = repository.openContext()) {
             getUserJoinsGameState(context, user, game);
         } catch (UserAlreadyPlayingException | IllegalGameStateException
@@ -428,7 +431,7 @@ public final class GameService {
      *                                     </ul>
      */
     public void userJoinsGame(@Nonnull final UUID userId,
-                              @Nonnull final GameIdentifier gameId)
+                              @Nonnull final UUID gameId)
             throws NoSuchElementException, UserAlreadyPlayingException,
             IllegalGameStateException, SecurityException {
         try (var context = repository.openContext()) {
@@ -460,10 +463,10 @@ public final class GameService {
         final boolean endRecruitment;
 
         UserJoinsGameState(final Game game,
-                           final UUID firstUnplayedCharacter, final boolean alreadyJoined,
+                           final UUID firstFreeCharacter, final boolean alreadyJoined,
                            final boolean endRecruitment) {
             this.game = game;
-            this.character = firstUnplayedCharacter;
+            this.character = firstFreeCharacter;
             this.alreadyJoined = alreadyJoined;
             this.endRecruitment = endRecruitment;
         }

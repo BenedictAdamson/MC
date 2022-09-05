@@ -37,7 +37,7 @@ import java.util.UUID;
 public final class UserGameAssociation {
 
     private final UUID user;
-    private final GameIdentifier game;
+    private final UUID game;
 
     /**
      * <p>
@@ -54,7 +54,7 @@ public final class UserGameAssociation {
      *                                         </ul>
      */
     public UserGameAssociation(@Nonnull final UUID user,
-                               @Nonnull final GameIdentifier game) {
+                               @Nonnull final UUID game) {
         this.user = Objects.requireNonNull(user, "user");
         this.game = Objects.requireNonNull(game, "game");
     }
@@ -85,7 +85,7 @@ public final class UserGameAssociation {
      * </p>
      */
     @Nonnull
-    public GameIdentifier getGame() {
+    public UUID getGame() {
         return game;
     }
 
