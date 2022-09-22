@@ -30,16 +30,14 @@
   * Docker Pipeline
   * Pipeline Utility Steps
   * Warnings Next Generation
-  *
-  * An administrator will need to permit scripts to use method org.apache.maven.model.Model getVersion.
   */
  
 pipeline { 
     agent {
         dockerfile {
             filename 'Jenkins.Dockerfile'
-            additionalBuildArgs  '--build-arg JENKINSUID=`id -u jenkins` --build-arg JENKINSGID=`id -g jenkins` --build-arg DOCKERGID=`stat -c %g /var/run/docker.sock`'
-            args '-v $HOME:/home/jenkins -v /var/run/docker.sock:/var/run/docker.sock --network="host" -u jenkins:jenkins --group-add docker'
+            additionalBuildArgs  '--build-arg JENKINSUID=`id -u jenkins` --build-arg JENKINSGID=`id -g jenkins`'
+            args '-v $HOME:/home/jenkins -v /var/run/docker.sock:/var/run/docker.sock --network="host" -u jenkins:jenkins'
         }
     }
     triggers {
@@ -58,32 +56,24 @@ pipeline {
             }
         }
         stage('Build and verify') {
-        	/* Includes building Docker images, which will be in the local repository,
-        	 * but does not push the Docker images. Pushing images of development ("SNAPSHOT") versions can be
-        	 * troublesome because it can result in situations when the remote and local repositories hold different
-        	 * versions with the same tag, leading to confusion about which version is actually used,
-        	 * and inconsistencies for environments (such as minikube and Kubernetes in general) that do not use the
-        	 * local Docker registry.
-        	 */
             when{
                 not{
                     branch 'master'
                 }
-            } 
+            }
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){ 
-                    sh 'mvn -B -s $MAVEN_SETTINGS verify'
+                    sh 'mvn -B -s $MAVEN_SETTINGS clean verify'
                 }
             }
         }
         stage('Build, verify and deploy') {
-        	/* Includes pushing Docker images. */
             when{
                  branch 'master'
-            } 
+            }
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){ 
-                    sh 'mvn -B -s $MAVEN_SETTINGS deploy'
+                    sh 'mvn -B -s $MAVEN_SETTINGS clean deploy'
                 }
             }
         }
@@ -100,12 +90,9 @@ pipeline {
 					]
             }
             junit 'MC-*/target/*-reports/**/TEST-*.xml'
-            junit 'MC-*/target/karma-reports/*.xml'  
         }
         success {
-            archiveArtifacts artifacts: 'MC-*/target/*.deb', fingerprint: true
             archiveArtifacts artifacts: 'MC-*/target/*.jar', fingerprint: true
-            archiveArtifacts artifacts: 'MC-*/target/*.tgz', fingerprint: true
         }
     }
 }
