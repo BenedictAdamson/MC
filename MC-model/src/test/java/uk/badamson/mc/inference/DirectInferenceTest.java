@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class DirectInferenceTest {
     private static final BasicBelief BASIC_BELIEF_A = new BasicBelief(0, 0);
     private static final BasicBelief BASIC_BELIEF_B = new BasicBelief(1, 1);
+    private static final BasicBelief BASIC_BELIEF_C = new BasicBelief(2, 2);
 
     private static void constructor(
             BasicBelief premise, BasicBelief implication, double strength, double previousPremiseInformation) {
@@ -74,8 +75,8 @@ public class DirectInferenceTest {
             @Test
             public void differentValues() {
                 test(
-                        BASIC_BELIEF_A, BASIC_BELIEF_B, 5, 0,
-                        BASIC_BELIEF_B, BASIC_BELIEF_A, 2.25, 2.25
+                        BASIC_BELIEF_B, BASIC_BELIEF_C, 5, 0,
+                        BASIC_BELIEF_C, BASIC_BELIEF_A, 2.25, 2.25
                 );
             }
 
