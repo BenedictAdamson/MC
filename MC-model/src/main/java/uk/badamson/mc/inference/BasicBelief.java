@@ -18,10 +18,16 @@ package uk.badamson.mc.inference;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @NotThreadSafe
 public final class BasicBelief implements Belief {
+    private final Set<Inference> inferences = new HashSet<>();
     private double information;
     private double nextInformation;
 
@@ -52,11 +58,22 @@ public final class BasicBelief implements Belief {
         return nextInformation;
     }
 
+    @Nonnull
+    public Set<Inference> getInferences() {
+        return Collections.unmodifiableSet(inferences);
+    }
+
     public void addInformation(double change) {
         nextInformation += change;
         if (Math.abs(nextInformation - information) >= Belief.INFORMATION_PRECISION) {
             information = nextInformation;
+            Set.copyOf(inferences).forEach(i -> i.premiseChanged(this));
         }
+    }
+
+    public void addInference(@Nonnull Inference inference) {
+        Objects.requireNonNull(inference);
+        inferences.add(inference);
     }
 
 }

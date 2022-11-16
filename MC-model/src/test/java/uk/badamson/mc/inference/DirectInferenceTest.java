@@ -2,6 +2,7 @@ package uk.badamson.mc.inference;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.badamson.dbc.assertions.EqualsSemanticsVerifier;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,7 +22,7 @@ public class DirectInferenceTest {
         assertAll(
                 () -> assertThat(inference.getPremise(), sameInstance(premise)),
                 () -> assertThat(inference.getImplication(), sameInstance(implication)),
-                () -> assertThat(inference.getStrength(), is(strength)),
+                () -> assertThat(inference.getBayesFactor(), is(strength)),
                 () -> assertThat(inference.getPreviousPremiseInformation(), is(previousPremiseInformation))
         );
     }
@@ -34,7 +35,11 @@ public class DirectInferenceTest {
     public static void assertInvariants(DirectInference inferenceA, DirectInference inferenceB) {
         ObjectVerifier.assertInvariants(inferenceA, inferenceB);
         InferenceTest.assertInvariants(inferenceA, inferenceB);
-        assertThat(inferenceA.equals(inferenceB), is(inferenceA == inferenceB));
+        assertAll(
+                () -> EqualsSemanticsVerifier.assertValueSemantics(inferenceA, inferenceB, "bayesFactor", DirectInference::getBayesFactor),
+                () -> EqualsSemanticsVerifier.assertValueSemantics(inferenceA, inferenceB, "implication", DirectInference::getImplication),
+                () -> EqualsSemanticsVerifier.assertValueSemantics(inferenceA, inferenceB, "premise", DirectInference::getPremise)
+        );
     }
 
 
@@ -47,7 +52,7 @@ public class DirectInferenceTest {
     public class Construct {
 
         @Nested
-        public class Once {
+        public class One {
 
             @Test
             public void a() {
@@ -55,7 +60,7 @@ public class DirectInferenceTest {
             }
 
             @Test
-            public void B() {
+            public void b() {
                 constructor(BASIC_BELIEF_B, BASIC_BELIEF_A, 0.25, 1.25);
             }
 
@@ -65,32 +70,82 @@ public class DirectInferenceTest {
         public class Two {
 
             @Test
-            public void equalValues() {
-                test(
-                        BASIC_BELIEF_A, BASIC_BELIEF_B, 0.25, 1.25,
-                        BASIC_BELIEF_A, BASIC_BELIEF_B, 0.25, 1.25
+            public void equivalent() {
+                equivalent(
+                        BASIC_BELIEF_A, BASIC_BELIEF_B,
+                        0.5, 0, 0
                 );
             }
 
             @Test
-            public void differentValues() {
-                test(
-                        BASIC_BELIEF_B, BASIC_BELIEF_C, 5, 0,
-                        BASIC_BELIEF_C, BASIC_BELIEF_A, 2.25, 2.25
+            public void equivalentDespiteDifferentPreviousPremiseInformation() {
+                equivalent(
+                        BASIC_BELIEF_B, BASIC_BELIEF_A,
+                        0.25, 0.25, -0.25
                 );
             }
 
-            private void test(
+            @Test
+            public void differentPremises() {
+                final double bayesFactor = 0.5;
+                final double previousPremiseInformation = 0;
+                different(
+                        BASIC_BELIEF_C, BASIC_BELIEF_B,
+                        bayesFactor, previousPremiseInformation,
+                        BASIC_BELIEF_A, BASIC_BELIEF_B,
+                        bayesFactor, previousPremiseInformation
+                );
+            }
+
+            @Test
+            public void differentImplication() {
+                final double bayesFactor = 0.25;
+                final double previousPremiseInformation = 0;
+                different(
+                        BASIC_BELIEF_A, BASIC_BELIEF_B,
+                        bayesFactor, previousPremiseInformation,
+                        BASIC_BELIEF_A, BASIC_BELIEF_C,
+                        bayesFactor, previousPremiseInformation
+                );
+            }
+
+            @Test
+            public void differentBayesFactor() {
+                final double previousPremiseInformation = 0;
+                different(
+                        BASIC_BELIEF_A, BASIC_BELIEF_C,
+                        0.5, previousPremiseInformation,
+                        BASIC_BELIEF_A, BASIC_BELIEF_C,
+                        0.25, previousPremiseInformation
+                );
+            }
+
+            private void different(
                     BasicBelief premiseA, BasicBelief implicationA,
-                    double strengthA, double previousPremiseInformationA,
+                    double bayesFactorA, double previousPremiseInformationA,
                     BasicBelief premiseB, BasicBelief implicationB,
-                    double strengthB, double previousPremiseInformationB
+                    double bayesFactorB, double previousPremiseInformationB
             ) {
                 final var inferenceA = new DirectInference(
-                        premiseA, implicationA, strengthA, previousPremiseInformationA);
+                        premiseA, implicationA, bayesFactorA, previousPremiseInformationA);
                 final var inferenceB = new DirectInference(
-                        premiseB, implicationB, strengthB, previousPremiseInformationB);
+                        premiseB, implicationB, bayesFactorB, previousPremiseInformationB);
                 assertInvariants(inferenceA, inferenceB);
+                assertThat(inferenceA, not(is(inferenceB)));
+            }
+
+            private void equivalent(
+                    BasicBelief premise, BasicBelief implication,
+                    double bayesFactor,
+                    double previousPremiseInformationA,
+                    double previousPremiseInformationB
+            ) {
+                final var inferenceA = new DirectInference(
+                        premise, implication, bayesFactor, previousPremiseInformationA);
+                final var inferenceB = new DirectInference(
+                        premise, implication, bayesFactor, previousPremiseInformationB);
+                assertInvariants(inferenceA, inferenceB);
+                assertThat(inferenceA, is(inferenceB));
             }
         }
     }

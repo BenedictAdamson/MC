@@ -20,13 +20,24 @@ package uk.badamson.mc.inference;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.badamson.dbc.assertions.CollectionVerifier;
 import uk.badamson.dbc.assertions.ObjectVerifier;
 
+import java.util.Set;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.closeTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class BasicBeliefTest {
+
+    private static final Inference INFERENCE_A = premise -> {
+        // do nothing
+    };
+
+    private static final Inference INFERENCE_B = premise -> {
+        // do nothing
+    };
 
     private static void constructor(double information, double nextInformation) {
         final var belief = new BasicBelief(information, nextInformation);
@@ -34,6 +45,7 @@ public class BasicBeliefTest {
         assertInvariants(belief);
         assertThat(belief.getInformation(), is(information));
         assertThat(belief.getNextInformation(), is(nextInformation));
+        assertThat(belief.getInferences(), empty());
     }
 
     private static void addInformation(final BasicBelief belief, final double change) {
@@ -54,10 +66,30 @@ public class BasicBeliefTest {
         );
     }
 
+    private static void addInference(final BasicBelief belief, Inference inference) {
+        final var inferences0 = Set.copyOf(belief.getInferences());
+
+        belief.addInference(inference);
+
+        assertInvariants(belief);
+        InferenceTest.assertInvariants(inference);
+        final var inferences = Set.copyOf(belief.getInferences());
+        assertAll(
+                () -> assertThat(inferences, hasItem(inference)),
+                () -> assertThat(inferences.size(), lessThanOrEqualTo(inferences0.size() + 1)),
+                () -> CollectionVerifier.assertForAllElements(inferences, i -> assertThat(i, either(sameInstance(inference)).or(in(inferences0)))));
+    }
+
     public static void assertInvariants(final BasicBelief belief) {
         ObjectVerifier.assertInvariants(belief);
         BeliefTest.assertInvariants(belief);
-        assertThat(belief.getNextInformation(), closeTo(belief.getNextInformation(), Belief.INFORMATION_PRECISION));
+        final Set<Inference> inferences = belief.getInferences();
+        assertThat(inferences, notNullValue());
+        assertThat(belief.getInformation(), closeTo(belief.getNextInformation(), Belief.INFORMATION_PRECISION));
+        CollectionVerifier.assertForAllElements(inferences, inference -> {
+            assertThat(inference, notNullValue());
+            InferenceTest.assertInvariants(inference);
+        });
     }
 
     public static void assertInvariants(final BasicBelief beliefA, final BasicBelief beliefB) {
@@ -126,6 +158,12 @@ public class BasicBeliefTest {
         }
 
         @Test
+        public void justTooSmallToChangeInformation() {
+            final var belief = new BasicBelief(1, 1);
+            addInformation(belief, Math.nextDown(Belief.INFORMATION_PRECISION));
+        }
+
+        @Test
         public void justBigEnoughToChangeInformation() {
             final var belief = new BasicBelief(1, 1);
             addInformation(belief, Belief.INFORMATION_PRECISION);
@@ -135,6 +173,130 @@ public class BasicBeliefTest {
         public void large() {
             final var belief = new BasicBelief(1, 1);
             addInformation(belief, Belief.INFORMATION_PRECISION * 10.0);
+        }
+
+        @Nested
+        public class WithInference {
+
+            @Nested
+            public class TooSmallToChange {
+
+                @Test
+                public void zero() {
+                    test(0);
+                }
+
+                @Test
+                public void increase() {
+                    test(Belief.INFORMATION_PRECISION * 0.5);
+                }
+
+                @Test
+                public void decrease() {
+                    test(Belief.INFORMATION_PRECISION * -0.5);
+                }
+
+                @Test
+                public void justTooSmallIncreaseToChangeInformation() {
+                    test(Math.nextDown(Belief.INFORMATION_PRECISION));
+                }
+
+                @Test
+                public void justTooSmallDecreaseToChangeInformation() {
+                    test(Math.nextUp(-Belief.INFORMATION_PRECISION));
+                }
+
+                private void test(double change) {
+                    final var belief = new BasicBelief(0, 0);
+                    final var spy = new InferenceTest.Spy();
+                    belief.addInference(spy);
+
+                    addInformation(belief, change);
+                    assertThat(spy.nCalls, is(0));
+                }
+            }
+
+            @Nested
+            public class BigEnoughToChange {
+
+                @Test
+                public void increase() {
+                    test(10);
+                }
+
+                @Test
+                public void decrease() {
+                    test(-10);
+                }
+
+                @Test
+                public void justBigEnoughIncreaseToChangeInformation() {
+                    test(Belief.INFORMATION_PRECISION);
+                }
+
+                @Test
+                public void justBigEnoughDecreaseToChangeInformation() {
+                    test(Belief.INFORMATION_PRECISION);
+                }
+
+                private void test(double change) {
+                    final var belief = new BasicBelief(0, 0);
+                    final var spy = new InferenceTest.Spy();
+                    belief.addInference(spy);
+
+                    addInformation(belief, change);
+
+                    assertAll(
+                            () -> assertThat("nCalls", spy.nCalls, is(1)),
+                            () -> assertThat("premise", spy.premise, sameInstance(belief)));
+                }
+            }
+        }
+    }
+
+    @Nested
+    public class AddInference {
+
+        @Test
+        public void two() {
+            final var belief = new BasicBelief(0, 0);
+            belief.addInference(INFERENCE_A);
+
+            addInference(belief, INFERENCE_B);
+
+            assertThat(belief.getInferences(), containsInAnyOrder(INFERENCE_A, INFERENCE_B));
+        }
+
+        @Test
+        public void twice() {
+            final var belief = new BasicBelief(0, 0);
+            belief.addInference(INFERENCE_A);
+
+            addInference(belief, INFERENCE_A);
+
+            assertThat(belief.getInferences(), contains(INFERENCE_A));
+        }
+
+        @Nested
+        public class One {
+
+            @Test
+            public void a() {
+                test(INFERENCE_A);
+            }
+
+            @Test
+            public void b() {
+                test(INFERENCE_B);
+            }
+
+            private void test(Inference inference) {
+                final var belief = new BasicBelief(0, 0);
+
+                addInference(belief, inference);
+
+                assertThat(belief.getInferences(), contains(inference));
+            }
         }
     }
 }
