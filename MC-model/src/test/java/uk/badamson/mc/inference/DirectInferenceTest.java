@@ -101,7 +101,7 @@ public class DirectInferenceTest {
             @Test
             public void differentImplication() {
                 final double bayesFactor = 0.25;
-                final double previousPremiseInformation = 0;
+                final double previousPremiseInformation = 1;
                 different(
                         BASIC_BELIEF_A, BASIC_BELIEF_B,
                         bayesFactor, previousPremiseInformation,
@@ -114,9 +114,9 @@ public class DirectInferenceTest {
             public void differentBayesFactor() {
                 final double previousPremiseInformation = 0;
                 different(
-                        BASIC_BELIEF_A, BASIC_BELIEF_C,
+                        BASIC_BELIEF_B, BASIC_BELIEF_C,
                         0.5, previousPremiseInformation,
-                        BASIC_BELIEF_A, BASIC_BELIEF_C,
+                        BASIC_BELIEF_B, BASIC_BELIEF_C,
                         0.25, previousPremiseInformation
                 );
             }
