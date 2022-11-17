@@ -25,6 +25,7 @@ public class DirectInferenceTest {
                 () -> assertThat(inference.getBayesFactor(), is(strength)),
                 () -> assertThat(inference.getPreviousPremiseInformation(), is(previousPremiseInformation))
         );
+        assertThat(premise.getInferences(), hasItem(inference));
     }
 
     public static void assertInvariants(DirectInference inference) {

@@ -24,6 +24,7 @@ public final class DirectInference implements Inference {
         this.implication = implication;
         this.bayesFactor = bayesFactor;
         this.previousPremiseInformation = previousPremiseInformation;
+        premise.addInference(this);
     }
 
     @Override
