@@ -21,6 +21,7 @@ package uk.badamson.mc.inference;
 import java.util.Set;
 
 final class Exclusive2 {
+    private static final double BAYES_FACTOR = -Math.sqrt(0.5);
     private final Set<BasicBelief> beliefs;
 
     Exclusive2(BasicBelief beliefA, BasicBelief beliefB) {
@@ -28,6 +29,8 @@ final class Exclusive2 {
         if (beliefA.equals(beliefB)) {
             throw new IllegalArgumentException();
         }
+        new DirectInference(beliefA, beliefB, BAYES_FACTOR, beliefA.getInformation());
+        new DirectInference(beliefB, beliefA, BAYES_FACTOR, beliefB.getInformation());
     }
 
     public Set<BasicBelief> getBeliefs() {

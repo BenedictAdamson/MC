@@ -27,6 +27,7 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class Exclusive2Test {
     private static final BasicBelief BASIC_BELIEF_A = new BasicBelief(0, 0);
@@ -66,6 +67,63 @@ public class Exclusive2Test {
         @Test
         public void b() {
             constructor(BASIC_BELIEF_B, BASIC_BELIEF_C);
+        }
+    }
+
+    @Nested
+    public class AddInformation {
+
+        @Nested
+        public class A {
+
+            @Test
+            public void zero() {
+                test(0, 0, 0);
+            }
+
+            @Test
+            public void smallIncrease() {
+                test(0, 0, Belief.INFORMATION_PRECISION * 0.1);
+            }
+
+            @Test
+            public void smallDecrease() {
+                test(0, 0, -Belief.INFORMATION_PRECISION * 0.1);
+            }
+
+            @Test
+            public void increaseA() {
+                test(0, 0, Belief.INFORMATION_PRECISION * 10);
+            }
+
+            @Test
+            public void increaseB() {
+                test(1, 2, Belief.INFORMATION_PRECISION * 2);
+            }
+
+            @Test
+            public void decrease() {
+                test(0, 0, -Belief.INFORMATION_PRECISION * 10);
+            }
+
+            private void test(double informationA0, double informationB0, double change) {
+                final var total0 = informationA0 + informationB0;
+                final var beliefA = new BasicBelief(informationA0, informationA0);
+                final var beliefB = new BasicBelief(informationB0, informationB0);
+                final var exclusive = new Exclusive2(beliefA, beliefB);
+
+                beliefA.addInformation(change);
+
+                assertInvariants(exclusive);
+                final var informationA = beliefA.getInformation();
+                final var informationB = beliefB.getInformation();
+                assertAll(
+                        () -> assertThat("total", informationA + informationB, closeTo(total0 + change, 5.0 * Belief.INFORMATION_PRECISION)),
+                        () -> assertThat("A changed", informationA, closeTo(informationA0 + change * 2.0, 2.0 * Belief.INFORMATION_PRECISION)),
+                        () -> assertThat("B changed", informationB, closeTo(informationB0 - change, 3.0 * Belief.INFORMATION_PRECISION))
+                );
+            }
+
         }
     }
 }
