@@ -59,26 +59,13 @@ public class Exclusive2Test {
     public class Construct {
 
         @Test
-        public void two() {
-            final var exclusiveA = new Exclusive2(BASIC_BELIEF_A, BASIC_BELIEF_B);
-            final var exclusiveB = new Exclusive2(BASIC_BELIEF_B, BASIC_BELIEF_C);
-
-            assertInvariants(exclusiveA, exclusiveB);
+        public void a() {
+            constructor(BASIC_BELIEF_A, BASIC_BELIEF_B);
         }
 
-        @Nested
-        public class One {
-
-            @Test
-            public void a() {
-                constructor(BASIC_BELIEF_A, BASIC_BELIEF_B);
-            }
-
-            @Test
-            public void b() {
-                constructor(BASIC_BELIEF_B, BASIC_BELIEF_C);
-            }
-
+        @Test
+        public void b() {
+            constructor(BASIC_BELIEF_B, BASIC_BELIEF_C);
         }
     }
 }
