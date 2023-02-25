@@ -1,6 +1,6 @@
 package uk.badamson.mc.emotion;
 /*
- * © Copyright Benedict Adamson 2022.
+ * © Copyright Benedict Adamson 2022-23.
  *
  * This file is part of MC.
  *
@@ -18,8 +18,10 @@ package uk.badamson.mc.emotion;
  * along with MC.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import uk.badamson.mc.inference.BasicBelief;
 
+@SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "A container rather than a value")
 public final class Emotions {
 
     private final BasicBelief stressed;

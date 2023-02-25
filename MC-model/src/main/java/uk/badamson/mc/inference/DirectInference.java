@@ -1,5 +1,7 @@
 package uk.badamson.mc.inference;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Objects;
@@ -14,6 +16,7 @@ public final class DirectInference implements Inference {
     private final double bayesFactor;
     private double previousPremiseInformation;
 
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Associations rather than attributes")
     public DirectInference(
             @Nonnull BasicBelief premise,
             @Nonnull BasicBelief implication,
@@ -73,11 +76,13 @@ public final class DirectInference implements Inference {
     }
 
     @Nonnull
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Association rather than attribute")
     public BasicBelief getPremise() {
         return premise;
     }
 
     @Nonnull
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Association rather than attribute")
     public BasicBelief getImplication() {
         return implication;
     }
