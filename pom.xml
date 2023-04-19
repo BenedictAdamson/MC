@@ -42,7 +42,7 @@
    <build />
    <distributionManagement>
       <repository>
-         <id>local.repo</id>
+         <id>releases.repo</id>
          <name>MC Repository</name>
          <url>${repository.releases.url}</url>
       </repository>
