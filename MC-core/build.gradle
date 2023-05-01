@@ -4,6 +4,7 @@
 
 plugins {
     id 'uk.badamson.mc.java-conventions'
+    id 'groovy'
 }
 
 dependencies {
@@ -24,4 +25,11 @@ description = 'MC-core'
 
 java {
     withJavadocJar()
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }

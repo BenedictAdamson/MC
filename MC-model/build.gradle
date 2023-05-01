@@ -21,3 +21,10 @@ description = 'MC-model'
 java {
     withJavadocJar()
 }
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
