@@ -16,7 +16,7 @@ repositories {
 
 group = 'uk.badamson.mc'
 version = '3.2.4-SNAPSHOT'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {
     publications {
