@@ -1,10 +1,29 @@
+/**
+ * uk.badamson.mc.java-conventions.gradle
+ * Gradle conventions for Java code in the MC project.
+ *
+ * This code makes use of password credentials for the release and snapshot Maven repositories;
+ * both are simply named "maven", so ~/.gradle/gradle.properties (for example)
+ * should set correct values for the properties mavenUsername and mavenPassword.
+ */
 plugins {
     id 'java-library'
     id 'maven-publish'
 }
 
+def releasesRepoUrl = 'http://thegn:8081/repository/maven-releases/'
+def snapshotsRepoUrl = 'http://thegn:8081/repository/maven-snapshots/'
+
 repositories {
     mavenLocal()
+    maven {
+        url releasesRepoUrl
+        allowInsecureProtocol = true
+    }
+    maven {
+        url snapshotsRepoUrl
+        allowInsecureProtocol = true
+    }
     mavenCentral()
 }
 
@@ -16,6 +35,13 @@ publishing {
     publications {
         maven(MavenPublication) {
             from(components.java)
+        }
+    }
+    repositories {
+        maven {
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            allowInsecureProtocol = true
+            credentials(PasswordCredentials)
         }
     }
 }
