@@ -35,6 +35,22 @@ publishing {
     publications {
         maven(MavenPublication) {
             from(components.java)
+            pom {
+                organization {
+                    name = 'Benedict Adamson'
+                }
+                licenses {
+                    license {
+                        name = 'GNU Affero General Public License, Version 3'
+                        url = 'https://www.gnu.org/licenses/agpl.html'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git@github.com:BenedictAdamson/MC.git'
+                    developerConnection = 'scm:git:git@github.com:BenedictAdamson/MC.git'
+                    url = 'https://github.com/BenedictAdamson/MC'
+                }
+            }
         }
     }
     repositories {
