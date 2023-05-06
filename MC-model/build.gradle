@@ -1,6 +1,7 @@
 plugins {
     id 'uk.badamson.mc.java-conventions'
     id 'com.github.spotbugs' version '5.0.14'
+    id 'pmd'
 }
 
 dependencies {
@@ -31,3 +32,9 @@ spotbugs {
     reportLevel = 'Low'
 }
 spotbugsTest.enabled = false
+
+pmd {
+    ruleSetConfig = resources.text.fromFile('src/test/resources/pmd-ruleset.xml')
+}
+pmdTest.enabled = false
+
