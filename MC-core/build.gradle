@@ -23,6 +23,7 @@ description = 'MC-core'
 
 java {
     withJavadocJar()
+    withSourcesJar()
 }
 
 test {

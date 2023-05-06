@@ -18,6 +18,7 @@ description = 'MC-model'
 
 java {
     withJavadocJar()
+    withSourcesJar()
 }
 
 test {
