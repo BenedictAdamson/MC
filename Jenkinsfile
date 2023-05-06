@@ -1,7 +1,7 @@
 // Jenkinsfile for the MC project
 
 /* 
- * © Copyright Benedict Adamson 2018-22.
+ * © Copyright Benedict Adamson 2018-23.
  * 
  * This file is part of MC.
  *
@@ -21,12 +21,7 @@
  
  /*
   * Jenkins plugins used:
-  * Config File Provider
-  *     - Should configure the file settings.xml with ID 'maven-settings' as the Maven settings file
-  *     - That settings.xml configuration should provide authentication credentials
-  *       (in server/servers elements) for the services with the following IDs:
-  *         - MC.repo: the Maven release repository, at localhost:8081 
-  *         - MC-SNAPSHOT.repo: the Maven SNAPSHOT repository, at localhost:8081
+  * Credentials
   * Docker Pipeline
   * Pipeline Utility Steps
   * Warnings Next Generation
@@ -48,32 +43,10 @@ pipeline {
         PATH = '/usr/sbin:/usr/bin:/sbin:/bin'
     }
     stages {
-        stage('Clean') { 
+        stage('Check, test and publish') {
             steps {
-                configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){
-                    sh 'mvn -B -s $MAVEN_SETTINGS clean'
-                }
-            }
-        }
-        stage('Build and verify') {
-            when{
-                not{
-                    branch 'master'
-                }
-            }
-            steps {
-                configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){ 
-                    sh 'mvn -B -s $MAVEN_SETTINGS clean verify'
-                }
-            }
-        }
-        stage('Build, verify and deploy') {
-            when{
-                 branch 'master'
-            }
-            steps {
-                configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]){ 
-                    sh 'mvn -B -s $MAVEN_SETTINGS clean deploy'
+                withCredentials([usernamePassword(credentialsId: 'maven', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh './gradlew check test publish -PmavenUsername=$USERNAME -PmavenPassword=$PASSWORD'
                 }
             }
         }
@@ -85,14 +58,13 @@ pipeline {
                 	java(),
                 	javaDoc(),
                 	mavenConsole(),
-                	pmdParser(pattern: '**/target/pmd.xml'),
-					spotBugs(pattern: '**/target/spotbugsXml.xml')
+                	pmdParser(pattern: '**/build/reports/pmd/*.xml')
 					]
             }
-            junit 'MC-*/target/*-reports/**/TEST-*.xml'
+            junit 'MC-*/build/test-results/test/TEST-*.xml'
         }
         success {
-            archiveArtifacts artifacts: 'MC-*/target/*.jar', fingerprint: true
+            archiveArtifacts artifacts: 'MC-*/build/libs/*.jar', fingerprint: true
         }
     }
 }
