@@ -1,5 +1,6 @@
 plugins {
     id 'uk.badamson.mc.java-conventions'
+    id 'com.github.spotbugs' version '5.0.14'
 }
 
 dependencies {
@@ -24,3 +25,9 @@ test {
         events "passed", "skipped", "failed"
     }
 }
+
+spotbugs {
+    effort = 'Max'
+    reportLevel = 'Low'
+}
+spotbugsTest.enabled = false
