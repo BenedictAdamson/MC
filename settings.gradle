@@ -4,8 +4,8 @@ dependencyResolutionManagement {
     versionCatalogs {
         libs {
             version('junit', {
-                strictly '[5.9, 5.10['
-                prefer '5.9.2'
+                strictly '[5.10, 5.11['
+                prefer '5.10.0'
             })
             library('logback-classic', 'ch.qos.logback', 'logback-classic').version {
                 strictly '[1.2, 1.3['
